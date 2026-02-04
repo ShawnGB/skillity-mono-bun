@@ -1,0 +1,15 @@
+{
+  "name": "skillity",
+  "private": true,
+  "workspaces": ["frontend", "backend"],
+  "scripts": {
+    "dev": "docker compose up",
+    "dev:api": "cd backend && bun run start:dev",
+    "dev:web": "cd frontend && bun run dev",
+    "build:api": "cd backend && bun run build",
+    "build:web": "cd frontend && bun run build",
+    "lint": "bun run lint:api && bun run lint:web",
+    "lint:api": "cd backend && bun run lint",
+    "lint:web": "cd frontend && bun run lint"
+  }
+}
