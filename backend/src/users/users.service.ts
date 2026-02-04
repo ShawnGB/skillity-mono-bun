@@ -19,15 +19,15 @@ export class UsersService {
     const user = this.UsersRepository.create(createUserDto);
     if (!user) throw new NotFoundException('User could not be created');
 
-    user.password = bcrypt.hash(user.password, 10);
+    user.password = await bcrypt.hash(user.password, 10);
 
     await this.UsersRepository.save(user);
 
     return new UserResponseDTO(user);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.UsersRepository.find();
   }
 
   findOne(id: number) {
