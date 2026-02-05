@@ -1,5 +1,12 @@
 import { UserRole } from 'src/types/enums';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToMany,
+} from 'typeorm';
+import type { Workshop } from 'src/workshops/entities/workshop.entity';
 
 @Entity()
 export class User {
@@ -20,4 +27,12 @@ export class User {
 
   @Column({ name: 'last_name', length: 150 })
   lastName: string;
+
+  // relations
+
+  @OneToMany('Workshop', 'host')
+  hosting: Workshop[];
+
+  @ManyToMany('Workshop', 'participants')
+  workshops: Workshop[];
 }
