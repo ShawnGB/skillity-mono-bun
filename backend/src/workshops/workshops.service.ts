@@ -1,26 +1,27 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateWorkshopDto } from './dto/create-workshop.dto';
-import { UpdateWorkshopDto } from './dto/update-workshop.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Workshop } from './entities/workshop.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class WorkshopsService {
-  create(createWorkshopDto: CreateWorkshopDto) {
-    return 'This action adds a new workshop';
+  constructor(
+    @InjectRepository(Workshop)
+    private readonly WorkshopRepositoty: Repository<Workshop>,
+  ) {}
+
+  async create(createWorkshopDto: CreateWorkshopDto) {
+    // TODO: Add host when auth is implemented
+    const workshopToCreate = this.WorkshopRepositoty.create(createWorkshopDto);
+
+    if (!workshopToCreate)
+      throw new ConflictException('Could not create Workshop');
+
+    return await this.WorkshopRepositoty.save(workshopToCreate);
   }
 
   findAll() {
-    return `This action returns all workshops`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} workshop`;
-  }
-
-  update(id: number, updateWorkshopDto: UpdateWorkshopDto) {
-    return `This action updates a #${id} workshop`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} workshop`;
+    return this.WorkshopRepositoty.find();
   }
 }

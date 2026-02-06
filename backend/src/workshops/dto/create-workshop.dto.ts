@@ -5,7 +5,6 @@ import {
   IsNumber,
   IsPositive,
   Min,
-  IsUUID,
 } from 'class-validator';
 
 export class CreateWorkshopDto {
@@ -36,7 +35,4 @@ export class CreateWorkshopDto {
   @IsNotEmpty()
   location: string;
 
-  @IsUUID()
-  @IsNotEmpty()
-  hostId: string;
 }
