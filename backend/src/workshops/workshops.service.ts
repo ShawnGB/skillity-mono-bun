@@ -11,9 +11,11 @@ export class WorkshopsService {
     private readonly WorkshopRepositoty: Repository<Workshop>,
   ) {}
 
-  async create(createWorkshopDto: CreateWorkshopDto) {
-    // TODO: Add host when auth is implemented
-    const workshopToCreate = this.WorkshopRepositoty.create(createWorkshopDto);
+  async create(createWorkshopDto: CreateWorkshopDto, hostId: string) {
+    const workshopToCreate = this.WorkshopRepositoty.create({
+      ...createWorkshopDto,
+      hostId,
+    });
 
     if (!workshopToCreate)
       throw new ConflictException('Could not create Workshop');
