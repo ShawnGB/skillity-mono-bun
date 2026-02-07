@@ -6,14 +6,14 @@ import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { register as registerAction } from '@/actions/auth';
-import type { RegisterInput } from '@skillity/shared';
+import { login } from '@/actions/auth';
+import type { LoginInput } from '@skillity/shared';
 
-interface RegisterFormProps {
+interface LoginFormProps {
   onSuccess?: () => void;
 }
 
-export default function RegisterForm({ onSuccess }: RegisterFormProps) {
+export default function LoginForm({ onSuccess }: LoginFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -22,12 +22,12 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<RegisterInput>();
+  } = useForm<LoginInput>();
 
-  const onSubmit = (data: RegisterInput) => {
+  const onSubmit = (data: LoginInput) => {
     setError(null);
     startTransition(async () => {
-      const result = await registerAction(data);
+      const result = await login(data);
       if (result.error) {
         setError(result.error);
       } else {
@@ -44,32 +44,6 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
           {error}
         </div>
       )}
-
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="firstName">First Name</Label>
-          <Input
-            id="firstName"
-            {...register('firstName', { required: 'First name is required' })}
-            placeholder="John"
-          />
-          {errors.firstName && (
-            <p className="text-sm text-destructive">{errors.firstName.message}</p>
-          )}
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="lastName">Last Name</Label>
-          <Input
-            id="lastName"
-            {...register('lastName', { required: 'Last name is required' })}
-            placeholder="Doe"
-          />
-          {errors.lastName && (
-            <p className="text-sm text-destructive">{errors.lastName.message}</p>
-          )}
-        </div>
-      </div>
 
       <div className="space-y-2">
         <Label htmlFor="email">Email</Label>
@@ -102,7 +76,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
               message: 'Password must be at least 6 characters',
             },
           })}
-          placeholder="••••••••"
+          placeholder="Enter your password"
         />
         {errors.password && (
           <p className="text-sm text-destructive">{errors.password.message}</p>
@@ -110,7 +84,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? 'Registering...' : 'Register'}
+        {isPending ? 'Signing in...' : 'Sign In'}
       </Button>
     </form>
   );
