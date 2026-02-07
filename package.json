@@ -1,7 +1,7 @@
 {
   "name": "skillity",
   "private": true,
-  "workspaces": ["frontend", "backend"],
+  "workspaces": ["packages/*", "frontend", "backend"],
   "scripts": {
     "dev": "docker compose up",
     "dev:api": "cd backend && bun run start:dev",
