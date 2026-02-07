@@ -9,7 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@skillity/shared": "workspace:*",
     "axios": "^1.13.4",
+    "server-only": "^0.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
