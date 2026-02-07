@@ -1,46 +1,56 @@
 'use client';
 
+import { useState, useTransition } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { createWorkshop } from '@/api/workshops.api';
-
-interface CreateWorkshopFormData {
-  title: string;
-  description: string;
-  maxParticipants: number;
-  ticketPrice: number;
-  currency: string;
-  location: string;
-}
+import { createWorkshop } from '@/actions/workshops';
+import type { CreateWorkshopInput } from '@skillity/shared';
 
 interface CreateWorkshopFormProps {
   onSuccess?: () => void;
 }
 
-export default function CreateWorkshopForm({ onSuccess }: CreateWorkshopFormProps) {
+export default function CreateWorkshopForm({
+  onSuccess,
+}: CreateWorkshopFormProps) {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<CreateWorkshopFormData>();
+    formState: { errors },
+  } = useForm<CreateWorkshopInput>();
 
-  const onSubmit = async (data: CreateWorkshopFormData) => {
-    try {
-      await createWorkshop({
+  const onSubmit = (data: CreateWorkshopInput) => {
+    setError(null);
+    startTransition(async () => {
+      const result = await createWorkshop({
         ...data,
         maxParticipants: Number(data.maxParticipants),
         ticketPrice: Number(data.ticketPrice),
       });
-      onSuccess?.();
-    } catch (error) {
-      console.error('Failed to create workshop:', error);
-    }
+      if (result.error) {
+        setError(result.error);
+      } else {
+        router.refresh();
+        onSuccess?.();
+      }
+    });
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      {error && (
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
+
       <div className="space-y-2">
         <Label htmlFor="title">Title</Label>
         <Input
@@ -81,7 +91,9 @@ export default function CreateWorkshopForm({ onSuccess }: CreateWorkshopFormProp
             placeholder="10"
           />
           {errors.maxParticipants && (
-            <p className="text-sm text-destructive">{errors.maxParticipants.message}</p>
+            <p className="text-sm text-destructive">
+              {errors.maxParticipants.message}
+            </p>
           )}
         </div>
 
@@ -98,7 +110,9 @@ export default function CreateWorkshopForm({ onSuccess }: CreateWorkshopFormProp
             placeholder="0"
           />
           {errors.ticketPrice && (
-            <p className="text-sm text-destructive">{errors.ticketPrice.message}</p>
+            <p className="text-sm text-destructive">
+              {errors.ticketPrice.message}
+            </p>
           )}
         </div>
       </div>
@@ -133,8 +147,8 @@ export default function CreateWorkshopForm({ onSuccess }: CreateWorkshopFormProp
         </div>
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Creating...' : 'Create Workshop'}
+      <Button type="submit" className="w-full" disabled={isPending}>
+        {isPending ? 'Creating...' : 'Create Workshop'}
       </Button>
     </form>
   );
