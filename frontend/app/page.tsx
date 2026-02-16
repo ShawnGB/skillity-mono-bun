@@ -1,6 +1,25 @@
 import Link from 'next/link';
+import { Search, Ticket, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WorkshopsListing from '@/components/workshops/WorkshopsListing';
+
+const steps = [
+  {
+    icon: Search,
+    title: 'Browse',
+    description: 'Find a creative experience that speaks to you.',
+  },
+  {
+    icon: Ticket,
+    title: 'Join',
+    description: 'Book your spot and show up — that\u2019s all it takes.',
+  },
+  {
+    icon: Sparkles,
+    title: 'Create',
+    description: 'Walk away inspired, with something you made.',
+  },
+];
 
 export default function Home() {
   return (
@@ -34,6 +53,61 @@ export default function Home() {
       <section className="container mx-auto px-4 pb-16">
         <h2 className="text-3xl mb-8">Featured Workshops</h2>
         <WorkshopsListing />
+      </section>
+
+      <section className="border-t bg-muted/50 py-20">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl text-center mb-16">How It Works</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-4xl mx-auto">
+            {steps.map((step, i) => (
+              <div key={i} className="text-center">
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+                  <step.icon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-serif font-bold mb-2">
+                  {step.title}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {step.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 md:py-32">
+        <div className="container mx-auto px-4 max-w-3xl text-center">
+          <blockquote className="text-3xl md:text-5xl font-serif font-bold leading-tight">
+            &ldquo;Humanity is not losing its abilities — it&rsquo;s losing the
+            enthusiasm to live them.&rdquo;
+          </blockquote>
+          <p className="mt-8 text-lg text-muted-foreground max-w-xl mx-auto">
+            In a world where AI handles the routine, what remains uniquely ours
+            is imagination. uSkillity exists to help people rediscover their
+            creativity — and through it, themselves.
+          </p>
+        </div>
+      </section>
+
+      <section className="bg-primary text-primary-foreground py-20">
+        <div className="container mx-auto px-4 text-center max-w-2xl">
+          <h2 className="text-4xl md:text-5xl text-primary-foreground">
+            Share What Moves You
+          </h2>
+          <p className="mt-6 text-lg text-primary-foreground/80">
+            You don&rsquo;t need to be an expert. You just need something
+            you&rsquo;re passionate about and a willingness to share it. Host a
+            creative circle and inspire others.
+          </p>
+          <Button
+            asChild
+            size="lg"
+            className="mt-8 bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+          >
+            <Link href="/teach">Become a Guide</Link>
+          </Button>
+        </div>
       </section>
     </main>
   );

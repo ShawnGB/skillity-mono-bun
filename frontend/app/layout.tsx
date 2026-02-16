@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Fraunces } from 'next/font/google';
 import './globals.css';
 import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
 
 const inter = Inter({
   variable: '--font-inter',
@@ -15,7 +16,7 @@ const fraunces = Fraunces({
 
 export const metadata: Metadata = {
   title: 'Skillity',
-  description: 'Workshop management platform',
+  description: 'Rediscover your creativity through hands-on workshops.',
 };
 
 export default function RootLayout({
@@ -30,6 +31,7 @@ export default function RootLayout({
       >
         <Header />
         {children}
+        <Footer />
       </body>
     </html>
   );

@@ -36,16 +36,16 @@ export default async function Header() {
               Browse
             </Link>
             <Link
-              href="/workshops"
+              href="/teach"
               className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
             >
               Teach
             </Link>
             <Link
-              href="/workshops"
+              href="/about"
               className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
             >
-              Community
+              About
             </Link>
           </nav>
         </div>
