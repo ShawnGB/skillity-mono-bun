@@ -3,3 +3,10 @@ export enum UserRole {
   HOST = 'host',
   GUEST = 'guest',
 }
+
+export enum WorkshopStatus {
+  DRAFT = 'draft',
+  PUBLISHED = 'published',
+  CANCELLED = 'cancelled',
+  COMPLETED = 'completed',
+}

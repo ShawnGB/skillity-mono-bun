@@ -8,6 +8,7 @@ export type {
 
 export type { User, CreateUserInput } from './types/user';
 
+export { WorkshopStatus } from './types/workshop';
 export type {
   Workshop,
   CreateWorkshopInput,

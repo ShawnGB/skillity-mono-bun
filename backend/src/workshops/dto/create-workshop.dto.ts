@@ -5,6 +5,9 @@ import {
   IsNumber,
   IsPositive,
   Min,
+  Max,
+  IsDateString,
+  IsInt,
 } from 'class-validator';
 
 export class CreateWorkshopDto {
@@ -35,4 +38,12 @@ export class CreateWorkshopDto {
   @IsNotEmpty()
   location: string;
 
+  @IsDateString()
+  @IsNotEmpty()
+  startsAt: string;
+
+  @IsInt()
+  @Min(30)
+  @Max(480)
+  duration: number;
 }

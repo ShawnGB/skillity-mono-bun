@@ -7,6 +7,7 @@ import type {
   CreateWorkshopInput,
   UpdateWorkshopInput,
 } from '@skillity/shared';
+import { WorkshopStatus } from '@skillity/shared';
 import { getSession } from '@/data/auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -43,6 +44,7 @@ export async function createWorkshop(
 
     const data: Workshop = await response.json();
     revalidatePath('/workshops');
+    revalidatePath('/profile/workshops');
     return { data };
   } catch (err) {
     return { error: (err as Error).message || 'Failed to create workshop' };
@@ -83,4 +85,11 @@ export async function updateWorkshop(
   } catch (err) {
     return { error: (err as Error).message || 'Failed to update workshop' };
   }
+}
+
+export async function updateWorkshopStatus(
+  id: string,
+  status: WorkshopStatus,
+): Promise<ActionResult<Workshop>> {
+  return updateWorkshop(id, { status });
 }

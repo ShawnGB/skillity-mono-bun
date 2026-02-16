@@ -1,18 +1,9 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { BaseEntity } from 'src/common/entities/base.entity';
 
 @Entity('refresh_tokens')
-export class RefreshToken {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class RefreshToken extends BaseEntity {
   @Column({ unique: true })
   token: string;
 
@@ -28,7 +19,4 @@ export class RefreshToken {
 
   @Column({ name: 'is_revoked', default: false })
   isRevoked: boolean;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
 }

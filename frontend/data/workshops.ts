@@ -10,3 +10,7 @@ export const getWorkshops = cache(async (): Promise<Workshop[]> => {
 export const getWorkshop = cache(async (id: string): Promise<Workshop> => {
   return serverGet<Workshop>(`/workshops/${id}`);
 });
+
+export const getMyWorkshops = cache(async (): Promise<Workshop[]> => {
+  return serverGet<Workshop[]>('/workshops/mine');
+});
