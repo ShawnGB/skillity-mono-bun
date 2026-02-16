@@ -3,8 +3,10 @@
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
-import { format } from 'date-fns';
+import { format, differenceInMinutes } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
+import { WorkshopStatus } from '@skillity/shared';
+import type { Workshop } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,8 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { createWorkshop } from '@/actions/workshops';
+import { updateWorkshop } from '@/actions/workshops';
 import { cn } from '@/lib/utils';
+
+interface EditWorkshopFormProps {
+  workshop: Workshop;
+  onSuccess?: () => void;
+}
 
 interface FormValues {
   title: string;
@@ -35,11 +42,6 @@ interface FormValues {
   duration: number;
 }
 
-interface CreateWorkshopFormProps {
-  onSuccess?: () => void;
-  defaultValues?: Partial<Pick<FormValues, 'title' | 'description' | 'maxParticipants' | 'ticketPrice' | 'location'>>;
-}
-
 const DURATION_OPTIONS = [
   { value: '30', label: '30 min' },
   { value: '60', label: '1 hour' },
@@ -50,20 +52,43 @@ const DURATION_OPTIONS = [
   { value: '240', label: '4 hours' },
 ];
 
-export default function CreateWorkshopForm({
+function deriveDuration(startsAt: string, endsAt: string): number {
+  const minutes = differenceInMinutes(new Date(endsAt), new Date(startsAt));
+  const closest = DURATION_OPTIONS.map((o) => Number(o.value)).reduce(
+    (prev, curr) =>
+      Math.abs(curr - minutes) < Math.abs(prev - minutes) ? curr : prev,
+  );
+  return closest;
+}
+
+export default function EditWorkshopForm({
+  workshop,
   onSuccess,
-  defaultValues,
-}: CreateWorkshopFormProps) {
+}: EditWorkshopFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  const isPublished = workshop.status === WorkshopStatus.PUBLISHED;
+
+  const startsAtDate = new Date(workshop.startsAt);
 
   const {
     register,
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FormValues>({ defaultValues });
+  } = useForm<FormValues>({
+    defaultValues: {
+      title: workshop.title,
+      description: workshop.description,
+      maxParticipants: workshop.maxParticipants,
+      ticketPrice: workshop.ticketPrice,
+      location: workshop.location,
+      date: startsAtDate,
+      startTime: format(startsAtDate, 'HH:mm'),
+      duration: deriveDuration(workshop.startsAt, workshop.endsAt),
+    },
+  });
 
   const onSubmit = (data: FormValues) => {
     setError(null);
@@ -78,12 +103,11 @@ export default function CreateWorkshopForm({
     }
 
     startTransition(async () => {
-      const result = await createWorkshop({
+      const result = await updateWorkshop(workshop.id, {
         title: data.title,
         description: data.description,
         maxParticipants: Number(data.maxParticipants),
-        ticketPrice: Number(data.ticketPrice),
-        currency: 'EUR',
+        ...(isPublished ? {} : { ticketPrice: Number(data.ticketPrice) }),
         location: data.location,
         startsAt: startsAt.toISOString(),
         duration: Number(data.duration),
@@ -236,6 +260,7 @@ export default function CreateWorkshopForm({
             id="ticketPrice"
             type="number"
             step="0.01"
+            disabled={isPublished}
             {...register('ticketPrice', {
               required: 'Required',
               min: { value: 0, message: 'Cannot be negative' },
@@ -263,7 +288,7 @@ export default function CreateWorkshopForm({
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? 'Creating...' : 'Create Workshop'}
+        {isPending ? 'Saving...' : 'Save Changes'}
       </Button>
     </form>
   );

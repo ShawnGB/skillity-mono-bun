@@ -2,7 +2,9 @@ import Link from 'next/link';
 import { format } from 'date-fns';
 import { getMyWorkshops } from '@/data/workshops';
 import { WorkshopStatus } from '@skillity/shared';
+import type { Workshop } from '@skillity/shared';
 import { cn } from '@/lib/utils';
+import MyWorkshopsHeader from '@/components/profile/MyWorkshopsHeader';
 import WorkshopActions from '@/components/profile/WorkshopActions';
 
 function StatusBadge({ status }: { status: WorkshopStatus }) {
@@ -22,6 +24,43 @@ function StatusBadge({ status }: { status: WorkshopStatus }) {
   );
 }
 
+function WorkshopRow({ workshop, dimmed }: { workshop: Workshop; dimmed?: boolean }) {
+  return (
+    <div
+      className={cn(
+        'flex items-center justify-between gap-4 rounded-xl border bg-card p-5',
+        dimmed && 'opacity-60',
+      )}
+    >
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-3 mb-1">
+          <Link
+            href={`/workshops/${workshop.id}`}
+            className="font-medium truncate hover:underline"
+          >
+            {workshop.title}
+          </Link>
+          <StatusBadge status={workshop.status} />
+        </div>
+        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          {workshop.startsAt && (
+            <span>{format(new Date(workshop.startsAt), 'MMM d, yyyy')}</span>
+          )}
+          {workshop.startsAt && workshop.endsAt && (
+            <span>
+              {format(new Date(workshop.startsAt), 'HH:mm')} - {format(new Date(workshop.endsAt), 'HH:mm')}
+            </span>
+          )}
+          <span>
+            {workshop.participants.length} / {workshop.maxParticipants} participants
+          </span>
+        </div>
+      </div>
+      <WorkshopActions workshop={workshop} />
+    </div>
+  );
+}
+
 export default async function MyWorkshopsPage() {
   let workshops;
   try {
@@ -30,63 +69,44 @@ export default async function MyWorkshopsPage() {
     workshops = [];
   }
 
-  if (!workshops || workshops.length === 0) {
-    return (
-      <div className="text-center py-16">
-        <p className="text-muted-foreground mb-4">You haven't created any workshops yet.</p>
-        <Link
-          href="/workshops"
-          className="text-sm text-primary hover:underline"
-        >
-          Go to workshops to create one
-        </Link>
-      </div>
-    );
-  }
+  const upcoming = (workshops ?? []).filter(
+    (w) =>
+      w.status === WorkshopStatus.DRAFT ||
+      w.status === WorkshopStatus.PUBLISHED,
+  );
+
+  const past = (workshops ?? []).filter(
+    (w) =>
+      w.status === WorkshopStatus.COMPLETED ||
+      w.status === WorkshopStatus.CANCELLED,
+  );
 
   return (
-    <div className="space-y-4">
-      {workshops.map((workshop) => {
-        const isPast =
-          workshop.status === WorkshopStatus.COMPLETED ||
-          workshop.status === WorkshopStatus.CANCELLED;
+    <div className="space-y-6">
+      <MyWorkshopsHeader />
 
-        return (
-          <div
-            key={workshop.id}
-            className={cn(
-              'flex items-center justify-between gap-4 rounded-xl border bg-card p-5',
-              isPast && 'opacity-60',
-            )}
-          >
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3 mb-1">
-                <Link
-                  href={`/workshops/${workshop.id}`}
-                  className="font-medium truncate hover:underline"
-                >
-                  {workshop.title}
-                </Link>
-                <StatusBadge status={workshop.status} />
-              </div>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                {workshop.startsAt && (
-                  <span>{format(new Date(workshop.startsAt), 'MMM d, yyyy')}</span>
-                )}
-                {workshop.startsAt && workshop.endsAt && (
-                  <span>
-                    {format(new Date(workshop.startsAt), 'HH:mm')} - {format(new Date(workshop.endsAt), 'HH:mm')}
-                  </span>
-                )}
-                <span>
-                  {workshop.participants.length} / {workshop.maxParticipants} participants
-                </span>
-              </div>
-            </div>
-            <WorkshopActions workshopId={workshop.id} status={workshop.status} />
-          </div>
-        );
-      })}
+      {upcoming.length === 0 && past.length === 0 && (
+        <div className="text-center py-16">
+          <p className="text-muted-foreground">No workshops yet. Create your first one above.</p>
+        </div>
+      )}
+
+      {upcoming.length > 0 && (
+        <div className="space-y-4">
+          {upcoming.map((workshop) => (
+            <WorkshopRow key={workshop.id} workshop={workshop} />
+          ))}
+        </div>
+      )}
+
+      {past.length > 0 && (
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-muted-foreground">Past workshops</h3>
+          {past.map((workshop) => (
+            <WorkshopRow key={workshop.id} workshop={workshop} dimmed />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
