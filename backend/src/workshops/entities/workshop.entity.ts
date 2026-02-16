@@ -32,7 +32,9 @@ export class Workshop {
   @Column()
   location: string;
 
-  //relations
+  @Column({ name: 'host_id' })
+  hostId: string;
+
   @ManyToOne('User', 'hosting')
   @JoinColumn({ name: 'host_id' })
   host: User;

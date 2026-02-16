@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param } from '@nestjs/common';
 import { WorkshopsService } from './workshops.service';
 import { CreateWorkshopDto } from './dto/create-workshop.dto';
 import { Public } from '../auth/decorators/public.decorator';
@@ -23,5 +23,11 @@ export class WorkshopsController {
   @Get()
   findAll() {
     return this.workshopsService.findAll();
+  }
+
+  @Public()
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.workshopsService.findOne(id);
   }
 }

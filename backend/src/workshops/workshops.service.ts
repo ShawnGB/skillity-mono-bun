@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateWorkshopDto } from './dto/create-workshop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workshop } from './entities/workshop.entity';
@@ -25,5 +29,16 @@ export class WorkshopsService {
 
   findAll() {
     return this.WorkshopRepositoty.find();
+  }
+
+  async findOne(id: string) {
+    const workshop = await this.WorkshopRepositoty.findOne({
+      where: { id },
+      relations: ['host', 'participants'],
+    });
+
+    if (!workshop) throw new NotFoundException('Workshop not found');
+
+    return workshop;
   }
 }
