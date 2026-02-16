@@ -24,28 +24,17 @@ export default async function Header() {
           </Link>
           <nav className="flex items-center gap-4">
             <Link
-              href="/"
-              className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-            >
-              Home
-            </Link>
-            <Link
               href="/workshops"
               className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
             >
-              Browse
+              Browse Workshops
             </Link>
+            <br />
             <Link
               href="/teach"
               className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
             >
-              Teach
-            </Link>
-            <Link
-              href="/about"
-              className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-            >
-              About
+              Teach yourself
             </Link>
           </nav>
         </div>
