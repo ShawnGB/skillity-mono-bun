@@ -3,6 +3,7 @@
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import type { LoginInput, RegisterInput, AuthResponse } from '@skillity/shared';
+import { serverPatch, serverPost } from '@/data/server-client';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -96,56 +97,26 @@ export async function register(
 
 export async function becomeHost(): Promise<ActionResult<{ role: string }>> {
   try {
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore.toString();
-
-    const response = await fetch(`${API_URL}/users/become-host`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      return { error: error.message || 'Failed to upgrade to host' };
-    }
-
-    const data = await response.json();
+    const data = await serverPatch<{ role: string }>('/users/become-host');
     revalidatePath('/', 'layout');
-    return { data: { role: data.role } };
+    return { data };
   } catch (err) {
     return { error: (err as Error).message || 'Failed to upgrade to host' };
   }
 }
 
 export async function logout(): Promise<ActionResult<{ message: string }>> {
+  const cookieStore = await cookies();
+
   try {
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore.toString();
-
-    await fetch(`${API_URL}/auth/logout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-      },
-      credentials: 'include',
-    });
-
-    cookieStore.delete('access_token');
-    cookieStore.delete('refresh_token');
-
-    revalidatePath('/', 'layout');
-    return { data: { message: 'Logged out successfully' } };
+    await serverPost('/auth/logout');
   } catch {
-    const cookieStore = await cookies();
-    cookieStore.delete('access_token');
-    cookieStore.delete('refresh_token');
-
-    revalidatePath('/', 'layout');
-    return { data: { message: 'Logged out' } };
+    // proceed with local cleanup
   }
+
+  cookieStore.delete('access_token');
+  cookieStore.delete('refresh_token');
+
+  revalidatePath('/', 'layout');
+  return { data: { message: 'Logged out successfully' } };
 }

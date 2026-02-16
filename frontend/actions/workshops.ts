@@ -1,6 +1,5 @@
 'use server';
 
-import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import type {
   Workshop,
@@ -9,8 +8,7 @@ import type {
 } from '@skillity/shared';
 import { WorkshopStatus } from '@skillity/shared';
 import { getSession } from '@/data/auth';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { serverPost, serverPatch } from '@/data/server-client';
 
 type ActionResult<T> =
   | { data: T; error?: never }
@@ -25,24 +23,7 @@ export async function createWorkshop(
   }
 
   try {
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore.toString();
-
-    const response = await fetch(`${API_URL}/workshops`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-      },
-      body: JSON.stringify(input),
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      return { error: error.message || 'Failed to create workshop' };
-    }
-
-    const data: Workshop = await response.json();
+    const data = await serverPost<Workshop>('/workshops', input);
     revalidatePath('/workshops');
     revalidatePath('/profile/workshops');
     return { data };
@@ -61,26 +42,10 @@ export async function updateWorkshop(
   }
 
   try {
-    const cookieStore = await cookies();
-    const cookieHeader = cookieStore.toString();
-
-    const response = await fetch(`${API_URL}/workshops/${id}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        ...(cookieHeader ? { Cookie: cookieHeader } : {}),
-      },
-      body: JSON.stringify(input),
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      return { error: error.message || 'Failed to update workshop' };
-    }
-
-    const data: Workshop = await response.json();
+    const data = await serverPatch<Workshop>(`/workshops/${id}`, input);
     revalidatePath('/workshops');
     revalidatePath(`/workshops/${id}`);
+    revalidatePath('/profile/workshops');
     return { data };
   } catch (err) {
     return { error: (err as Error).message || 'Failed to update workshop' };
