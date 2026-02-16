@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const protectedRoutes = ['/dashboard', '/profile', '/workshops/create'];
-const authRoutes = ['/login', '/register'];
+const protectedRoutes = ['/profile', '/onboarding'];
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 async function refreshTokens(
@@ -32,9 +31,6 @@ export async function middleware(request: NextRequest) {
   const refreshToken = request.cookies.get('refresh_token')?.value;
 
   if (accessToken) {
-    if (authRoutes.some((route) => pathname.startsWith(route))) {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
     return NextResponse.next();
   }
 
@@ -42,12 +38,7 @@ export async function middleware(request: NextRequest) {
     const setCookieHeaders = await refreshTokens(refreshToken);
 
     if (setCookieHeaders?.length) {
-      const isAuthRoute = authRoutes.some((route) =>
-        pathname.startsWith(route),
-      );
-      const response = isAuthRoute
-        ? NextResponse.redirect(new URL('/', request.url))
-        : NextResponse.next();
+      const response = NextResponse.next();
 
       for (const cookie of setCookieHeaders) {
         response.headers.append('Set-Cookie', cookie);
@@ -58,9 +49,7 @@ export async function middleware(request: NextRequest) {
   }
 
   if (protectedRoutes.some((route) => pathname.startsWith(route))) {
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(new URL('/', request.url));
   }
 
   return NextResponse.next();
