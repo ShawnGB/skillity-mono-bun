@@ -11,3 +11,9 @@ export interface CreateUserInput {
   firstName: string;
   lastName: string;
 }
+
+export interface UpdateProfileInput {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}
