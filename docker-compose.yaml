@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:17-alpine
-    container_name: nest_db
+    container_name: skillity_db
     environment:
       POSTGRES_USER: dev_user
       POSTGRES_PASSWORD: dev_pass
@@ -10,32 +10,51 @@ services:
       - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dev_user -d app_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   api:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: nest_api
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: skillity_api
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     ports:
       - "3000:3000"
     environment:
       DATABASE_URL: "postgresql://dev_user:dev_pass@db:5432/app_db"
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - ./backend/src:/app/backend/src
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: next_frontend
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: skillity_frontend
     ports:
       - "3001:3000"
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - ./frontend/actions:/app/frontend/actions
+      - ./frontend/app:/app/frontend/app
+      - ./frontend/components:/app/frontend/components
+      - ./frontend/data:/app/frontend/data
+      - ./frontend/lib:/app/frontend/lib
+      - ./frontend/public:/app/frontend/public
+      - ./frontend/stores:/app/frontend/stores
+      - ./packages/shared/src:/app/packages/shared/src
+
+  adminer:
+    image: adminer:latest
+    container_name: skillity_adminer
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"
 
 volumes:
   pg_data:
