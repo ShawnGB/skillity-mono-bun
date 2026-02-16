@@ -1,9 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto, UserResponseDTO } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserRole } from '../types/enums';
 
 import * as bcrypt from 'bcrypt';
 
@@ -14,7 +19,6 @@ export class UsersService {
     private readonly UsersRepository: Repository<User>,
   ) {}
 
-  // TODO: find right exceotion for this
   async create(createUserDto: CreateUserDto): Promise<UserResponseDTO> {
     const user = this.UsersRepository.create(createUserDto);
     if (!user) throw new NotFoundException('User could not be created');
@@ -38,15 +42,41 @@ export class UsersService {
     return await this.UsersRepository.findOne({ where: { email } });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async becomeHost(userId: string) {
+    const user = await this.UsersRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    if (user.role !== UserRole.GUEST) {
+      throw new BadRequestException('Only guests can upgrade to host');
+    }
+
+    user.role = UserRole.HOST;
+    await this.UsersRepository.save(user);
+
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+    };
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+  async updateProfile(userId: string, dto: UpdateProfileDto) {
+    const user = await this.UsersRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    if (dto.firstName !== undefined) user.firstName = dto.firstName;
+    if (dto.lastName !== undefined) user.lastName = dto.lastName;
+    if (dto.email !== undefined) user.email = dto.email;
+
+    await this.UsersRepository.save(user);
+
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+    };
   }
 }

@@ -53,9 +53,12 @@ export default async function Header() {
         <div className="flex items-center gap-3">
           {isAuthenticated ? (
             <>
-              <span className="text-sm text-primary-foreground/80">
+              <Link
+                href="/profile"
+                className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+              >
                 {user?.firstName} {user?.lastName}
-              </span>
+              </Link>
               <LogoutButton />
             </>
           ) : (

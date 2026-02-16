@@ -11,7 +11,7 @@ export class WorkshopsController {
   constructor(private readonly workshopsService: WorkshopsService) {}
 
   @Post()
-  @Roles(UserRole.HOST, UserRole.ADMIN, UserRole.GUEST)
+  @Roles(UserRole.HOST, UserRole.ADMIN)
   create(
     @Body() createWorkshopDto: CreateWorkshopDto,
     @CurrentUser() user: { id: string },

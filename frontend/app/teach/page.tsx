@@ -129,7 +129,7 @@ export default function TeachPage() {
             learners in your city.
           </p>
           <Button asChild size="lg">
-            <Link href="/workshops">Create Your First Workshop</Link>
+            <Link href="/onboarding">Get Started</Link>
           </Button>
         </div>
       </section>
