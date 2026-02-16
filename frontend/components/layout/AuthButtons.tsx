@@ -13,7 +13,11 @@ export default function AuthButtons() {
     <>
       <FormModal
         trigger={
-          <Button variant="ghost" size="sm">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
+          >
             Log in
           </Button>
         }
@@ -25,7 +29,14 @@ export default function AuthButtons() {
       </FormModal>
 
       <FormModal
-        trigger={<Button size="sm">Sign up</Button>}
+        trigger={
+          <Button
+            size="sm"
+            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
+          >
+            Sign up
+          </Button>
+        }
         title="Create an account"
         description="Get started with Skillity today."
         onSuccess={() => router.refresh()}
