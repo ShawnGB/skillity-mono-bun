@@ -52,7 +52,7 @@ function WorkshopRow({ workshop, dimmed }: { workshop: Workshop; dimmed?: boolea
             </span>
           )}
           <span>
-            {workshop.participants.length} / {workshop.maxParticipants} participants
+            {workshop.participantCount} / {workshop.maxParticipants} participants
           </span>
         </div>
       </div>

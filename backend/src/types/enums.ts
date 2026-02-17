@@ -10,3 +10,10 @@ export enum WorkshopStatus {
   CANCELLED = 'cancelled',
   COMPLETED = 'completed',
 }
+
+export enum BookingStatus {
+  PENDING = 'pending',
+  CONFIRMED = 'confirmed',
+  CANCELLED = 'cancelled',
+  REFUNDED = 'refunded',
+}

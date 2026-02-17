@@ -3,15 +3,25 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
+import type { UserRole } from '@skillity/shared';
 
-const tabs = [
-  { href: '/profile', label: 'Profile' },
-  { href: '/profile/workshops', label: 'My Workshops' },
-  { href: '/profile/settings', label: 'Settings' },
+interface ProfileNavProps {
+  role: UserRole;
+}
+
+const allTabs = [
+  { href: '/profile', label: 'Profile', roles: null },
+  { href: '/profile/bookings', label: 'My Bookings', roles: null },
+  { href: '/profile/workshops', label: 'My Workshops', roles: ['host', 'admin'] as UserRole[] },
+  { href: '/profile/settings', label: 'Settings', roles: null },
 ];
 
-export default function ProfileNav() {
+export default function ProfileNav({ role }: ProfileNavProps) {
   const pathname = usePathname();
+
+  const tabs = allTabs.filter(
+    (tab) => tab.roles === null || tab.roles.includes(role),
+  );
 
   return (
     <nav className="flex gap-6 border-b mb-8">

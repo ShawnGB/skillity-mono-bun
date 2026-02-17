@@ -19,7 +19,8 @@ export interface Workshop {
   endsAt: string;
   status: WorkshopStatus;
   host: User;
-  participants: User[];
+  participantCount: number;
+  externalUrl: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -33,6 +34,7 @@ export interface CreateWorkshopInput {
   location: string;
   startsAt: string;
   duration: number;
+  externalUrl?: string;
 }
 
 export interface UpdateWorkshopInput {
@@ -45,4 +47,5 @@ export interface UpdateWorkshopInput {
   startsAt?: string;
   duration?: number;
   status?: WorkshopStatus;
+  externalUrl?: string;
 }

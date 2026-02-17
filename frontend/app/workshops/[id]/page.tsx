@@ -44,7 +44,7 @@ export default async function WorkshopDetailPage({
 
   const session = await getSession();
   const isAuthenticated = !!session?.user;
-  const spotsLeft = workshop.maxParticipants - workshop.participants.length;
+  const spotsLeft = workshop.maxParticipants - workshop.participantCount;
 
   const isCancelled = workshop.status === WorkshopStatus.CANCELLED;
   const isCompleted = workshop.status === WorkshopStatus.COMPLETED;
@@ -116,11 +116,16 @@ export default async function WorkshopDetailPage({
           <div className="lg:col-span-1">
             <div className="sticky top-8 rounded-xl border bg-card p-6 space-y-6">
               <div className="flex items-center justify-between">
-                <span className="text-3xl font-serif font-bold">
-                  {workshop.ticketPrice > 0
-                    ? `${workshop.ticketPrice} ${workshop.currency}`
-                    : 'Free'}
-                </span>
+                <div>
+                  <span className="text-3xl font-serif font-bold">
+                    {workshop.ticketPrice > 0
+                      ? `${workshop.ticketPrice} ${workshop.currency}`
+                      : 'Free'}
+                  </span>
+                  {workshop.ticketPrice > 0 && (
+                    <p className="text-xs text-muted-foreground mt-0.5">inkl. MwSt.</p>
+                  )}
+                </div>
                 <StatusBadge status={workshop.status} />
               </div>
 
@@ -150,7 +155,7 @@ export default async function WorkshopDetailPage({
                 <div className="flex justify-between">
                   <span>Registered</span>
                   <span className="font-medium text-foreground">
-                    {workshop.participants.length}
+                    {workshop.participantCount}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -165,8 +170,14 @@ export default async function WorkshopDetailPage({
                 <Button disabled className="w-full" variant="outline">
                   {isCancelled ? 'Workshop Cancelled' : 'Workshop Ended'}
                 </Button>
+              ) : workshop.externalUrl ? (
+                <Button asChild size="lg" className="w-full">
+                  <a href={workshop.externalUrl} target="_blank" rel="noopener noreferrer">
+                    Visit Website
+                  </a>
+                </Button>
               ) : (
-                <RegisterButton isAuthenticated={isAuthenticated} />
+                <RegisterButton isAuthenticated={isAuthenticated} workshopId={workshop.id} />
               )}
             </div>
           </div>

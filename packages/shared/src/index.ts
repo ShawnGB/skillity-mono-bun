@@ -14,3 +14,9 @@ export type {
   CreateWorkshopInput,
   UpdateWorkshopInput,
 } from './types/workshop';
+
+export { BookingStatus } from './types/booking';
+export type {
+  Booking,
+  CreateBookingInput,
+} from './types/booking';

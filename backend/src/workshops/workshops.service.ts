@@ -10,7 +10,7 @@ import { UpdateWorkshopDto } from './dto/update-workshop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workshop } from './entities/workshop.entity';
 import { Repository } from 'typeorm';
-import { UserRole, WorkshopStatus } from 'src/types/enums';
+import { UserRole, WorkshopStatus, BookingStatus } from 'src/types/enums';
 
 const VALID_TRANSITIONS: Record<WorkshopStatus, WorkshopStatus[]> = {
   [WorkshopStatus.DRAFT]: [WorkshopStatus.PUBLISHED, WorkshopStatus.CANCELLED],
@@ -53,10 +53,10 @@ export class WorkshopsService {
     const workshops = await this.workshopRepository.find({
       where: { hostId },
       order: { startsAt: 'DESC' },
-      relations: ['host', 'participants'],
+      relations: ['host', 'bookings'],
     });
 
-    return workshops.map((w) => this.withEffectiveStatus(w));
+    return workshops.map((w) => this.withParticipantCount(this.withEffectiveStatus(w)));
   }
 
   async findAll() {
@@ -65,18 +65,21 @@ export class WorkshopsService {
       relations: ['host'],
     });
 
-    return workshops.map((w) => this.withEffectiveStatus(w));
+    return workshops.map((w) => ({
+      ...this.withEffectiveStatus(w),
+      participantCount: 0,
+    }));
   }
 
   async findOne(id: string) {
     const workshop = await this.workshopRepository.findOne({
       where: { id },
-      relations: ['host', 'participants'],
+      relations: ['host', 'bookings'],
     });
 
     if (!workshop) throw new NotFoundException('Workshop not found');
 
-    return this.withEffectiveStatus(workshop);
+    return this.withParticipantCount(this.withEffectiveStatus(workshop));
   }
 
   async update(
@@ -143,5 +146,14 @@ export class WorkshopsService {
       return { ...workshop, status: WorkshopStatus.COMPLETED };
     }
     return workshop;
+  }
+
+  private withParticipantCount(workshop: Workshop & { bookings?: any[] }) {
+    const participantCount = (workshop.bookings ?? []).filter(
+      (b: any) => b.status === BookingStatus.CONFIRMED,
+    ).length;
+
+    const { bookings, ...rest } = workshop;
+    return { ...rest, participantCount };
   }
 }

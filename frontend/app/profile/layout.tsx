@@ -13,7 +13,7 @@ export default async function ProfileLayout({
   return (
     <main className="container mx-auto px-4 py-12 max-w-4xl">
       <h1 className="text-4xl mb-6">Dashboard</h1>
-      <ProfileNav />
+      <ProfileNav role={session.user.role} />
       {children}
     </main>
   );

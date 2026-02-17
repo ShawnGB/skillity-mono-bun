@@ -8,6 +8,8 @@ import {
   Max,
   IsDateString,
   IsInt,
+  IsOptional,
+  IsUrl,
 } from 'class-validator';
 
 export class CreateWorkshopDto {
@@ -46,4 +48,8 @@ export class CreateWorkshopDto {
   @Min(30)
   @Max(480)
   duration: number;
+
+  @IsOptional()
+  @IsUrl()
+  externalUrl?: string;
 }

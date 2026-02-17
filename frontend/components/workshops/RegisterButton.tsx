@@ -1,25 +1,46 @@
 'use client';
 
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import FormModal from '@/components/modals/FormModal';
 import LoginForm from '@/components/auth/LoginForm';
 import RegisterForm from '@/components/users/RegisterForm';
+import { bookWorkshop } from '@/actions/bookings';
 
 interface RegisterButtonProps {
   isAuthenticated: boolean;
+  workshopId: string;
 }
 
 export default function RegisterButton({
   isAuthenticated,
+  workshopId,
 }: RegisterButtonProps) {
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function handleBook() {
+    setLoading(true);
+    setError(null);
+    const result = await bookWorkshop(workshopId);
+    if (result.error) {
+      setError(result.error);
+      setLoading(false);
+      return;
+    }
+    router.push(`/checkout/${result.data.id}`);
+  }
 
   if (isAuthenticated) {
     return (
-      <Button size="lg" className="w-full">
-        Register for Workshop
-      </Button>
+      <div className="space-y-2">
+        <Button size="lg" className="w-full" onClick={handleBook} disabled={loading}>
+          {loading ? 'Booking...' : 'Register for Workshop'}
+        </Button>
+        {error && <p className="text-sm text-destructive">{error}</p>}
+      </div>
     );
   }
 

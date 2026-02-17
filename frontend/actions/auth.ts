@@ -7,7 +7,9 @@ import { serverPatch, serverPost } from '@/data/server-client';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-type ActionResult<T> = { data: T; error?: never } | { data?: never; error: string };
+type ActionResult<T> =
+  | { data: T; error?: never }
+  | { data?: never; error: string };
 
 export async function login(
   input: LoginInput,

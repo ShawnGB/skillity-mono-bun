@@ -1,12 +1,12 @@
 import {
   Column,
   Entity,
-  JoinTable,
-  ManyToMany,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import type { User } from 'src/users/entities/user.entity';
+import type { Booking } from 'src/bookings/entities/booking.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { WorkshopStatus } from 'src/types/enums';
 
@@ -43,6 +43,9 @@ export class Workshop extends BaseEntity {
   })
   status: WorkshopStatus;
 
+  @Column({ name: 'external_url', nullable: true })
+  externalUrl: string | null;
+
   @Column({ name: 'host_id' })
   hostId: string;
 
@@ -50,7 +53,6 @@ export class Workshop extends BaseEntity {
   @JoinColumn({ name: 'host_id' })
   host: User;
 
-  @ManyToMany('User', 'workshops')
-  @JoinTable({ name: 'workshop_participants' })
-  participants: User[];
+  @OneToMany('Booking', 'workshop')
+  bookings: Booking[];
 }
