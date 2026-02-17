@@ -13,6 +13,13 @@ const create = [
   { label: 'Create Workshop', href: '/workshops' },
 ];
 
+const legal = [
+  { label: 'Impressum', href: '/impressum' },
+  { label: 'Datenschutz', href: '/datenschutz' },
+  { label: 'AGB', href: '/agb' },
+  { label: 'Widerruf', href: '/widerruf' },
+];
+
 const socials = [
   { icon: Instagram, href: '#', label: 'Instagram' },
   { icon: Github, href: '#', label: 'GitHub' },
@@ -23,7 +30,7 @@ export default function Footer() {
   return (
     <footer className="border-t bg-muted/30 pt-16 pb-8">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">
           <div>
             <Image
               src="/logo.svg"
@@ -58,6 +65,22 @@ export default function Footer() {
             <ul className="space-y-2">
               {create.map((link) => (
                 <li key={link.href + link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-sm font-semibold mb-4 font-sans">Legal</h4>
+            <ul className="space-y-2">
+              {legal.map((link) => (
+                <li key={link.href}>
                   <Link
                     href={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
