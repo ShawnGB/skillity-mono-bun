@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { WorkshopStatus } from '@skillity/shared';
 import type { Workshop } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
 import { updateWorkshopStatus } from '@/actions/workshops';
 import FormModal from '@/components/modals/FormModal';
 import EditWorkshopForm from '@/components/workshops/EditWorkshopForm';
@@ -78,14 +79,16 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
           {isPending ? 'Publishing...' : 'Publish'}
         </Button>
       )}
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => handleStatusChange(WorkshopStatus.CANCELLED)}
-        disabled={isPending}
-      >
-        Cancel
-      </Button>
+      <ConfirmDialog
+        trigger={<Button size="sm" variant="outline" disabled={isPending}>Cancel</Button>}
+        title="Cancel workshop?"
+        description="This will cancel your workshop and notify any booked participants. This action cannot be undone."
+        confirmLabel="Yes, cancel workshop"
+        onConfirm={async () => {
+          await updateWorkshopStatus(workshop.id, WorkshopStatus.CANCELLED);
+          router.refresh();
+        }}
+      />
     </div>
   );
 }
