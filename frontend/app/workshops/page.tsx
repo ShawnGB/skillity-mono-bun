@@ -1,6 +1,13 @@
+import type { Metadata } from 'next';
 import WorkshopsListing from '@/components/workshops/WorkshopsListing';
 import WorkshopsHeader from '@/components/workshops/WorkshopsHeader';
 import { getSession } from '@/data/auth';
+
+export const metadata: Metadata = {
+  title: 'Browse Workshops',
+  description:
+    'Explore creative workshops in your city. Filter by category -- crafts, cooking, music, visual arts, and more.',
+};
 
 interface WorkshopsPageProps {
   searchParams: Promise<{ category?: string }>;

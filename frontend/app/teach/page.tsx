@@ -1,6 +1,13 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Heart, Wallet, Users, ListChecks, Handshake, BadgeEuro } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+export const metadata: Metadata = {
+  title: 'Become a Guide',
+  description:
+    'Share your passion and earn on your terms. Host creative workshops on uSkillity -- no teaching degree required.',
+};
 
 const benefits = [
   {

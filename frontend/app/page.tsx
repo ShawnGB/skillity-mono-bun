@@ -1,7 +1,17 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Search, Ticket, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WorkshopsListing from '@/components/workshops/WorkshopsListing';
+
+export const metadata: Metadata = {
+  title: 'Hands-On Creative Workshops in Berlin',
+  description:
+    'Discover workshops led by passionate creators. Learn pottery, cooking, music, art and more. Book your spot on uSkillity.',
+  openGraph: {
+    type: 'website',
+  },
+};
 
 const steps = [
   {

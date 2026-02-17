@@ -1,3 +1,10 @@
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Datenschutz',
+  robots: { index: false },
+};
+
 export default function DatenschutzPage() {
   return (
     <main className="container mx-auto px-4 py-12 max-w-3xl">

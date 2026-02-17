@@ -15,8 +15,26 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: 'Skillity',
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://uskillity.com',
+  ),
+  title: {
+    template: '%s | uSkillity',
+    default: 'uSkillity -- Rediscover Your Creativity',
+  },
   description: 'Rediscover your creativity through hands-on workshops.',
+  openGraph: {
+    siteName: 'uSkillity',
+    locale: 'de_DE',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -29,6 +47,19 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${fraunces.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Organization',
+              name: 'uSkillity',
+              url: process.env.NEXT_PUBLIC_SITE_URL || 'https://uskillity.com',
+              description:
+                'Rediscover your creativity through hands-on workshops.',
+            }),
+          }}
+        />
         <Header />
         {children}
         <Footer />

@@ -1,6 +1,13 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Heart, Users, Flame, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+
+export const metadata: Metadata = {
+  title: 'About uSkillity',
+  description:
+    'Born in Berlin in 2016, uSkillity helps people rediscover creativity through hands-on workshops and creative circles.',
+};
 
 const values = [
   {

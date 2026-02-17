@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -9,6 +10,30 @@ import { getAvatarUrl } from '@/lib/avatar';
 
 interface HostProfilePageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: HostProfilePageProps): Promise<Metadata> {
+  const { id } = await params;
+
+  try {
+    const host = await getHostProfile(id);
+    const name = [host.firstName, host.lastName].filter(Boolean).join(' ');
+    const description = host.tagline || host.bio?.slice(0, 160) || `${name} on uSkillity`;
+
+    return {
+      title: `${name} | Host`,
+      description,
+      openGraph: {
+        title: `${name} | Host`,
+        description,
+        type: 'profile',
+      },
+    };
+  } catch {
+    return {};
+  }
 }
 
 export default async function HostProfilePage({ params }: HostProfilePageProps) {
@@ -29,8 +54,29 @@ export default async function HostProfilePage({ params }: HostProfilePageProps) 
       w.status === WorkshopStatus.PUBLISHED || w.status === WorkshopStatus.COMPLETED,
   );
 
+  const name = [host.firstName, host.lastName].filter(Boolean).join(' ');
+
+  const personJsonLd: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name,
+    description: host.bio || undefined,
+  };
+
+  if (host.averageRating !== null) {
+    personJsonLd.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: host.averageRating,
+      reviewCount: host.reviewCount,
+    };
+  }
+
   return (
     <main className="container mx-auto px-4 py-12">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd) }}
+      />
       <Link
         href="/workshops"
         className="text-sm text-muted-foreground hover:text-foreground transition-colors"

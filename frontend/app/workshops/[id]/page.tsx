@@ -1,3 +1,4 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { format } from 'date-fns';
@@ -14,6 +15,30 @@ import { getAvatarUrl } from '@/lib/avatar';
 
 interface WorkshopDetailPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: WorkshopDetailPageProps): Promise<Metadata> {
+  const { id } = await params;
+
+  try {
+    const workshop = await getWorkshop(id);
+    const description = workshop.description.slice(0, 160);
+
+    return {
+      title: workshop.title,
+      description,
+      openGraph: {
+        title: workshop.title,
+        description,
+        type: 'article',
+        images: [`https://picsum.photos/seed/${workshop.id}/1200/630`],
+      },
+    };
+  } catch {
+    return {};
+  }
 }
 
 function StatusBadge({ status }: { status: WorkshopStatus }) {
@@ -67,8 +92,49 @@ export default async function WorkshopDetailPage({
   const alreadyReviewed = reviews.some((r) => r.userId === session?.user?.id);
   const canReview = isAuthenticated && isCompleted && hasConfirmedBooking && !alreadyReviewed;
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://uskillity.com';
+
+  const eventStatusMap: Record<string, string> = {
+    [WorkshopStatus.PUBLISHED]: 'https://schema.org/EventScheduled',
+    [WorkshopStatus.CANCELLED]: 'https://schema.org/EventCancelled',
+    [WorkshopStatus.COMPLETED]: 'https://schema.org/EventMovedOnline',
+  };
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: workshop.title,
+    description: workshop.description,
+    startDate: workshop.startsAt,
+    endDate: workshop.endsAt,
+    location: {
+      '@type': 'Place',
+      name: workshop.location,
+    },
+    organizer: {
+      '@type': 'Person',
+      name: `${workshop.host.firstName} ${workshop.host.lastName}`,
+    },
+    offers: {
+      '@type': 'Offer',
+      price: workshop.ticketPrice,
+      priceCurrency: 'EUR',
+      availability:
+        spotsLeft > 0
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/SoldOut',
+      url: `${siteUrl}/workshops/${workshop.id}`,
+    },
+    eventStatus: eventStatusMap[workshop.status],
+    image: `https://picsum.photos/seed/${workshop.id}/1200/630`,
+  };
+
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {isCancelled && (
         <div className="bg-destructive/10 text-destructive text-center py-3 text-sm font-medium">
           This workshop has been cancelled
