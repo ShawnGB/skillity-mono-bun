@@ -129,11 +129,7 @@ export default function OnboardingFlow() {
             </Button>
           </div>
 
-          <Button
-            variant="ghost"
-            className="w-full"
-            onClick={() => setStep(0)}
-          >
+          <Button variant="ghost" className="w-full" onClick={() => setStep(0)}>
             &larr; Back
           </Button>
         </div>

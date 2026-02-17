@@ -1,10 +1,12 @@
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { getMyBookings } from '@/data/bookings';
-import { BookingStatus } from '@skillity/shared';
+import { getMyReviews } from '@/data/workshops';
+import { BookingStatus, WorkshopStatus } from '@skillity/shared';
 import type { Booking } from '@skillity/shared';
 import { cn } from '@/lib/utils';
 import CancelBookingButton from '@/components/profile/CancelBookingButton';
+import ReviewButton from '@/components/workshops/ReviewButton';
 
 interface MyBookingsPageProps {
   searchParams: Promise<{ confirmed?: string }>;
@@ -27,7 +29,7 @@ function BookingStatusBadge({ status }: { status: BookingStatus }) {
   );
 }
 
-function BookingRow({ booking, dimmed }: { booking: Booking; dimmed?: boolean }) {
+function BookingRow({ booking, dimmed, canReview }: { booking: Booking; dimmed?: boolean; canReview?: boolean }) {
   const workshop = booking.workshop;
   const canCancel =
     booking.status === BookingStatus.CONFIRMED ||
@@ -61,7 +63,10 @@ function BookingRow({ booking, dimmed }: { booking: Booking; dimmed?: boolean })
           </span>
         </div>
       </div>
-      {canCancel && <CancelBookingButton bookingId={booking.id} />}
+      <div className="flex items-center gap-2 shrink-0">
+        {canReview && <ReviewButton workshopId={workshop.id} />}
+        {canCancel && <CancelBookingButton bookingId={booking.id} />}
+      </div>
     </div>
   );
 }
@@ -70,10 +75,17 @@ export default async function MyBookingsPage({ searchParams }: MyBookingsPagePro
   const { confirmed } = await searchParams;
 
   let bookings: Booking[];
+  let reviewedWorkshopIds: Set<string>;
   try {
-    bookings = await getMyBookings();
+    const [fetchedBookings, myReviews] = await Promise.all([
+      getMyBookings(),
+      getMyReviews(),
+    ]);
+    bookings = fetchedBookings;
+    reviewedWorkshopIds = new Set(myReviews.map((r) => r.workshopId));
   } catch {
     bookings = [];
+    reviewedWorkshopIds = new Set();
   }
 
   const active = bookings.filter(
@@ -111,9 +123,16 @@ export default async function MyBookingsPage({ searchParams }: MyBookingsPagePro
 
       {active.length > 0 && (
         <div className="space-y-4">
-          {active.map((booking) => (
-            <BookingRow key={booking.id} booking={booking} />
-          ))}
+          {active.map((booking) => {
+            const isCompleted = booking.workshop.status === WorkshopStatus.COMPLETED;
+            const canReview =
+              isCompleted &&
+              booking.status === BookingStatus.CONFIRMED &&
+              !reviewedWorkshopIds.has(booking.workshop.id);
+            return (
+              <BookingRow key={booking.id} booking={booking} canReview={canReview} />
+            );
+          })}
         </div>
       )}
 

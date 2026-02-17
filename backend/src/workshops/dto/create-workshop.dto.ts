@@ -11,6 +11,7 @@ import {
   IsOptional,
   IsUrl,
   IsEnum,
+  IsUUID,
 } from 'class-validator';
 import { WorkshopCategory } from 'src/types/enums';
 
@@ -57,4 +58,8 @@ export class CreateWorkshopDto {
   @IsOptional()
   @IsUrl()
   externalUrl?: string;
+
+  @IsOptional()
+  @IsUUID()
+  seriesId?: string;
 }

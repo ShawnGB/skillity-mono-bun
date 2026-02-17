@@ -6,6 +6,8 @@ export interface AuthUser {
   firstName: string;
   lastName: string;
   role: UserRole;
+  bio?: string | null;
+  tagline?: string | null;
 }
 
 export interface LoginInput {

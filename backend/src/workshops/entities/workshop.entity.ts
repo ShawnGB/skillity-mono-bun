@@ -46,6 +46,9 @@ export class Workshop extends BaseEntity {
   })
   status: WorkshopStatus;
 
+  @Column({ name: 'series_id', type: 'uuid', nullable: true })
+  seriesId: string | null;
+
   @Column({ name: 'external_url', nullable: true })
   externalUrl: string | null;
 
@@ -58,4 +61,7 @@ export class Workshop extends BaseEntity {
 
   @OneToMany('Booking', 'workshop')
   bookings: Booking[];
+
+  @OneToMany('Review', 'workshop')
+  reviews: any[];
 }

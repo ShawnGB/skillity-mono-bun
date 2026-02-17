@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { WorkshopsModule } from './workshops/workshops.module';
 import { AuthModule } from './auth/auth.module';
 import { BookingsModule } from './bookings/bookings.module';
+import { ReviewsModule } from './reviews/reviews.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -23,6 +24,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
     WorkshopsModule,
     AuthModule,
     BookingsModule,
+    ReviewsModule,
   ],
   controllers: [AppController],
   providers: [

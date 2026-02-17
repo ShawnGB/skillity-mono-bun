@@ -9,7 +9,8 @@ import { CreateWorkshopDto } from './dto/create-workshop.dto';
 import { UpdateWorkshopDto } from './dto/update-workshop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workshop } from './entities/workshop.entity';
-import { Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
+import { randomUUID } from 'crypto';
 import { UserRole, WorkshopStatus, BookingStatus } from 'src/types/enums';
 
 const VALID_TRANSITIONS: Record<WorkshopStatus, WorkshopStatus[]> = {
@@ -27,7 +28,7 @@ export class WorkshopsService {
   ) {}
 
   async create(createWorkshopDto: CreateWorkshopDto, hostId: string) {
-    const { duration, startsAt: startsAtStr, ...rest } = createWorkshopDto;
+    const { duration, startsAt: startsAtStr, seriesId, ...rest } = createWorkshopDto;
 
     const startsAt = new Date(startsAtStr);
     if (startsAt <= new Date()) {
@@ -40,6 +41,7 @@ export class WorkshopsService {
       ...rest,
       startsAt,
       endsAt,
+      seriesId: seriesId ?? randomUUID(),
       status: WorkshopStatus.DRAFT,
       hostId,
     });
@@ -59,9 +61,13 @@ export class WorkshopsService {
     return workshops.map((w) => this.withParticipantCount(this.withEffectiveStatus(w)));
   }
 
-  async findAll(category?: string) {
+  async findAll(category?: string, hostId?: string) {
+    const where: Record<string, any> = {};
+    if (category) where.category = category;
+    if (hostId) where.hostId = hostId;
+
     const workshops = await this.workshopRepository.find({
-      where: category ? { category: category as any } : undefined,
+      where: Object.keys(where).length > 0 ? where : undefined,
       order: { startsAt: 'ASC' },
       relations: ['host'],
     });
@@ -131,6 +137,27 @@ export class WorkshopsService {
 
     Object.assign(workshop, updateWorkshopDto);
     return await this.workshopRepository.save(workshop);
+  }
+
+  async findSeriesSiblings(seriesId: string, excludeId?: string) {
+    const where: Record<string, any> = {
+      seriesId,
+      status: In([WorkshopStatus.PUBLISHED, WorkshopStatus.COMPLETED]),
+    };
+    if (excludeId) {
+      where.id = Not(excludeId);
+    }
+
+    const workshops = await this.workshopRepository.find({
+      where,
+      order: { startsAt: 'ASC' },
+      relations: ['host'],
+    });
+
+    return workshops.map((w) => ({
+      ...this.withEffectiveStatus(w),
+      participantCount: 0,
+    }));
   }
 
   private getDurationMinutes(workshop: Workshop): number | null {

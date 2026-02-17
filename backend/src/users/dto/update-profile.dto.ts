@@ -14,4 +14,14 @@ export class UpdateProfileDto {
   @IsOptional()
   @IsEmail()
   email?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  bio?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  tagline?: string;
 }

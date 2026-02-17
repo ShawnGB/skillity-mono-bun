@@ -2,6 +2,8 @@ import Link from 'next/link';
 import { getSession } from '@/data/auth';
 import { Button } from '@/components/ui/button';
 import ProfileForm from '@/components/profile/ProfileForm';
+import ProfileCompleteness from '@/components/profile/ProfileCompleteness';
+import HostProfileSection from '@/components/profile/HostProfileSection';
 
 export default async function ProfilePage() {
   const session = await getSession();
@@ -10,12 +12,23 @@ export default async function ProfilePage() {
 
   return (
     <div className="max-w-2xl space-y-8">
+      <ProfileCompleteness user={user} />
+
       <section className="rounded-xl border bg-card p-6">
         <h2 className="text-xl font-sans font-semibold mb-6">
           Personal Information
         </h2>
         <ProfileForm user={user} />
       </section>
+
+      {isHost && (
+        <section className="rounded-xl border bg-card p-6">
+          <h2 className="text-xl font-sans font-semibold mb-6">
+            Host Profile
+          </h2>
+          <HostProfileSection user={user} />
+        </section>
+      )}
 
       <section className="rounded-xl border bg-card p-6">
         <h2 className="text-xl font-sans font-semibold mb-4">Account Type</h2>

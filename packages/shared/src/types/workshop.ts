@@ -45,6 +45,8 @@ export interface Workshop {
   startsAt: string;
   endsAt: string;
   status: WorkshopStatus;
+  seriesId: string | null;
+  hostId: string;
   host: User;
   participantCount: number;
   externalUrl: string | null;
@@ -63,6 +65,7 @@ export interface CreateWorkshopInput {
   startsAt: string;
   duration: number;
   externalUrl?: string;
+  seriesId?: string;
 }
 
 export interface UpdateWorkshopInput {

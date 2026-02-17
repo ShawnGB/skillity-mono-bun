@@ -1,11 +1,16 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { format } from 'date-fns';
-import { getWorkshop } from '@/data/workshops';
+import { ArrowRight } from 'lucide-react';
+import { getWorkshop, getWorkshopReviews, getSeriesReviews, getSeriesWorkshops } from '@/data/workshops';
 import { getSession } from '@/data/auth';
-import { WorkshopStatus, CATEGORY_LABELS } from '@skillity/shared';
+import { getMyBookings } from '@/data/bookings';
+import { WorkshopStatus, BookingStatus, CATEGORY_LABELS } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
 import RegisterButton from '@/components/workshops/RegisterButton';
+import ReviewsList from '@/components/workshops/ReviewsList';
+import ReviewButton from '@/components/workshops/ReviewButton';
+import { getAvatarUrl } from '@/lib/avatar';
 
 interface WorkshopDetailPageProps {
   params: Promise<{ id: string }>;
@@ -44,11 +49,23 @@ export default async function WorkshopDetailPage({
 
   const session = await getSession();
   const isAuthenticated = !!session?.user;
+
+  const [reviews, bookings, seriesSiblings] = await Promise.all([
+    workshop.seriesId ? getSeriesReviews(workshop.seriesId) : getWorkshopReviews(id),
+    isAuthenticated ? getMyBookings() : [],
+    workshop.seriesId ? getSeriesWorkshops(workshop.seriesId).then((ws) => ws.filter((w) => w.id !== id)) : [],
+  ]);
+
+  const isCompleted = workshop.status === WorkshopStatus.COMPLETED;
+  const isCancelled = workshop.status === WorkshopStatus.CANCELLED;
+  const isInactive = isCancelled || isCompleted;
   const spotsLeft = workshop.maxParticipants - workshop.participantCount;
 
-  const isCancelled = workshop.status === WorkshopStatus.CANCELLED;
-  const isCompleted = workshop.status === WorkshopStatus.COMPLETED;
-  const isInactive = isCancelled || isCompleted;
+  const hasConfirmedBooking = bookings.some(
+    (b) => b.workshopId === id && b.status === BookingStatus.CONFIRMED,
+  );
+  const alreadyReviewed = reviews.some((r) => r.userId === session?.user?.id);
+  const canReview = isAuthenticated && isCompleted && hasConfirmedBooking && !alreadyReviewed;
 
   return (
     <main>
@@ -112,9 +129,58 @@ export default async function WorkshopDetailPage({
 
             <div>
               <h2 className="text-2xl mb-4">Host</h2>
-              <p className="text-muted-foreground">
-                {workshop.host.firstName} {workshop.host.lastName}
-              </p>
+              <Link
+                href={`/hosts/${workshop.hostId}`}
+                className="flex items-center gap-3 rounded-xl border bg-card p-4 hover:bg-accent transition-colors"
+              >
+                <img
+                  src={getAvatarUrl(workshop.host.firstName, workshop.host.lastName)}
+                  alt={`${workshop.host.firstName} ${workshop.host.lastName}`}
+                  className="size-10 rounded-full"
+                />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium">{workshop.host.firstName} {workshop.host.lastName}</p>
+                  {workshop.host.tagline && (
+                    <p className="text-xs text-muted-foreground truncate">{workshop.host.tagline}</p>
+                  )}
+                </div>
+                <ArrowRight className="size-4 text-muted-foreground shrink-0" />
+              </Link>
+            </div>
+
+            {seriesSiblings.length > 0 && (
+              <div>
+                <h2 className="text-2xl mb-4">Other available dates</h2>
+                <div className="space-y-2">
+                  {seriesSiblings.map((sibling) => (
+                    <Link
+                      key={sibling.id}
+                      href={`/workshops/${sibling.id}`}
+                      className="flex items-center justify-between rounded-xl border bg-card p-4 hover:bg-accent transition-colors"
+                    >
+                      <div>
+                        <p className="font-medium">
+                          {sibling.startsAt && format(new Date(sibling.startsAt), 'EEEE, MMMM d, yyyy')}
+                        </p>
+                        {sibling.startsAt && sibling.endsAt && (
+                          <p className="text-sm text-muted-foreground">
+                            {format(new Date(sibling.startsAt), 'HH:mm')} - {format(new Date(sibling.endsAt), 'HH:mm')}
+                          </p>
+                        )}
+                      </div>
+                      <ArrowRight className="size-4 text-muted-foreground" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl">Reviews</h2>
+                {canReview && <ReviewButton workshopId={id} />}
+              </div>
+              <ReviewsList reviews={reviews} />
             </div>
           </div>
 

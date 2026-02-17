@@ -6,7 +6,9 @@ export type {
   AuthResponse,
 } from './types/auth';
 
-export type { User, CreateUserInput, UpdateProfileInput } from './types/user';
+export type { User, CreateUserInput, UpdateProfileInput, HostProfile } from './types/user';
+
+export type { Review, CreateReviewInput } from './types/review';
 
 export { WorkshopStatus, WorkshopCategory, CATEGORY_LABELS } from './types/workshop';
 export type {

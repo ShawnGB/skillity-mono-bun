@@ -3,6 +3,8 @@ export interface User {
   email: string;
   firstName: string;
   lastName: string;
+  bio?: string | null;
+  tagline?: string | null;
 }
 
 export interface CreateUserInput {
@@ -16,4 +18,18 @@ export interface UpdateProfileInput {
   firstName?: string;
   lastName?: string;
   email?: string;
+  bio?: string;
+  tagline?: string;
+}
+
+export interface HostProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  bio: string | null;
+  tagline: string | null;
+  averageRating: number | null;
+  reviewCount: number;
+  workshopCount: number;
+  memberSince: string;
 }

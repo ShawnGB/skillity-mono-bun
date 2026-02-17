@@ -24,7 +24,7 @@ function StatusBadge({ status }: { status: WorkshopStatus }) {
   );
 }
 
-function WorkshopRow({ workshop, dimmed }: { workshop: Workshop; dimmed?: boolean }) {
+function WorkshopRow({ workshop, dimmed, dateCount }: { workshop: Workshop; dimmed?: boolean; dateCount?: number }) {
   return (
     <div
       className={cn(
@@ -44,6 +44,11 @@ function WorkshopRow({ workshop, dimmed }: { workshop: Workshop; dimmed?: boolea
             {CATEGORY_LABELS[workshop.category]}
           </span>
           <StatusBadge status={workshop.status} />
+          {dateCount && dateCount > 1 && (
+            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
+              {dateCount} dates
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           {workshop.startsAt && (
@@ -72,13 +77,22 @@ export default async function MyWorkshopsPage() {
     workshops = [];
   }
 
-  const upcoming = (workshops ?? []).filter(
+  const allWorkshops = workshops ?? [];
+
+  const seriesCounts = new Map<string, number>();
+  for (const w of allWorkshops) {
+    if (w.seriesId) {
+      seriesCounts.set(w.seriesId, (seriesCounts.get(w.seriesId) ?? 0) + 1);
+    }
+  }
+
+  const upcoming = allWorkshops.filter(
     (w) =>
       w.status === WorkshopStatus.DRAFT ||
       w.status === WorkshopStatus.PUBLISHED,
   );
 
-  const past = (workshops ?? []).filter(
+  const past = allWorkshops.filter(
     (w) =>
       w.status === WorkshopStatus.COMPLETED ||
       w.status === WorkshopStatus.CANCELLED,
@@ -97,7 +111,11 @@ export default async function MyWorkshopsPage() {
       {upcoming.length > 0 && (
         <div className="space-y-4">
           {upcoming.map((workshop) => (
-            <WorkshopRow key={workshop.id} workshop={workshop} />
+            <WorkshopRow
+              key={workshop.id}
+              workshop={workshop}
+              dateCount={workshop.seriesId ? seriesCounts.get(workshop.seriesId) : undefined}
+            />
           ))}
         </div>
       )}
@@ -106,7 +124,12 @@ export default async function MyWorkshopsPage() {
         <div className="space-y-4">
           <h3 className="text-sm font-medium text-muted-foreground">Past workshops</h3>
           {past.map((workshop) => (
-            <WorkshopRow key={workshop.id} workshop={workshop} dimmed />
+            <WorkshopRow
+              key={workshop.id}
+              workshop={workshop}
+              dimmed
+              dateCount={workshop.seriesId ? seriesCounts.get(workshop.seriesId) : undefined}
+            />
           ))}
         </div>
       )}

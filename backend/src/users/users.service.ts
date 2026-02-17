@@ -8,9 +8,10 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User } from './entities/user.entity';
 import { Booking } from '../bookings/entities/booking.entity';
 import { Workshop } from '../workshops/entities/workshop.entity';
-import { In, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BookingStatus, UserRole } from '../types/enums';
+import { BookingStatus, UserRole, WorkshopStatus } from '../types/enums';
+import { ReviewsService } from '../reviews/reviews.service';
 import { randomUUID } from 'crypto';
 
 import * as bcrypt from 'bcrypt';
@@ -24,6 +25,7 @@ export class UsersService {
     private readonly bookingsRepository: Repository<Booking>,
     @InjectRepository(Workshop)
     private readonly workshopsRepository: Repository<Workshop>,
+    private readonly reviewsService: ReviewsService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDTO> {
@@ -75,6 +77,8 @@ export class UsersService {
     if (dto.firstName !== undefined) user.firstName = dto.firstName;
     if (dto.lastName !== undefined) user.lastName = dto.lastName;
     if (dto.email !== undefined) user.email = dto.email;
+    if (dto.bio !== undefined) user.bio = dto.bio;
+    if (dto.tagline !== undefined) user.tagline = dto.tagline;
 
     await this.UsersRepository.save(user);
 
@@ -84,6 +88,37 @@ export class UsersService {
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role,
+      bio: user.bio,
+      tagline: user.tagline,
+    };
+  }
+
+  async getHostProfile(id: string) {
+    const user = await this.UsersRepository.findOne({ where: { id } });
+    if (!user || (user.role !== UserRole.HOST && user.role !== UserRole.ADMIN)) {
+      throw new NotFoundException('Host not found');
+    }
+
+    const workshopCount = await this.workshopsRepository.count({
+      where: {
+        hostId: id,
+        status: Not(In([WorkshopStatus.DRAFT, WorkshopStatus.CANCELLED])),
+      },
+    });
+
+    const { averageRating, reviewCount } =
+      await this.reviewsService.getHostAverageRating(id);
+
+    return {
+      id: user.id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      bio: user.bio,
+      tagline: user.tagline,
+      averageRating,
+      reviewCount,
+      workshopCount,
+      memberSince: user.createdAt.toISOString(),
     };
   }
 

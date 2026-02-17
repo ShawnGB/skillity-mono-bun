@@ -39,7 +39,7 @@ interface FormValues {
 
 interface CreateWorkshopFormProps {
   onSuccess?: () => void;
-  defaultValues?: Partial<Pick<FormValues, 'title' | 'description' | 'maxParticipants' | 'ticketPrice' | 'location'>>;
+  defaultValues?: Partial<Pick<FormValues, 'title' | 'category' | 'description' | 'maxParticipants' | 'ticketPrice' | 'location'>> & { seriesId?: string };
 }
 
 const DURATION_OPTIONS = [
@@ -90,6 +90,7 @@ export default function CreateWorkshopForm({
         location: data.location,
         startsAt: startsAt.toISOString(),
         duration: Number(data.duration),
+        ...(defaultValues?.seriesId && { seriesId: defaultValues.seriesId }),
       });
       if (result.error) {
         setError(result.error);

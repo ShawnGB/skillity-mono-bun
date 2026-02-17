@@ -22,14 +22,23 @@ export class WorkshopsController {
 
   @Public()
   @Get()
-  findAll(@Query('category') category?: WorkshopCategory) {
-    return this.workshopsService.findAll(category);
+  findAll(
+    @Query('category') category?: WorkshopCategory,
+    @Query('hostId') hostId?: string,
+  ) {
+    return this.workshopsService.findAll(category, hostId);
   }
 
   @Get('mine')
   @Roles(UserRole.HOST, UserRole.ADMIN)
   findMine(@CurrentUser() user: { id: string }) {
     return this.workshopsService.findByHost(user.id);
+  }
+
+  @Public()
+  @Get('series/:seriesId')
+  findBySeries(@Param('seriesId') seriesId: string) {
+    return this.workshopsService.findSeriesSiblings(seriesId);
   }
 
   @Public()

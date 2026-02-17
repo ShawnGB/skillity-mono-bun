@@ -32,6 +32,16 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
     workshop.status === WorkshopStatus.COMPLETED ||
     workshop.status === WorkshopStatus.CANCELLED;
 
+  const seriesDefaults = {
+    title: workshop.title,
+    category: workshop.category,
+    description: workshop.description,
+    maxParticipants: workshop.maxParticipants,
+    ticketPrice: workshop.ticketPrice,
+    location: workshop.location,
+    seriesId: workshop.seriesId ?? undefined,
+  };
+
   if (isPast) {
     return (
       <div className="flex items-center gap-2 shrink-0">
@@ -44,13 +54,7 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
           {({ onSuccess }) => (
             <CreateWorkshopForm
               onSuccess={onSuccess}
-              defaultValues={{
-                title: workshop.title,
-                description: workshop.description,
-                maxParticipants: workshop.maxParticipants,
-                ticketPrice: workshop.ticketPrice,
-                location: workshop.location,
-              }}
+              defaultValues={seriesDefaults}
             />
           )}
         </FormModal>
@@ -68,6 +72,19 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
       >
         {({ onSuccess }) => (
           <EditWorkshopForm workshop={workshop} onSuccess={onSuccess} />
+        )}
+      </FormModal>
+      <FormModal
+        trigger={<Button size="sm" variant="outline">Add Date</Button>}
+        title="Add another date"
+        description="Create a new session for this workshop on a different date."
+        onSuccess={() => router.refresh()}
+      >
+        {({ onSuccess }) => (
+          <CreateWorkshopForm
+            onSuccess={onSuccess}
+            defaultValues={seriesDefaults}
+          />
         )}
       </FormModal>
       {workshop.status === WorkshopStatus.DRAFT && (
