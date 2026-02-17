@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { format } from 'date-fns';
 import { getWorkshop } from '@/data/workshops';
 import { getSession } from '@/data/auth';
-import { WorkshopStatus } from '@skillity/shared';
+import { WorkshopStatus, CATEGORY_LABELS } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
 import RegisterButton from '@/components/workshops/RegisterButton';
 
@@ -75,6 +75,11 @@ export default async function WorkshopDetailPage({
             <h1 className="text-5xl md:text-7xl lg:text-8xl uppercase text-white">
               {workshop.title}
             </h1>
+            <div className="mt-3 flex items-center gap-3">
+              <span className="rounded-full bg-white/20 px-3 py-1 text-sm font-medium text-white backdrop-blur-sm">
+                {CATEGORY_LABELS[workshop.category]}
+              </span>
+            </div>
             <div className="mt-3 flex items-center gap-3 text-lg text-white/70">
               <span>{workshop.location}</span>
               {workshop.startsAt && (

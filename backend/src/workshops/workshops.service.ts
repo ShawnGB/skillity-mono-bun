@@ -59,8 +59,9 @@ export class WorkshopsService {
     return workshops.map((w) => this.withParticipantCount(this.withEffectiveStatus(w)));
   }
 
-  async findAll() {
+  async findAll(category?: string) {
     const workshops = await this.workshopRepository.find({
+      where: category ? { category: category as any } : undefined,
       order: { startsAt: 'ASC' },
       relations: ['host'],
     });

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm, Controller } from 'react-hook-form';
 import { format, differenceInMinutes } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
-import { WorkshopStatus } from '@skillity/shared';
+import { WorkshopStatus, WorkshopCategory, CATEGORY_LABELS } from '@skillity/shared';
 import type { Workshop } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -33,6 +33,7 @@ interface EditWorkshopFormProps {
 
 interface FormValues {
   title: string;
+  category: WorkshopCategory;
   description: string;
   maxParticipants: number;
   ticketPrice: number;
@@ -80,6 +81,7 @@ export default function EditWorkshopForm({
   } = useForm<FormValues>({
     defaultValues: {
       title: workshop.title,
+      category: workshop.category,
       description: workshop.description,
       maxParticipants: workshop.maxParticipants,
       ticketPrice: workshop.ticketPrice,
@@ -105,6 +107,7 @@ export default function EditWorkshopForm({
     startTransition(async () => {
       const result = await updateWorkshop(workshop.id, {
         title: data.title,
+        category: data.category,
         description: data.description,
         maxParticipants: Number(data.maxParticipants),
         ...(isPublished ? {} : { ticketPrice: Number(data.ticketPrice) }),
@@ -141,6 +144,32 @@ export default function EditWorkshopForm({
         />
         {errors.title && (
           <p className="text-sm text-destructive">{errors.title.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label>Category</Label>
+        <Controller
+          name="category"
+          control={control}
+          rules={{ required: 'Category is required' }}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} value={field.value}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent className="z-[52]">
+                {Object.values(WorkshopCategory).map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {CATEGORY_LABELS[cat]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.category && (
+          <p className="text-sm text-destructive">{errors.category.message}</p>
         )}
       </div>
 

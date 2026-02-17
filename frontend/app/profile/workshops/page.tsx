@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { getMyWorkshops } from '@/data/workshops';
-import { WorkshopStatus } from '@skillity/shared';
+import { WorkshopStatus, CATEGORY_LABELS } from '@skillity/shared';
 import type { Workshop } from '@skillity/shared';
 import { cn } from '@/lib/utils';
 import MyWorkshopsHeader from '@/components/profile/MyWorkshopsHeader';
@@ -40,6 +40,9 @@ function WorkshopRow({ workshop, dimmed }: { workshop: Workshop; dimmed?: boolea
           >
             {workshop.title}
           </Link>
+          <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+            {CATEGORY_LABELS[workshop.category]}
+          </span>
           <StatusBadge status={workshop.status} />
         </div>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">

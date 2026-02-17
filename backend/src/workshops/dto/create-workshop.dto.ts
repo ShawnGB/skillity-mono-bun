@@ -10,13 +10,18 @@ import {
   IsInt,
   IsOptional,
   IsUrl,
+  IsEnum,
 } from 'class-validator';
+import { WorkshopCategory } from 'src/types/enums';
 
 export class CreateWorkshopDto {
   @IsString()
   @IsNotEmpty()
   @MaxLength(50)
   title: string;
+
+  @IsEnum(WorkshopCategory)
+  category: WorkshopCategory;
 
   @IsString()
   @IsNotEmpty()

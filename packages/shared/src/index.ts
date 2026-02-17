@@ -8,7 +8,7 @@ export type {
 
 export type { User, CreateUserInput, UpdateProfileInput } from './types/user';
 
-export { WorkshopStatus } from './types/workshop';
+export { WorkshopStatus, WorkshopCategory, CATEGORY_LABELS } from './types/workshop';
 export type {
   Workshop,
   CreateWorkshopInput,

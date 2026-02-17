@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Patch, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
 import { WorkshopsService } from './workshops.service';
 import { CreateWorkshopDto } from './dto/create-workshop.dto';
 import { UpdateWorkshopDto } from './dto/update-workshop.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { UserRole } from '../types/enums';
+import { UserRole, WorkshopCategory } from '../types/enums';
 
 @Controller('workshops')
 export class WorkshopsController {
@@ -22,8 +22,8 @@ export class WorkshopsController {
 
   @Public()
   @Get()
-  findAll() {
-    return this.workshopsService.findAll();
+  findAll(@Query('category') category?: WorkshopCategory) {
+    return this.workshopsService.findAll(category);
   }
 
   @Get('mine')

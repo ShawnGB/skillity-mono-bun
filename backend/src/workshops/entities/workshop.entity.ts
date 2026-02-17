@@ -8,7 +8,7 @@ import {
 import type { User } from 'src/users/entities/user.entity';
 import type { Booking } from 'src/bookings/entities/booking.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { WorkshopStatus } from 'src/types/enums';
+import { WorkshopStatus, WorkshopCategory } from 'src/types/enums';
 
 @Entity()
 export class Workshop extends BaseEntity {
@@ -35,6 +35,9 @@ export class Workshop extends BaseEntity {
 
   @Column({ name: 'ends_at', type: 'timestamp', nullable: true })
   endsAt: Date;
+
+  @Column({ type: 'enum', enum: WorkshopCategory })
+  category: WorkshopCategory;
 
   @Column({
     type: 'enum',

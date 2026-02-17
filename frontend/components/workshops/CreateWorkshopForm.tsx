@@ -22,10 +22,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { createWorkshop } from '@/actions/workshops';
+import { WorkshopCategory, CATEGORY_LABELS } from '@skillity/shared';
 import { cn } from '@/lib/utils';
 
 interface FormValues {
   title: string;
+  category: WorkshopCategory;
   description: string;
   maxParticipants: number;
   ticketPrice: number;
@@ -80,6 +82,7 @@ export default function CreateWorkshopForm({
     startTransition(async () => {
       const result = await createWorkshop({
         title: data.title,
+        category: data.category,
         description: data.description,
         maxParticipants: Number(data.maxParticipants),
         ticketPrice: Number(data.ticketPrice),
@@ -117,6 +120,32 @@ export default function CreateWorkshopForm({
         />
         {errors.title && (
           <p className="text-sm text-destructive">{errors.title.message}</p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label>Category</Label>
+        <Controller
+          name="category"
+          control={control}
+          rules={{ required: 'Category is required' }}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} value={field.value}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent className="z-[52]">
+                {Object.values(WorkshopCategory).map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {CATEGORY_LABELS[cat]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
+        {errors.category && (
+          <p className="text-sm text-destructive">{errors.category.message}</p>
         )}
       </div>
 
