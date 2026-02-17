@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -24,6 +24,17 @@ export class UsersController {
     @Body() dto: UpdateProfileDto,
   ) {
     return this.usersService.updateProfile(user.id, dto);
+  }
+
+  @Delete('me')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  deleteAccount(@CurrentUser() user: { id: string }) {
+    return this.usersService.deleteAccount(user.id);
+  }
+
+  @Get('me/export')
+  exportData(@CurrentUser() user: { id: string }) {
+    return this.usersService.exportData(user.id);
   }
 
   @Patch('become-host')

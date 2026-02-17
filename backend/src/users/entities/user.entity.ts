@@ -1,6 +1,7 @@
 import { UserRole } from 'src/types/enums';
-import { Column, Entity, OneToMany, ManyToMany } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import type { Workshop } from 'src/workshops/entities/workshop.entity';
+import type { Booking } from 'src/bookings/entities/booking.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
 
 @Entity()
@@ -20,9 +21,12 @@ export class User extends BaseEntity {
   @Column({ name: 'last_name', length: 150 })
   lastName: string;
 
+  @Column({ name: 'deleted_at', type: 'timestamptz', nullable: true })
+  deletedAt: Date | null;
+
   @OneToMany('Workshop', 'host')
   hosting: Workshop[];
 
-  @ManyToMany('Workshop', 'participants')
-  workshops: Workshop[];
+  @OneToMany('Booking', 'user')
+  bookings: Booking[];
 }
