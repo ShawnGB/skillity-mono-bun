@@ -9,9 +9,10 @@ import { CreateWorkshopDto } from './dto/create-workshop.dto';
 import { UpdateWorkshopDto } from './dto/update-workshop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workshop } from './entities/workshop.entity';
-import { Not, Repository } from 'typeorm';
+import { In, Not, Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { UserRole, WorkshopStatus, BookingStatus } from 'src/types/enums';
+import { Booking } from 'src/bookings/entities/booking.entity';
 
 const VALID_TRANSITIONS: Record<WorkshopStatus, WorkshopStatus[]> = {
   [WorkshopStatus.DRAFT]: [WorkshopStatus.PUBLISHED, WorkshopStatus.CANCELLED],
@@ -25,6 +26,8 @@ export class WorkshopsService {
   constructor(
     @InjectRepository(Workshop)
     private readonly workshopRepository: Repository<Workshop>,
+    @InjectRepository(Booking)
+    private readonly bookingRepository: Repository<Booking>,
   ) {}
 
   async create(createWorkshopDto: CreateWorkshopDto, hostId: string) {
@@ -124,6 +127,26 @@ export class WorkshopsService {
       ) {
         throw new BadRequestException(
           'Cannot publish a workshop without a scheduled date',
+        );
+      }
+
+      if (updateWorkshopDto.status === WorkshopStatus.CANCELLED) {
+        const hoursUntilStart = workshop.startsAt
+          ? (workshop.startsAt.getTime() - Date.now()) / (1000 * 60 * 60)
+          : Infinity;
+
+        if (hoursUntilStart < 72) {
+          throw new BadRequestException(
+            'Workshops can only be cancelled up to 72 hours before they start',
+          );
+        }
+
+        await this.bookingRepository.update(
+          {
+            workshopId: id,
+            status: In([BookingStatus.PENDING, BookingStatus.CONFIRMED]),
+          },
+          { status: BookingStatus.REFUNDED },
         );
       }
     }

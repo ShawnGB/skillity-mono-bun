@@ -31,9 +31,13 @@ function BookingStatusBadge({ status }: { status: BookingStatus }) {
 
 function BookingRow({ booking, dimmed, canReview }: { booking: Booking; dimmed?: boolean; canReview?: boolean }) {
   const workshop = booking.workshop;
-  const canCancel =
+  const isActive =
     booking.status === BookingStatus.CONFIRMED ||
     booking.status === BookingStatus.PENDING;
+  const hoursUntilStart = workshop.startsAt
+    ? (new Date(workshop.startsAt).getTime() - Date.now()) / (1000 * 60 * 60)
+    : Infinity;
+  const canCancel = isActive && hoursUntilStart >= 72;
 
   return (
     <div
@@ -66,6 +70,9 @@ function BookingRow({ booking, dimmed, canReview }: { booking: Booking; dimmed?:
       <div className="flex items-center gap-2 shrink-0">
         {canReview && <ReviewButton workshopId={workshop.id} />}
         {canCancel && <CancelBookingButton bookingId={booking.id} />}
+        {isActive && !canCancel && (
+          <span className="text-xs text-muted-foreground">Non-cancellable</span>
+        )}
       </div>
     </div>
   );

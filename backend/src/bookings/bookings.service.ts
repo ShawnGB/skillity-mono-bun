@@ -31,6 +31,10 @@ export class BookingsService {
       throw new BadRequestException('Workshop is not available for booking');
     }
 
+    if (workshop.startsAt && workshop.startsAt <= new Date()) {
+      throw new BadRequestException('Workshop has already started');
+    }
+
     if (workshop.externalUrl) {
       throw new BadRequestException('External workshops cannot be booked directly');
     }
@@ -101,6 +105,10 @@ export class BookingsService {
       throw new BadRequestException('Only pending bookings can be confirmed');
     }
 
+    if (booking.workshop.startsAt && booking.workshop.startsAt <= new Date()) {
+      throw new BadRequestException('Workshop has already started');
+    }
+
     const confirmedCount = await this.bookingRepository.count({
       where: {
         workshopId: booking.workshopId,
@@ -121,6 +129,7 @@ export class BookingsService {
   async cancelBooking(id: string, userId: string) {
     const booking = await this.bookingRepository.findOne({
       where: { id },
+      relations: ['workshop'],
     });
 
     if (!booking) throw new NotFoundException('Booking not found');
@@ -131,6 +140,16 @@ export class BookingsService {
       booking.status !== BookingStatus.CONFIRMED
     ) {
       throw new BadRequestException('This booking cannot be cancelled');
+    }
+
+    const hoursUntilStart = booking.workshop.startsAt
+      ? (booking.workshop.startsAt.getTime() - Date.now()) / (1000 * 60 * 60)
+      : Infinity;
+
+    if (hoursUntilStart < 72) {
+      throw new BadRequestException(
+        'Cancellation is no longer available. Bookings can only be cancelled up to 72 hours before the workshop starts.',
+      );
     }
 
     booking.status = BookingStatus.CANCELLED;

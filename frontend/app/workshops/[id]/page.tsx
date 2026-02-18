@@ -93,8 +93,10 @@ export default async function WorkshopDetailPage({
 
   const isCompleted = workshop.status === WorkshopStatus.COMPLETED;
   const isCancelled = workshop.status === WorkshopStatus.CANCELLED;
-  const isInactive = isCancelled || isCompleted;
+  const hasStarted = !!(workshop.startsAt && new Date(workshop.startsAt) <= new Date());
+  const isInactive = isCancelled || isCompleted || hasStarted;
   const spotsLeft = workshop.maxParticipants - workshop.participantCount;
+  const isSoldOut = spotsLeft <= 0;
 
   const hasConfirmedBooking = bookings.some(
     (b) => b.workshopId === id && b.status === BookingStatus.CONFIRMED,
@@ -328,7 +330,11 @@ export default async function WorkshopDetailPage({
 
               {isInactive ? (
                 <Button disabled className="w-full" variant="outline">
-                  {isCancelled ? 'Workshop Cancelled' : 'Workshop Ended'}
+                  {isCancelled ? 'Workshop Cancelled' : hasStarted ? 'Workshop Started' : 'Workshop Ended'}
+                </Button>
+              ) : isSoldOut ? (
+                <Button disabled className="w-full" variant="outline">
+                  Sold Out
                 </Button>
               ) : workshop.externalUrl ? (
                 <Button asChild size="lg" className="w-full">
