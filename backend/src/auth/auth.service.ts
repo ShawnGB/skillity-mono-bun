@@ -105,6 +105,10 @@ export class AuthService {
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
+        bio: user.bio,
+        tagline: user.tagline,
+        profession: user.profession,
+        city: user.city,
       },
     };
   }
