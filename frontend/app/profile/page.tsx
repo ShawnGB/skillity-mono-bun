@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
 import { getSession } from '@/data/auth';
 import { getAvatarUrl } from '@/lib/avatar';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,8 @@ import HostProfileSection from '@/components/profile/HostProfileSection';
 
 export default async function ProfilePage() {
   const session = await getSession();
-  const user = session!.user;
+  if (!session?.user) redirect('/login');
+  const user = session.user;
   const isHost = user.role === 'host' || user.role === 'admin';
 
   return (
