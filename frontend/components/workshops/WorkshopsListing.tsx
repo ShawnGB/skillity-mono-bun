@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { getWorkshops } from '@/data/workshops';
-import { WorkshopStatus, WorkshopCategory, CATEGORY_LABELS } from '@skillity/shared';
+import { WorkshopStatus, WorkshopCategory, WorkshopLevel, CATEGORY_LABELS, LEVEL_LABELS } from '@skillity/shared';
 import { cn } from '@/lib/utils';
 
 function StatusBadge({ status }: { status: WorkshopStatus }) {
@@ -28,12 +28,23 @@ function StatusBadge({ status }: { status: WorkshopStatus }) {
   );
 }
 
-interface WorkshopsListingProps {
-  category?: string;
+function buildFilterUrl(params: Record<string, string | undefined>) {
+  const qs = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value) qs.set(key, value);
+  }
+  const str = qs.toString();
+  return str ? `/workshops?${str}` : '/workshops';
 }
 
-export default async function WorkshopsListing({ category }: WorkshopsListingProps) {
-  const workshops = await getWorkshops(category);
+interface WorkshopsListingProps {
+  category?: string;
+  level?: string;
+  search?: string;
+}
+
+export default async function WorkshopsListing({ category, level, search }: WorkshopsListingProps) {
+  const workshops = await getWorkshops(category, level, search);
 
   const visible = (workshops ?? []).filter(
     (w) => w.status !== WorkshopStatus.DRAFT,
@@ -49,9 +60,9 @@ export default async function WorkshopsListing({ category }: WorkshopsListingPro
 
   return (
     <>
-      <div className="mb-6 flex flex-wrap gap-2">
+      <div className="mb-4 flex flex-wrap gap-2">
         <Link
-          href="/workshops"
+          href={buildFilterUrl({ level, search })}
           className={cn(
             'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
             !category
@@ -64,7 +75,7 @@ export default async function WorkshopsListing({ category }: WorkshopsListingPro
         {Object.values(WorkshopCategory).map((cat) => (
           <Link
             key={cat}
-            href={`/workshops?category=${cat}`}
+            href={buildFilterUrl({ category: cat, level, search })}
             className={cn(
               'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
               category === cat
@@ -73,6 +84,34 @@ export default async function WorkshopsListing({ category }: WorkshopsListingPro
             )}
           >
             {CATEGORY_LABELS[cat]}
+          </Link>
+        ))}
+      </div>
+
+      <div className="mb-6 flex flex-wrap gap-2">
+        <Link
+          href={buildFilterUrl({ category, search })}
+          className={cn(
+            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+            !level
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground hover:bg-muted/80',
+          )}
+        >
+          All Levels
+        </Link>
+        {Object.values(WorkshopLevel).map((lvl) => (
+          <Link
+            key={lvl}
+            href={buildFilterUrl({ category, level: lvl, search })}
+            className={cn(
+              'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+              level === lvl
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80',
+            )}
+          >
+            {LEVEL_LABELS[lvl]}
           </Link>
         ))}
       </div>
@@ -100,14 +139,21 @@ export default async function WorkshopsListing({ category }: WorkshopsListingPro
                   alt={workshop.title}
                   className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
                 <StatusBadge status={workshop.status} />
                 <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
-                  {workshop.startsAt && (
-                    <p className="text-xs text-white/70 font-medium uppercase tracking-wider mb-1">
-                      {format(new Date(workshop.startsAt), 'MMM d, yyyy')}
-                    </p>
-                  )}
+                  <div className="flex items-center gap-2 mb-1">
+                    {workshop.startsAt && (
+                      <p className="text-xs text-white/70 font-medium uppercase tracking-wider">
+                        {format(new Date(workshop.startsAt), 'MMM d, yyyy')}
+                      </p>
+                    )}
+                    {workshop.level && (
+                      <span className="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-medium text-white backdrop-blur-sm">
+                        {LEVEL_LABELS[workshop.level]}
+                      </span>
+                    )}
+                  </div>
                   <h3 className="font-serif text-4xl font-bold leading-[0.85] uppercase transition-transform duration-300 group-hover:-translate-y-12">
                     {workshop.title}
                   </h3>

@@ -24,6 +24,12 @@ export enum WorkshopCategory {
   BUSINESS_AND_ENTREPRENEURSHIP = 'business_and_entrepreneurship',
 }
 
+export enum WorkshopLevel {
+  BEGINNER = 'beginner',
+  INTERMEDIATE = 'intermediate',
+  ADVANCED = 'advanced',
+}
+
 export enum BookingStatus {
   PENDING = 'pending',
   CONFIRMED = 'confirmed',

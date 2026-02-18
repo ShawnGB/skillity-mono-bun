@@ -20,6 +20,8 @@ export interface UpdateProfileInput {
   email?: string;
   bio?: string;
   tagline?: string;
+  profession?: string;
+  city?: string;
 }
 
 export interface HostProfile {
@@ -28,6 +30,8 @@ export interface HostProfile {
   lastName: string;
   bio: string | null;
   tagline: string | null;
+  profession: string | null;
+  city: string | null;
   averageRating: number | null;
   reviewCount: number;
   workshopCount: number;

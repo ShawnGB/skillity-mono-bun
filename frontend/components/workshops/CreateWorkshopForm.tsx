@@ -22,12 +22,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { createWorkshop } from '@/actions/workshops';
-import { WorkshopCategory, CATEGORY_LABELS } from '@skillity/shared';
+import { WorkshopCategory, WorkshopLevel, CATEGORY_LABELS, LEVEL_LABELS } from '@skillity/shared';
 import { cn } from '@/lib/utils';
 
 interface FormValues {
   title: string;
   category: WorkshopCategory;
+  level?: WorkshopLevel;
   description: string;
   maxParticipants: number;
   ticketPrice: number;
@@ -90,6 +91,7 @@ export default function CreateWorkshopForm({
         location: data.location,
         startsAt: startsAt.toISOString(),
         duration: Number(data.duration),
+        ...(data.level && { level: data.level }),
         ...(defaultValues?.seriesId && { seriesId: defaultValues.seriesId }),
       });
       if (result.error) {
@@ -148,6 +150,28 @@ export default function CreateWorkshopForm({
         {errors.category && (
           <p className="text-sm text-destructive">{errors.category.message}</p>
         )}
+      </div>
+
+      <div className="space-y-2">
+        <Label>Level</Label>
+        <Controller
+          name="level"
+          control={control}
+          render={({ field }) => (
+            <Select onValueChange={field.onChange} value={field.value ?? ''}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select a level (optional)" />
+              </SelectTrigger>
+              <SelectContent className="z-[52]">
+                {Object.values(WorkshopLevel).map((lvl) => (
+                  <SelectItem key={lvl} value={lvl}>
+                    {LEVEL_LABELS[lvl]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
       </div>
 
       <div className="space-y-2">

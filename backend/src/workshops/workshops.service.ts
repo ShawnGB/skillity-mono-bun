@@ -61,16 +61,24 @@ export class WorkshopsService {
     return workshops.map((w) => this.withParticipantCount(this.withEffectiveStatus(w)));
   }
 
-  async findAll(category?: string, hostId?: string) {
-    const where: Record<string, any> = {};
-    if (category) where.category = category;
-    if (hostId) where.hostId = hostId;
+  async findAll(category?: string, hostId?: string, level?: string, search?: string) {
+    const qb = this.workshopRepository
+      .createQueryBuilder('workshop')
+      .leftJoinAndSelect('workshop.host', 'host')
+      .orderBy('workshop.startsAt', 'ASC');
 
-    const workshops = await this.workshopRepository.find({
-      where: Object.keys(where).length > 0 ? where : undefined,
-      order: { startsAt: 'ASC' },
-      relations: ['host'],
-    });
+    if (category) qb.andWhere('workshop.category = :category', { category });
+    if (hostId) qb.andWhere('workshop.hostId = :hostId', { hostId });
+    if (level) qb.andWhere('workshop.level = :level', { level });
+    if (search) {
+      const term = `%${search.toLowerCase()}%`;
+      qb.andWhere(
+        '(LOWER(workshop.title) LIKE :search OR LOWER(workshop.description) LIKE :search)',
+        { search: term },
+      );
+    }
+
+    const workshops = await qb.getMany();
 
     return workshops.map((w) => ({
       ...this.withEffectiveStatus(w),

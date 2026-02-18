@@ -10,7 +10,7 @@ export type { User, CreateUserInput, UpdateProfileInput, HostProfile } from './t
 
 export type { Review, CreateReviewInput } from './types/review';
 
-export { WorkshopStatus, WorkshopCategory, CATEGORY_LABELS } from './types/workshop';
+export { WorkshopStatus, WorkshopCategory, WorkshopLevel, CATEGORY_LABELS, LEVEL_LABELS } from './types/workshop';
 export type {
   Workshop,
   CreateWorkshopInput,

@@ -28,6 +28,12 @@ export class User extends BaseEntity {
   @Column({ length: 120, nullable: true })
   tagline: string | null;
 
+  @Column({ length: 120, nullable: true })
+  profession: string | null;
+
+  @Column({ length: 100, nullable: true })
+  city: string | null;
+
   @Column({ name: 'deleted_at', type: 'timestamptz', nullable: true })
   deletedAt: Date | null;
 

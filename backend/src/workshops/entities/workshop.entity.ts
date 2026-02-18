@@ -8,7 +8,7 @@ import {
 import type { User } from 'src/users/entities/user.entity';
 import type { Booking } from 'src/bookings/entities/booking.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { WorkshopStatus, WorkshopCategory } from 'src/types/enums';
+import { WorkshopStatus, WorkshopCategory, WorkshopLevel } from 'src/types/enums';
 
 @Entity()
 export class Workshop extends BaseEntity {
@@ -38,6 +38,9 @@ export class Workshop extends BaseEntity {
 
   @Column({ type: 'enum', enum: WorkshopCategory })
   category: WorkshopCategory;
+
+  @Column({ type: 'enum', enum: WorkshopLevel, nullable: true })
+  level: WorkshopLevel | null;
 
   @Column({
     type: 'enum',

@@ -3,9 +3,17 @@ import { cache } from 'react';
 import type { Workshop, Review } from '@skillity/shared';
 import { serverGet } from './server-client';
 
-export const getWorkshops = cache(async (category?: string): Promise<Workshop[]> => {
-  const url = category ? `/workshops?category=${category}` : '/workshops';
-  return serverGet<Workshop[]>(url);
+export const getWorkshops = cache(async (
+  category?: string,
+  level?: string,
+  search?: string,
+): Promise<Workshop[]> => {
+  const params = new URLSearchParams();
+  if (category) params.set('category', category);
+  if (level) params.set('level', level);
+  if (search) params.set('search', search);
+  const qs = params.toString();
+  return serverGet<Workshop[]>(qs ? `/workshops?${qs}` : '/workshops');
 });
 
 export const getWorkshop = cache(async (id: string): Promise<Workshop> => {

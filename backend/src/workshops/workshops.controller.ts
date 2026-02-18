@@ -25,8 +25,10 @@ export class WorkshopsController {
   findAll(
     @Query('category') category?: WorkshopCategory,
     @Query('hostId') hostId?: string,
+    @Query('level') level?: string,
+    @Query('search') search?: string,
   ) {
-    return this.workshopsService.findAll(category, hostId);
+    return this.workshopsService.findAll(category, hostId, level, search);
   }
 
   @Get('mine')

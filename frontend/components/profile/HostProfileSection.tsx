@@ -15,6 +15,8 @@ interface HostProfileSectionProps {
 }
 
 interface FormValues {
+  profession: string;
+  city: string;
   tagline: string;
   bio: string;
 }
@@ -30,6 +32,8 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
     handleSubmit,
   } = useForm<FormValues>({
     defaultValues: {
+      profession: user.profession ?? '',
+      city: user.city ?? '',
       tagline: user.tagline ?? '',
       bio: user.bio ?? '',
     },
@@ -61,6 +65,27 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
           Host profile updated successfully.
         </div>
       )}
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="profession">Profession</Label>
+          <Input
+            id="profession"
+            placeholder="e.g. Ceramic Artist"
+            maxLength={120}
+            {...register('profession')}
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="city">City</Label>
+          <Input
+            id="city"
+            placeholder="e.g. Berlin"
+            maxLength={100}
+            {...register('city')}
+          />
+        </div>
+      </div>
 
       <div className="space-y-2">
         <Label htmlFor="tagline">Tagline</Label>

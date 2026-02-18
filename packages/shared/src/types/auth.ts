@@ -8,6 +8,8 @@ export interface AuthUser {
   role: UserRole;
   bio?: string | null;
   tagline?: string | null;
+  profession?: string | null;
+  city?: string | null;
 }
 
 export interface LoginInput {

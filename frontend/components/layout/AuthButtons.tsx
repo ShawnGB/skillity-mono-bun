@@ -16,7 +16,6 @@ export default function AuthButtons() {
           <Button
             variant="ghost"
             size="sm"
-            className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
           >
             Log in
           </Button>
@@ -32,13 +31,12 @@ export default function AuthButtons() {
         trigger={
           <Button
             size="sm"
-            className="bg-primary-foreground text-primary hover:bg-primary-foreground/90"
           >
             Sign up
           </Button>
         }
         title="Create an account"
-        description="Get started with Skillity today."
+        description="Get started with uSkillity."
         onSuccess={() => router.refresh()}
       >
         {({ onSuccess }) => <RegisterForm onSuccess={onSuccess} />}

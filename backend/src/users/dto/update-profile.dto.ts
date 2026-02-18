@@ -24,4 +24,14 @@ export class UpdateProfileDto {
   @IsString()
   @MaxLength(120)
   tagline?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  profession?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  city?: string;
 }

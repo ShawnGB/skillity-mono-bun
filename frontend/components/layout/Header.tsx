@@ -10,7 +10,7 @@ export default async function Header() {
   const isAuthenticated = !!user;
 
   return (
-    <header className="bg-primary text-primary-foreground">
+    <header className="border-b bg-background/95 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center">
@@ -19,22 +19,20 @@ export default async function Header() {
               alt="uSkillity"
               width={108}
               height={30}
-              className="brightness-0 invert"
             />
           </Link>
           <nav className="flex items-center gap-4">
             <Link
               href="/workshops"
-              className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Browse Workshops
             </Link>
-            <br />
             <Link
               href="/teach"
-              className="text-sm font-medium text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
-              Teach yourself
+              Become a Guide
             </Link>
           </nav>
         </div>
@@ -44,7 +42,7 @@ export default async function Header() {
             <>
               <Link
                 href="/profile"
-                className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 {user?.firstName} {user?.lastName}
               </Link>

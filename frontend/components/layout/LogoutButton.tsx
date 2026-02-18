@@ -22,7 +22,6 @@ export default function LogoutButton() {
       size="sm"
       onClick={handleLogout}
       disabled={isPending}
-      className="text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
     >
       {isPending ? 'Logging out...' : 'Log out'}
     </Button>

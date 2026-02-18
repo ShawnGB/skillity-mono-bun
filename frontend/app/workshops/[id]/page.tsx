@@ -152,7 +152,7 @@ export default async function WorkshopDetailPage({
           alt={workshop.title}
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent" />
         <div className="absolute inset-0 flex flex-col justify-end">
           <div className="container mx-auto px-4 pb-12">
             <h1 className="text-5xl md:text-7xl lg:text-8xl uppercase text-white">

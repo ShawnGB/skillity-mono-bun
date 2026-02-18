@@ -13,7 +13,7 @@ import {
   IsEnum,
   IsUUID,
 } from 'class-validator';
-import { WorkshopCategory } from 'src/types/enums';
+import { WorkshopCategory, WorkshopLevel } from 'src/types/enums';
 
 export class CreateWorkshopDto {
   @IsString()
@@ -54,6 +54,10 @@ export class CreateWorkshopDto {
   @Min(30)
   @Max(480)
   duration: number;
+
+  @IsOptional()
+  @IsEnum(WorkshopLevel)
+  level?: WorkshopLevel;
 
   @IsOptional()
   @IsUrl()

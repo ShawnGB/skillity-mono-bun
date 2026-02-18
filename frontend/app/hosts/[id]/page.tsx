@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { format } from 'date-fns';
 import Link from 'next/link';
+import { MapPin } from 'lucide-react';
 import { getHostProfile } from '@/data/hosts';
 import { getHostWorkshops } from '@/data/workshops';
 import { WorkshopStatus, CATEGORY_LABELS } from '@skillity/shared';
@@ -97,6 +98,9 @@ export default async function HostProfilePage({ params }: HostProfilePageProps) 
                 <h1 className="text-2xl font-semibold">
                   {host.firstName} {host.lastName}
                 </h1>
+                {host.profession && (
+                  <p className="mt-0.5 text-sm font-medium text-foreground/80">{host.profession}</p>
+                )}
                 {host.tagline && (
                   <p className="mt-1 text-muted-foreground">{host.tagline}</p>
                 )}
@@ -111,7 +115,13 @@ export default async function HostProfilePage({ params }: HostProfilePageProps) 
                 </div>
               )}
 
-              <div className="flex gap-6 text-sm text-muted-foreground">
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+                {host.city && (
+                  <div className="flex items-center gap-1">
+                    <MapPin className="size-3.5" />
+                    <span>{host.city}</span>
+                  </div>
+                )}
                 <div className="text-center">
                   <p className="text-lg font-semibold text-foreground">{host.workshopCount}</p>
                   <p>{host.workshopCount === 1 ? 'Workshop' : 'Workshops'}</p>

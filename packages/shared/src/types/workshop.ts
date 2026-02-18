@@ -1,5 +1,17 @@
 import type { User } from './user';
 
+export enum WorkshopLevel {
+  BEGINNER = 'beginner',
+  INTERMEDIATE = 'intermediate',
+  ADVANCED = 'advanced',
+}
+
+export const LEVEL_LABELS: Record<WorkshopLevel, string> = {
+  [WorkshopLevel.BEGINNER]: 'Beginner',
+  [WorkshopLevel.INTERMEDIATE]: 'Intermediate',
+  [WorkshopLevel.ADVANCED]: 'Advanced',
+};
+
 export enum WorkshopStatus {
   DRAFT = 'draft',
   PUBLISHED = 'published',
@@ -44,6 +56,7 @@ export interface Workshop {
   location: string;
   startsAt: string;
   endsAt: string;
+  level: WorkshopLevel | null;
   status: WorkshopStatus;
   seriesId: string | null;
   hostId: string;
@@ -64,6 +77,7 @@ export interface CreateWorkshopInput {
   location: string;
   startsAt: string;
   duration: number;
+  level?: WorkshopLevel;
   externalUrl?: string;
   seriesId?: string;
 }
@@ -78,6 +92,7 @@ export interface UpdateWorkshopInput {
   location?: string;
   startsAt?: string;
   duration?: number;
+  level?: WorkshopLevel;
   status?: WorkshopStatus;
   externalUrl?: string;
 }

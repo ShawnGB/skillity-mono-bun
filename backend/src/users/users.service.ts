@@ -79,6 +79,8 @@ export class UsersService {
     if (dto.email !== undefined) user.email = dto.email;
     if (dto.bio !== undefined) user.bio = dto.bio;
     if (dto.tagline !== undefined) user.tagline = dto.tagline;
+    if (dto.profession !== undefined) user.profession = dto.profession;
+    if (dto.city !== undefined) user.city = dto.city;
 
     await this.UsersRepository.save(user);
 
@@ -90,6 +92,8 @@ export class UsersService {
       role: user.role,
       bio: user.bio,
       tagline: user.tagline,
+      profession: user.profession,
+      city: user.city,
     };
   }
 
@@ -115,6 +119,8 @@ export class UsersService {
       lastName: user.lastName,
       bio: user.bio,
       tagline: user.tagline,
+      profession: user.profession,
+      city: user.city,
       averageRating,
       reviewCount,
       workshopCount,
