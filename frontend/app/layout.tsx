@@ -20,9 +20,9 @@ export const metadata: Metadata = {
   ),
   title: {
     template: '%s | uSkillity',
-    default: 'uSkillity -- Rediscover Your Creativity',
+    default: 'uSkillity',
   },
-  description: 'Rediscover your creativity through hands-on workshops.',
+  description: 'Passionate people sharing what they know. Hands-on workshops in your city.',
   openGraph: {
     siteName: 'uSkillity',
     locale: 'de_DE',
@@ -56,7 +56,7 @@ export default function RootLayout({
               name: 'uSkillity',
               url: process.env.NEXT_PUBLIC_SITE_URL || 'https://uskillity.com',
               description:
-                'Rediscover your creativity through hands-on workshops.',
+                'Passionate people sharing what they know. Hands-on workshops in your city.',
             }),
           }}
         />

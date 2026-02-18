@@ -63,8 +63,7 @@ export default function OnboardingFlow() {
           <div className="text-center">
             <h1 className="text-3xl mb-2">Tell Us About Yourself</h1>
             <p className="text-muted-foreground">
-              What inspires you to share your craft? This is optional — you can
-              skip ahead.
+              This is optional. You can always fill it in later.
             </p>
           </div>
 
@@ -73,7 +72,7 @@ export default function OnboardingFlow() {
               <Label htmlFor="bio">A bit about you</Label>
               <Input
                 id="bio"
-                placeholder="I'm passionate about ceramics and love sharing the meditative joy of working with clay..."
+                placeholder="Tell people what you're into and why you want to share it."
               />
             </div>
           </div>
@@ -109,7 +108,7 @@ export default function OnboardingFlow() {
             </div>
             <h3 className="text-lg font-semibold font-sans">Mollie Payments</h3>
             <p className="text-sm text-muted-foreground">
-              Secure payment processing. We keep just 5% — the rest goes
+              Secure payment processing. We keep just 5%. The rest goes
               directly to you.
             </p>
 
@@ -144,7 +143,7 @@ export default function OnboardingFlow() {
             <h1 className="text-3xl mb-2">You&rsquo;re All Set!</h1>
             <p className="text-muted-foreground">
               Your account has been upgraded to Host. You can now create
-              workshops and share your craft with the world.
+              workshops and start sharing what you know.
             </p>
           </div>
           <Button
