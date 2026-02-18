@@ -21,8 +21,16 @@ interface FormValues {
   bio: string;
 }
 
+function FieldValue({ value }: { value: string | null | undefined }) {
+  if (!value || value.trim() === '') {
+    return <span className="text-muted-foreground italic">Not set</span>;
+  }
+  return <>{value}</>;
+}
+
 export default function HostProfileSection({ user }: HostProfileSectionProps) {
   const router = useRouter();
+  const [isEditing, setIsEditing] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -30,6 +38,7 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
   const {
     register,
     handleSubmit,
+    reset,
   } = useForm<FormValues>({
     defaultValues: {
       profession: user.profession ?? '',
@@ -48,21 +57,57 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
         setError(result.error);
       } else {
         setSuccess(true);
+        setIsEditing(false);
         router.refresh();
       }
     });
   };
+
+  const handleCancel = () => {
+    reset();
+    setError(null);
+    setSuccess(false);
+    setIsEditing(false);
+  };
+
+  if (!isEditing) {
+    return (
+      <div className="space-y-4">
+        {success && (
+          <div className="rounded-md bg-primary/10 p-3 text-sm text-primary">
+            Host profile updated successfully.
+          </div>
+        )}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-muted-foreground">Profession</p>
+            <p><FieldValue value={user.profession} /></p>
+          </div>
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-muted-foreground">City</p>
+            <p><FieldValue value={user.city} /></p>
+          </div>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-muted-foreground">Tagline</p>
+          <p><FieldValue value={user.tagline} /></p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-muted-foreground">Bio</p>
+          <p className="whitespace-pre-wrap"><FieldValue value={user.bio} /></p>
+        </div>
+        <Button variant="outline" onClick={() => setIsEditing(true)}>
+          Edit
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {error && (
         <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
           {error}
-        </div>
-      )}
-      {success && (
-        <div className="rounded-md bg-primary/10 p-3 text-sm text-primary">
-          Host profile updated successfully.
         </div>
       )}
 
@@ -111,9 +156,14 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
         />
       </div>
 
-      <Button type="submit" disabled={isPending}>
-        {isPending ? 'Saving...' : 'Save Host Profile'}
-      </Button>
+      <div className="flex gap-2">
+        <Button type="submit" disabled={isPending}>
+          {isPending ? 'Saving...' : 'Save Host Profile'}
+        </Button>
+        <Button type="button" variant="outline" onClick={handleCancel} disabled={isPending}>
+          Cancel
+        </Button>
+      </div>
     </form>
   );
 }

@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Param } from '@nestjs/common';
 import { BookingsService } from './bookings.service';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { UserRole } from '../types/enums';
 
 @Controller()
 export class BookingsController {
@@ -12,6 +14,15 @@ export class BookingsController {
     @CurrentUser() user: { id: string },
   ) {
     return this.bookingsService.createBooking(workshopId, user.id);
+  }
+
+  @Get('workshops/:id/bookings')
+  @Roles(UserRole.HOST, UserRole.ADMIN)
+  findWorkshopBookings(
+    @Param('id') workshopId: string,
+    @CurrentUser() user: { id: string; role: UserRole },
+  ) {
+    return this.bookingsService.findWorkshopBookings(workshopId, user.id, user.role);
   }
 
   @Get('bookings/mine')

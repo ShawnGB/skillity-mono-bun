@@ -11,9 +11,10 @@ import type { LoginInput } from '@skillity/shared';
 
 interface LoginFormProps {
   onSuccess?: () => void;
+  redirectTo?: string;
 }
 
-export default function LoginForm({ onSuccess }: LoginFormProps) {
+export default function LoginForm({ onSuccess, redirectTo }: LoginFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +32,7 @@ export default function LoginForm({ onSuccess }: LoginFormProps) {
       if (result.error) {
         setError(result.error);
       } else {
-        router.refresh();
+        router.push(redirectTo ?? '/');
         onSuccess?.();
       }
     });

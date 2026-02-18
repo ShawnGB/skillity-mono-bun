@@ -23,3 +23,19 @@ export interface Booking {
 export interface CreateBookingInput {
   workshopId: string;
 }
+
+export interface WorkshopBookingParticipant {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface WorkshopBooking {
+  id: string;
+  status: BookingStatus;
+  amount: number;
+  currency: string;
+  createdAt: string;
+  user: WorkshopBookingParticipant;
+}

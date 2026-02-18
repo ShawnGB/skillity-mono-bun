@@ -1,11 +1,13 @@
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { getMyWorkshops } from '@/data/workshops';
+import { getWorkshopBookings } from '@/data/bookings';
 import { WorkshopStatus, CATEGORY_LABELS } from '@skillity/shared';
-import type { Workshop } from '@skillity/shared';
+import type { Workshop, WorkshopBooking } from '@skillity/shared';
 import { cn } from '@/lib/utils';
 import MyWorkshopsHeader from '@/components/profile/MyWorkshopsHeader';
 import WorkshopActions from '@/components/profile/WorkshopActions';
+import WorkshopParticipants from '@/components/profile/WorkshopParticipants';
 
 function StatusBadge({ status }: { status: WorkshopStatus }) {
   const config = {
@@ -24,47 +26,81 @@ function StatusBadge({ status }: { status: WorkshopStatus }) {
   );
 }
 
-function WorkshopRow({ workshop, dimmed, dateCount }: { workshop: Workshop; dimmed?: boolean; dateCount?: number }) {
+function WorkshopRow({
+  workshop,
+  dimmed,
+  dateCount,
+  bookings,
+}: {
+  workshop: Workshop;
+  dimmed?: boolean;
+  dateCount?: number;
+  bookings?: WorkshopBooking[];
+}) {
+  const showStats = workshop.pendingCount !== undefined;
+
   return (
     <div
       className={cn(
-        'flex items-center justify-between gap-4 rounded-xl border bg-card p-5',
+        'rounded-xl border bg-card p-5',
         dimmed && 'opacity-60',
       )}
     >
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-3 mb-1">
-          <Link
-            href={`/workshops/${workshop.id}`}
-            className="font-medium truncate hover:underline"
-          >
-            {workshop.title}
-          </Link>
-          <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
-            {CATEGORY_LABELS[workshop.category]}
-          </span>
-          <StatusBadge status={workshop.status} />
-          {dateCount && dateCount > 1 && (
-            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
-              {dateCount} dates
+      <div className="flex items-center justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-3 mb-1">
+            <Link
+              href={`/workshops/${workshop.id}`}
+              className="font-medium truncate hover:underline"
+            >
+              {workshop.title}
+            </Link>
+            <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+              {CATEGORY_LABELS[workshop.category]}
             </span>
-          )}
-        </div>
-        <div className="flex items-center gap-4 text-sm text-muted-foreground">
-          {workshop.startsAt && (
-            <span>{format(new Date(workshop.startsAt), 'MMM d, yyyy')}</span>
-          )}
-          {workshop.startsAt && workshop.endsAt && (
+            <StatusBadge status={workshop.status} />
+            {dateCount && dateCount > 1 && (
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                {dateCount} dates
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            {workshop.startsAt && (
+              <span>{format(new Date(workshop.startsAt), 'MMM d, yyyy')}</span>
+            )}
+            {workshop.startsAt && workshop.endsAt && (
+              <span>
+                {format(new Date(workshop.startsAt), 'HH:mm')} - {format(new Date(workshop.endsAt), 'HH:mm')}
+              </span>
+            )}
             <span>
-              {format(new Date(workshop.startsAt), 'HH:mm')} - {format(new Date(workshop.endsAt), 'HH:mm')}
+              {workshop.participantCount} / {workshop.maxParticipants} participants
             </span>
+          </div>
+          {showStats && (
+            <div className="flex items-center gap-4 mt-2 text-xs">
+              <span className="text-green-600">
+                {workshop.participantCount} confirmed
+              </span>
+              {(workshop.pendingCount ?? 0) > 0 && (
+                <span className="text-yellow-600">
+                  {workshop.pendingCount} pending
+                </span>
+              )}
+              <span className="text-muted-foreground">
+                Est. revenue: {workshop.estimatedRevenue?.toFixed(2)} EUR
+              </span>
+            </div>
           )}
-          <span>
-            {workshop.participantCount} / {workshop.maxParticipants} participants
-          </span>
         </div>
+        <WorkshopActions workshop={workshop} />
       </div>
-      <WorkshopActions workshop={workshop} />
+      {bookings && bookings.length > 0 && (
+        <div className="mt-3 border-t pt-3">
+          <WorkshopParticipants bookings={bookings} />
+        </div>
+      )}
     </div>
   );
 }
@@ -98,6 +134,20 @@ export default async function MyWorkshopsPage() {
       w.status === WorkshopStatus.CANCELLED,
   );
 
+  const bookingsMap = new Map<string, WorkshopBooking[]>();
+  await Promise.all(
+    upcoming
+      .filter((w) => w.status === WorkshopStatus.PUBLISHED)
+      .map(async (w) => {
+        try {
+          const bookings = await getWorkshopBookings(w.id);
+          bookingsMap.set(w.id, bookings);
+        } catch {
+          bookingsMap.set(w.id, []);
+        }
+      }),
+  );
+
   return (
     <div className="space-y-6">
       <MyWorkshopsHeader />
@@ -115,6 +165,7 @@ export default async function MyWorkshopsPage() {
               key={workshop.id}
               workshop={workshop}
               dateCount={workshop.seriesId ? seriesCounts.get(workshop.seriesId) : undefined}
+              bookings={bookingsMap.get(workshop.id)}
             />
           ))}
         </div>

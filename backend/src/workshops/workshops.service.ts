@@ -9,7 +9,7 @@ import { CreateWorkshopDto } from './dto/create-workshop.dto';
 import { UpdateWorkshopDto } from './dto/update-workshop.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workshop } from './entities/workshop.entity';
-import { In, Not, Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { UserRole, WorkshopStatus, BookingStatus } from 'src/types/enums';
 
@@ -150,7 +150,7 @@ export class WorkshopsService {
   async findSeriesSiblings(seriesId: string, excludeId?: string) {
     const where: Record<string, any> = {
       seriesId,
-      status: In([WorkshopStatus.PUBLISHED, WorkshopStatus.COMPLETED]),
+      status: WorkshopStatus.PUBLISHED,
     };
     if (excludeId) {
       where.id = Not(excludeId);
@@ -162,10 +162,12 @@ export class WorkshopsService {
       relations: ['host'],
     });
 
-    return workshops.map((w) => ({
-      ...this.withEffectiveStatus(w),
-      participantCount: 0,
-    }));
+    return workshops
+      .map((w) => ({
+        ...this.withEffectiveStatus(w),
+        participantCount: 0,
+      }))
+      .filter((w) => w.status === WorkshopStatus.PUBLISHED);
   }
 
   private getDurationMinutes(workshop: Workshop): number | null {
@@ -185,11 +187,16 @@ export class WorkshopsService {
   }
 
   private withParticipantCount(workshop: Workshop & { bookings?: any[] }) {
-    const participantCount = (workshop.bookings ?? []).filter(
+    const allBookings = workshop.bookings ?? [];
+    const participantCount = allBookings.filter(
       (b: any) => b.status === BookingStatus.CONFIRMED,
     ).length;
+    const pendingCount = allBookings.filter(
+      (b: any) => b.status === BookingStatus.PENDING,
+    ).length;
+    const estimatedRevenue = participantCount * Number(workshop.ticketPrice);
 
     const { bookings, ...rest } = workshop;
-    return { ...rest, participantCount };
+    return { ...rest, participantCount, pendingCount, estimatedRevenue };
   }
 }

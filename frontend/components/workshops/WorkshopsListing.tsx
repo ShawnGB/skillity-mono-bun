@@ -1,8 +1,11 @@
 import Link from 'next/link';
 import { format } from 'date-fns';
 import { getWorkshops } from '@/data/workshops';
+import { getSession } from '@/data/auth';
+import { getWishlistCheck } from '@/data/wishlist';
 import { WorkshopStatus, WorkshopCategory, WorkshopLevel, CATEGORY_LABELS, LEVEL_LABELS } from '@skillity/shared';
 import { cn } from '@/lib/utils';
+import WishlistButton from '@/components/workshops/WishlistButton';
 
 function StatusBadge({ status }: { status: WorkshopStatus }) {
   if (status === WorkshopStatus.PUBLISHED) return null;
@@ -57,6 +60,17 @@ export default async function WorkshopsListing({ category, level, search }: Work
     (w) => w.status === WorkshopStatus.COMPLETED || w.status === WorkshopStatus.CANCELLED,
   );
   const sorted = [...upcoming, ...past];
+
+  const session = await getSession();
+  const isAuthenticated = !!session?.user;
+  let wishlistMap: Record<string, boolean> = {};
+  if (isAuthenticated && sorted.length > 0) {
+    try {
+      wishlistMap = await getWishlistCheck(sorted.map((w) => w.id));
+    } catch {
+      wishlistMap = {};
+    }
+  }
 
   return (
     <>
@@ -141,6 +155,14 @@ export default async function WorkshopsListing({ category, level, search }: Work
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
                 <StatusBadge status={workshop.status} />
+                {isAuthenticated && (
+                  <div className="absolute top-3 left-3 z-10">
+                    <WishlistButton
+                      workshopId={workshop.id}
+                      isSaved={wishlistMap[workshop.id] ?? false}
+                    />
+                  </div>
+                )}
                 <div className="absolute inset-0 flex flex-col justify-end p-5 text-white">
                   <div className="flex items-center gap-2 mb-1">
                     {workshop.startsAt && (

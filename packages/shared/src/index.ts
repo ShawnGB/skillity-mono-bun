@@ -21,4 +21,8 @@ export { BookingStatus } from './types/booking';
 export type {
   Booking,
   CreateBookingInput,
+  WorkshopBooking,
+  WorkshopBookingParticipant,
 } from './types/booking';
+
+export type { WishlistItem, WishlistToggleResult } from './types/wishlist';

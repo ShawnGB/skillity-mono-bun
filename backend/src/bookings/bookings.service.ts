@@ -8,7 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Booking } from './entities/booking.entity';
 import { Workshop } from 'src/workshops/entities/workshop.entity';
-import { BookingStatus, WorkshopStatus } from 'src/types/enums';
+import { BookingStatus, UserRole, WorkshopStatus } from 'src/types/enums';
 
 @Injectable()
 export class BookingsService {
@@ -136,6 +136,41 @@ export class BookingsService {
     booking.status = BookingStatus.CANCELLED;
 
     return this.bookingRepository.save(booking);
+  }
+
+  async findWorkshopBookings(
+    workshopId: string,
+    userId: string,
+    userRole: UserRole,
+  ) {
+    const workshop = await this.workshopRepository.findOne({
+      where: { id: workshopId },
+    });
+
+    if (!workshop) throw new NotFoundException('Workshop not found');
+
+    if (workshop.hostId !== userId && userRole !== UserRole.ADMIN) {
+      throw new ForbiddenException('Only the host or an admin can view bookings');
+    }
+
+    return this.bookingRepository.find({
+      where: { workshopId },
+      relations: ['user'],
+      order: { createdAt: 'DESC' },
+      select: {
+        id: true,
+        status: true,
+        amount: true,
+        currency: true,
+        createdAt: true,
+        user: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+        },
+      },
+    });
   }
 
   private getEffectiveStatus(workshop: Workshop): WorkshopStatus {

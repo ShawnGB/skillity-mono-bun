@@ -62,6 +62,8 @@ export interface Workshop {
   hostId: string;
   host: User;
   participantCount: number;
+  pendingCount?: number;
+  estimatedRevenue?: number;
   externalUrl: string | null;
   createdAt: string;
   updatedAt: string;

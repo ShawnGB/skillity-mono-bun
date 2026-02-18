@@ -12,6 +12,7 @@ interface ProfileNavProps {
 const allTabs = [
   { href: '/profile', label: 'Profile', roles: null },
   { href: '/profile/bookings', label: 'My Bookings', roles: null },
+  { href: '/profile/saved', label: 'Saved', roles: null },
   { href: '/profile/workshops', label: 'My Workshops', roles: ['host', 'admin'] as UserRole[] },
   { href: '/profile/settings', label: 'Settings', roles: null },
 ];

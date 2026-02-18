@@ -11,9 +11,10 @@ import type { RegisterInput } from '@skillity/shared';
 
 interface RegisterFormProps {
   onSuccess?: () => void;
+  redirectTo?: string;
 }
 
-export default function RegisterForm({ onSuccess }: RegisterFormProps) {
+export default function RegisterForm({ onSuccess, redirectTo }: RegisterFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -31,7 +32,7 @@ export default function RegisterForm({ onSuccess }: RegisterFormProps) {
       if (result.error) {
         setError(result.error);
       } else {
-        router.refresh();
+        router.push(redirectTo ?? '/');
         onSuccess?.();
       }
     });

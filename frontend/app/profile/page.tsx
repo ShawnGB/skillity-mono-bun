@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { getSession } from '@/data/auth';
+import { getAvatarUrl } from '@/lib/avatar';
 import { Button } from '@/components/ui/button';
 import ProfileForm from '@/components/profile/ProfileForm';
 import ProfileCompleteness from '@/components/profile/ProfileCompleteness';
@@ -33,16 +34,21 @@ export default async function ProfilePage() {
       <section className="rounded-xl border bg-card p-6">
         <h2 className="text-xl font-sans font-semibold mb-4">Account Type</h2>
         {isHost ? (
-          <div className="flex items-center gap-3">
-            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
-              Host
-            </span>
-            <p className="text-sm text-muted-foreground">
-              You can create and manage workshops.
-            </p>
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary">
+                Host
+              </span>
+              <p className="text-sm text-muted-foreground">
+                You can create and manage workshops.
+              </p>
+            </div>
+            <Button variant="outline" asChild>
+              <Link href={`/hosts/${user.id}`}>View Public Profile</Link>
+            </Button>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             <div className="flex items-center gap-3">
               <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground">
                 Guest
@@ -50,6 +56,17 @@ export default async function ProfilePage() {
               <p className="text-sm text-muted-foreground">
                 Upgrade to Host to create workshops.
               </p>
+            </div>
+            <div className="flex items-center gap-3 rounded-lg border p-3">
+              <img
+                src={getAvatarUrl(user.firstName, user.lastName)}
+                alt={`${user.firstName} ${user.lastName}`}
+                className="size-10 rounded-full"
+              />
+              <div>
+                <p className="text-sm font-medium">{user.firstName} {user.lastName}</p>
+                <p className="text-xs text-muted-foreground">How you appear on reviews</p>
+              </div>
             </div>
             <Button asChild>
               <Link href="/onboarding">Become a Host</Link>

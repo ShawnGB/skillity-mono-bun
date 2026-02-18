@@ -8,7 +8,7 @@ export default async function ProfileLayout({
   children: React.ReactNode;
 }) {
   const session = await getSession();
-  if (!session?.user) redirect('/workshops');
+  if (!session?.user) redirect('/login');
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-4xl">

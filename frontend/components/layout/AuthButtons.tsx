@@ -1,46 +1,15 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import FormModal from '@/components/modals/FormModal';
-import RegisterForm from '@/components/users/RegisterForm';
-import LoginForm from '@/components/auth/LoginForm';
+import Link from 'next/link';
+import { buttonVariants } from '@/components/ui/button';
 
 export default function AuthButtons() {
-  const router = useRouter();
-
   return (
     <>
-      <FormModal
-        trigger={
-          <Button
-            variant="ghost"
-            size="sm"
-          >
-            Log in
-          </Button>
-        }
-        title="Welcome back"
-        description="Sign in to your account to continue."
-        onSuccess={() => router.refresh()}
-      >
-        {({ onSuccess }) => <LoginForm onSuccess={onSuccess} />}
-      </FormModal>
-
-      <FormModal
-        trigger={
-          <Button
-            size="sm"
-          >
-            Sign up
-          </Button>
-        }
-        title="Create an account"
-        description="Get started with uSkillity."
-        onSuccess={() => router.refresh()}
-      >
-        {({ onSuccess }) => <RegisterForm onSuccess={onSuccess} />}
-      </FormModal>
+      <Link href="/login" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
+        Log in
+      </Link>
+      <Link href="/register" className={buttonVariants({ size: 'sm' })}>
+        Sign up
+      </Link>
     </>
   );
 }

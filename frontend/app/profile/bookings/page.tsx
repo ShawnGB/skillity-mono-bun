@@ -100,6 +100,22 @@ export default async function MyBookingsPage({ searchParams }: MyBookingsPagePro
       b.status === BookingStatus.REFUNDED,
   );
 
+  const confirmedBookings = bookings.filter(
+    (b) => b.status === BookingStatus.CONFIRMED,
+  );
+  const attendedCount = confirmedBookings.filter(
+    (b) => b.workshop.status === WorkshopStatus.COMPLETED,
+  ).length;
+  const totalSpent = confirmedBookings.reduce(
+    (sum, b) => sum + Number(b.amount),
+    0,
+  );
+  const categoriesExplored = new Set(
+    confirmedBookings.map((b) => b.workshop.category),
+  ).size;
+
+  const hasStats = bookings.length > 0;
+
   return (
     <div className="space-y-6">
       {confirmed === 'true' && (
@@ -109,6 +125,25 @@ export default async function MyBookingsPage({ searchParams }: MyBookingsPagePro
       )}
 
       <h2 className="text-2xl">My Bookings</h2>
+
+      {hasStats && (
+        <div className="grid grid-cols-3 gap-4">
+          <div className="rounded-xl border bg-card p-4 text-center">
+            <p className="text-2xl font-semibold">{attendedCount}</p>
+            <p className="text-xs text-muted-foreground">Workshops attended</p>
+          </div>
+          <div className="rounded-xl border bg-card p-4 text-center">
+            <p className="text-2xl font-semibold">
+              {totalSpent > 0 ? `${totalSpent.toFixed(2)} EUR` : 'Free'}
+            </p>
+            <p className="text-xs text-muted-foreground">Total spent</p>
+          </div>
+          <div className="rounded-xl border bg-card p-4 text-center">
+            <p className="text-2xl font-semibold">{categoriesExplored}</p>
+            <p className="text-xs text-muted-foreground">Categories explored</p>
+          </div>
+        </div>
+      )}
 
       {active.length === 0 && past.length === 0 && (
         <div className="text-center py-16">

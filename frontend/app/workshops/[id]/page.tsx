@@ -12,6 +12,8 @@ import RegisterButton from '@/components/workshops/RegisterButton';
 import ReviewsList from '@/components/workshops/ReviewsList';
 import ReviewButton from '@/components/workshops/ReviewButton';
 import { getAvatarUrl } from '@/lib/avatar';
+import { getWishlistCheck } from '@/data/wishlist';
+import WishlistButton from '@/components/workshops/WishlistButton';
 
 interface WorkshopDetailPageProps {
   params: Promise<{ id: string }>;
@@ -80,6 +82,14 @@ export default async function WorkshopDetailPage({
     isAuthenticated ? getMyBookings() : [],
     workshop.seriesId ? getSeriesWorkshops(workshop.seriesId).then((ws) => ws.filter((w) => w.id !== id)) : [],
   ]);
+
+  let isSaved = false;
+  if (isAuthenticated) {
+    try {
+      const wishlistMap = await getWishlistCheck([id]);
+      isSaved = wishlistMap[id] ?? false;
+    } catch {}
+  }
 
   const isCompleted = workshop.status === WorkshopStatus.COMPLETED;
   const isCancelled = workshop.status === WorkshopStatus.CANCELLED;
@@ -302,6 +312,19 @@ export default async function WorkshopDetailPage({
                   </span>
                 </div>
               </div>
+
+              {isAuthenticated && (
+                <div className="flex items-center gap-2 text-sm">
+                  <WishlistButton
+                    workshopId={workshop.id}
+                    isSaved={isSaved}
+                    className="text-muted-foreground hover:text-red-500"
+                  />
+                  <span className="text-muted-foreground">
+                    {isSaved ? 'Saved' : 'Save'}
+                  </span>
+                </div>
+              )}
 
               {isInactive ? (
                 <Button disabled className="w-full" variant="outline">
