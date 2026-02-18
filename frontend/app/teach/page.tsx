@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 export const metadata: Metadata = {
   title: 'Become a Guide',
   description:
-    'Share your passion and earn on your terms. Host creative workshops on uSkillity -- no teaching degree required.',
+    'Share your passion and earn on your terms. Host workshops on uSkillity. No teaching degree required.',
 };
 
 const benefits = [
@@ -14,13 +14,13 @@ const benefits = [
     icon: Heart,
     title: 'Share Your Passion',
     description:
-      'Turn what you love into an experience others will remember. No teaching degree required — just enthusiasm.',
+      'Turn what you love into an experience others will remember. No teaching degree required, just enthusiasm.',
   },
   {
     icon: Wallet,
     title: 'Earn on Your Terms',
     description:
-      'Set your own price, schedule, and group size. You\u2019re in control of your creative circle.',
+      'Set your own price, schedule, and group size. Your workshop, your rules.',
   },
   {
     icon: Users,
@@ -41,7 +41,7 @@ const howItWorks = [
     icon: Handshake,
     title: 'Welcome Learners',
     description:
-      'Learners book their spot and show up. You focus on what you do best — sharing your craft.',
+      'Learners book their spot and show up. You focus on what you do best.',
   },
   {
     icon: BadgeEuro,
@@ -118,12 +118,12 @@ export default function TeachPage() {
       <section className="bg-primary text-primary-foreground py-20">
         <div className="container mx-auto px-4 text-center max-w-2xl">
           <h2 className="text-4xl md:text-5xl text-primary-foreground">
-            We Keep Just 5%
+            You Keep Everything
           </h2>
           <p className="mt-6 text-lg text-primary-foreground/80">
-            Because your craft is worth it. We charge a small commission so the
-            platform can grow — the rest is yours. No hidden fees, no
-            subscriptions.
+            You set your price and you get 100% of it. We add a small 5%
+            service fee for learners at checkout. No hidden fees, no
+            subscriptions, no commission taken from you.
           </p>
         </div>
       </section>

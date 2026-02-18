@@ -6,6 +6,7 @@ const explore = [
   { label: 'Home', href: '/' },
   { label: 'Browse Workshops', href: '/workshops' },
   { label: 'About', href: '/about' },
+  { label: 'FAQ', href: '/faq' },
 ];
 
 const create = [
@@ -18,12 +19,13 @@ const legal = [
   { label: 'Datenschutz', href: '/datenschutz' },
   { label: 'AGB', href: '/agb' },
   { label: 'Widerruf', href: '/widerruf' },
+  { label: 'Guidelines', href: '/guidelines' },
 ];
 
 const socials = [
   { icon: Instagram, href: '#', label: 'Instagram' },
   { icon: Github, href: '#', label: 'GitHub' },
-  { icon: Mail, href: '#', label: 'Email' },
+  { icon: Mail, href: 'mailto:contact@shawnbecker.de', label: 'Email' },
 ];
 
 export default function Footer() {
@@ -40,7 +42,7 @@ export default function Footer() {
               className="mb-3"
             />
             <p className="text-sm text-muted-foreground">
-              Share &middot; Connect &middot; Embrace
+              Share &middot; Connect &middot; Purpose
             </p>
           </div>
 
