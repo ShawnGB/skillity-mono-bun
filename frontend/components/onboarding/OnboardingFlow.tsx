@@ -1,37 +1,26 @@
-'use client';
-
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
-import { CheckCircle, CreditCard, User } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { becomeHost } from '@/actions/auth';
+import { useState, useEffect } from "react";
+import { useFetcher, useNavigate, Link } from "react-router";
+import { CheckCircle, CreditCard, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const steps = [
-  { label: 'About You', icon: User },
-  { label: 'Payment', icon: CreditCard },
-  { label: 'Done', icon: CheckCircle },
+  { label: "About You", icon: User },
+  { label: "Payment", icon: CreditCard },
+  { label: "Done", icon: CheckCircle },
 ];
 
 export default function OnboardingFlow() {
-  const router = useRouter();
+  const navigate = useNavigate();
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [step, setStep] = useState(0);
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
 
-  const handleConnectMollie = () => {
-    setError(null);
-    startTransition(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      const result = await becomeHost();
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setStep(2);
-      }
-    });
-  };
+  const isPending = fetcher.state !== "idle";
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data?.ok) {
+      setStep(2);
+    }
+  }, [fetcher.state, fetcher.data]);
 
   return (
     <div>
@@ -41,17 +30,15 @@ export default function OnboardingFlow() {
             <div
               className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
                 i <= step
-                  ? 'bg-primary text-primary-foreground'
-                  : 'bg-muted text-muted-foreground'
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
               }`}
             >
               {i + 1}
             </div>
             {i < steps.length - 1 && (
               <div
-                className={`h-px w-12 transition-colors ${
-                  i < step ? 'bg-primary' : 'bg-muted'
-                }`}
+                className={`h-px w-12 transition-colors ${i < step ? "bg-primary" : "bg-muted"}`}
               />
             )}
           </div>
@@ -66,23 +53,8 @@ export default function OnboardingFlow() {
               This is optional. You can always fill it in later.
             </p>
           </div>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="bio">A bit about you</Label>
-              <Input
-                id="bio"
-                placeholder="Tell people what you're into and why you want to share it."
-              />
-            </div>
-          </div>
-
           <div className="flex gap-3">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => setStep(1)}
-            >
+            <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>
               Skip
             </Button>
             <Button className="flex-1" onClick={() => setStep(1)}>
@@ -97,8 +69,8 @@ export default function OnboardingFlow() {
           <div className="text-center">
             <h1 className="text-3xl mb-2">Connect Your Payment Account</h1>
             <p className="text-muted-foreground">
-              We use Mollie to handle payments securely. Connect your account so
-              you can receive earnings from your workshops.
+              We use Mollie to handle payments securely. Connect your account so you can receive
+              earnings from your workshops.
             </p>
           </div>
 
@@ -108,24 +80,20 @@ export default function OnboardingFlow() {
             </div>
             <h3 className="text-lg font-semibold font-sans">Mollie Payments</h3>
             <p className="text-sm text-muted-foreground">
-              Secure payment processing. We keep just 5%. The rest goes
-              directly to you.
+              Secure payment processing. We keep just 5%. The rest goes directly to you.
             </p>
 
-            {error && (
+            {fetcher.data?.error && (
               <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                {error}
+                {fetcher.data.error}
               </div>
             )}
 
-            <Button
-              size="lg"
-              className="w-full"
-              onClick={handleConnectMollie}
-              disabled={isPending}
-            >
-              {isPending ? 'Connecting...' : 'Connect with Mollie'}
-            </Button>
+            <fetcher.Form method="post" action="/api/become-host">
+              <Button size="lg" className="w-full" type="submit" disabled={isPending}>
+                {isPending ? "Connecting..." : "Connect with Mollie"}
+              </Button>
+            </fetcher.Form>
           </div>
 
           <Button variant="ghost" className="w-full" onClick={() => setStep(0)}>
@@ -142,16 +110,12 @@ export default function OnboardingFlow() {
           <div>
             <h1 className="text-3xl mb-2">You&rsquo;re All Set!</h1>
             <p className="text-muted-foreground">
-              Your account has been upgraded to Host. You can now create
-              workshops and start sharing what you know.
+              Your account has been upgraded to Host. You can now create workshops and start sharing
+              what you know.
             </p>
           </div>
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={() => router.push('/workshops')}
-          >
-            Create Your First Workshop
+          <Button size="lg" className="w-full" asChild>
+            <Link to="/workshops/new">Create Your First Workshop</Link>
           </Button>
         </div>
       )}

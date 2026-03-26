@@ -6,6 +6,7 @@ export default [
   route("/login", "routes/login.tsx"),
   route("/register", "routes/register.tsx"),
   route("/logout", "routes/logout.tsx"),
+  route("/onboarding", "routes/onboarding.tsx"),
 
   layout("routes/profile.tsx", [
     route("/profile", "routes/profile._index.tsx"),
@@ -19,6 +20,7 @@ export default [
   route("/api/wishlist/:workshopId", "routes/api.wishlist.$workshopId.tsx"),
   route("/api/reviews/:workshopId", "routes/api.reviews.$workshopId.tsx"),
   route("/api/book/:workshopId", "routes/api.book.$workshopId.tsx"),
+  route("/api/become-host", "routes/api.become-host.tsx"),
   route("/api/profile", "routes/api.profile.tsx"),
   route("/api/profile/delete", "routes/api.profile.delete.tsx"),
   route("/api/profile/export", "routes/api.profile.export.tsx"),

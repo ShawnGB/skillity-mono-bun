@@ -31,6 +31,9 @@ type Pages = {
   "/logout": {
     params: {};
   };
+  "/onboarding": {
+    params: {};
+  };
   "/profile": {
     params: {};
   };
@@ -61,6 +64,9 @@ type Pages = {
       "workshopId": string;
     };
   };
+  "/api/become-host": {
+    params: {};
+  };
   "/api/profile": {
     params: {};
   };
@@ -85,7 +91,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/workshops" | "/workshops/:id" | "/login" | "/register" | "/logout" | "/profile" | "/profile/bookings" | "/profile/saved" | "/profile/workshops" | "/profile/settings" | "/api/wishlist/:workshopId" | "/api/reviews/:workshopId" | "/api/book/:workshopId" | "/api/profile" | "/api/profile/delete" | "/api/profile/export" | "/api/workshops/:workshopId/status" | "/api/bookings/:bookingId/cancel";
+    page: "/" | "/workshops" | "/workshops/:id" | "/login" | "/register" | "/logout" | "/onboarding" | "/profile" | "/profile/bookings" | "/profile/saved" | "/profile/workshops" | "/profile/settings" | "/api/wishlist/:workshopId" | "/api/reviews/:workshopId" | "/api/book/:workshopId" | "/api/become-host" | "/api/profile" | "/api/profile/delete" | "/api/profile/export" | "/api/workshops/:workshopId/status" | "/api/bookings/:bookingId/cancel";
   };
   "routes/workshops.tsx": {
     id: "routes/workshops";
@@ -106,6 +112,10 @@ type RouteFiles = {
   "routes/logout.tsx": {
     id: "routes/logout";
     page: "/logout";
+  };
+  "routes/onboarding.tsx": {
+    id: "routes/onboarding";
+    page: "/onboarding";
   };
   "routes/profile.tsx": {
     id: "routes/profile";
@@ -143,6 +153,10 @@ type RouteFiles = {
     id: "routes/api.book.$workshopId";
     page: "/api/book/:workshopId";
   };
+  "routes/api.become-host.tsx": {
+    id: "routes/api.become-host";
+    page: "/api/become-host";
+  };
   "routes/api.profile.tsx": {
     id: "routes/api.profile";
     page: "/api/profile";
@@ -172,6 +186,7 @@ type RouteModules = {
   "routes/login": typeof import("./app/routes/login.tsx");
   "routes/register": typeof import("./app/routes/register.tsx");
   "routes/logout": typeof import("./app/routes/logout.tsx");
+  "routes/onboarding": typeof import("./app/routes/onboarding.tsx");
   "routes/profile": typeof import("./app/routes/profile.tsx");
   "routes/profile._index": typeof import("./app/routes/profile._index.tsx");
   "routes/profile.bookings": typeof import("./app/routes/profile.bookings.tsx");
@@ -181,6 +196,7 @@ type RouteModules = {
   "routes/api.wishlist.$workshopId": typeof import("./app/routes/api.wishlist.$workshopId.tsx");
   "routes/api.reviews.$workshopId": typeof import("./app/routes/api.reviews.$workshopId.tsx");
   "routes/api.book.$workshopId": typeof import("./app/routes/api.book.$workshopId.tsx");
+  "routes/api.become-host": typeof import("./app/routes/api.become-host.tsx");
   "routes/api.profile": typeof import("./app/routes/api.profile.tsx");
   "routes/api.profile.delete": typeof import("./app/routes/api.profile.delete.tsx");
   "routes/api.profile.export": typeof import("./app/routes/api.profile.export.tsx");
