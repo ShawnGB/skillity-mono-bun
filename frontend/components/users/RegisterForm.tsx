@@ -1,48 +1,31 @@
-'use client';
-
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { register as registerAction } from '@/actions/auth';
-import type { RegisterInput } from '@skillity/shared';
+import { Form, useNavigation, useActionData } from "react-router";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import type { RegisterInput } from "@skillity/shared";
 
 interface RegisterFormProps {
-  onSuccess?: () => void;
   redirectTo?: string;
 }
 
-export default function RegisterForm({ onSuccess, redirectTo }: RegisterFormProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+export default function RegisterForm({ redirectTo }: RegisterFormProps) {
+  const navigation = useNavigation();
+  const actionData = useActionData<{ error?: string }>();
+  const isPending = navigation.state === "submitting";
 
   const {
     register,
-    handleSubmit,
     formState: { errors },
   } = useForm<RegisterInput>();
 
-  const onSubmit = (data: RegisterInput) => {
-    setError(null);
-    startTransition(async () => {
-      const result = await registerAction(data);
-      if (result.error) {
-        setError(result.error);
-      } else {
-        router.push(redirectTo ?? '/');
-        onSuccess?.();
-      }
-    });
-  };
-
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {error && (
+    <Form method="post" className="space-y-4">
+      {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
+
+      {actionData?.error && (
         <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-          {error}
+          {actionData.error}
         </div>
       )}
 
@@ -51,7 +34,7 @@ export default function RegisterForm({ onSuccess, redirectTo }: RegisterFormProp
           <Label htmlFor="firstName">First Name</Label>
           <Input
             id="firstName"
-            {...register('firstName', { required: 'First name is required' })}
+            {...register("firstName", { required: "First name is required" })}
             placeholder="John"
           />
           {errors.firstName && (
@@ -63,7 +46,7 @@ export default function RegisterForm({ onSuccess, redirectTo }: RegisterFormProp
           <Label htmlFor="lastName">Last Name</Label>
           <Input
             id="lastName"
-            {...register('lastName', { required: 'Last name is required' })}
+            {...register("lastName", { required: "Last name is required" })}
             placeholder="Doe"
           />
           {errors.lastName && (
@@ -77,11 +60,11 @@ export default function RegisterForm({ onSuccess, redirectTo }: RegisterFormProp
         <Input
           id="email"
           type="email"
-          {...register('email', {
-            required: 'Email is required',
+          {...register("email", {
+            required: "Email is required",
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: 'Invalid email address',
+              message: "Invalid email address",
             },
           })}
           placeholder="john@example.com"
@@ -96,11 +79,11 @@ export default function RegisterForm({ onSuccess, redirectTo }: RegisterFormProp
         <Input
           id="password"
           type="password"
-          {...register('password', {
-            required: 'Password is required',
+          {...register("password", {
+            required: "Password is required",
             minLength: {
               value: 6,
-              message: 'Password must be at least 6 characters',
+              message: "Password must be at least 6 characters",
             },
           })}
           placeholder="••••••••"
@@ -111,8 +94,8 @@ export default function RegisterForm({ onSuccess, redirectTo }: RegisterFormProp
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? 'Registering...' : 'Register'}
+        {isPending ? "Registering..." : "Register"}
       </Button>
-    </form>
+    </Form>
   );
 }

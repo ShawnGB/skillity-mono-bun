@@ -1,27 +1,15 @@
-import { useTransition } from 'react';
-import { useNavigate, useFetcher } from 'react-router';
-import { Button } from '@/components/ui/button';
+import { useFetcher } from "react-router";
+import { Button } from "@/components/ui/button";
 
 export default function LogoutButton() {
-  const navigate = useNavigate();
   const fetcher = useFetcher();
-  const [isPending, startTransition] = useTransition();
-
-  const handleLogout = () => {
-    startTransition(async () => {
-      await fetcher.submit(null, { method: 'post', action: '/logout' });
-      navigate('/');
-    });
-  };
+  const isPending = fetcher.state !== "idle";
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={handleLogout}
-      disabled={isPending}
-    >
-      {isPending ? 'Logging out...' : 'Log out'}
-    </Button>
+    <fetcher.Form method="post" action="/logout">
+      <Button variant="ghost" size="sm" type="submit" disabled={isPending}>
+        {isPending ? "Logging out..." : "Log out"}
+      </Button>
+    </fetcher.Form>
   );
 }
