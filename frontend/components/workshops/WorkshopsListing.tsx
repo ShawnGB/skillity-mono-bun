@@ -1,20 +1,18 @@
-import Link from 'next/link';
-import { format } from 'date-fns';
-import { getWorkshops } from '@/data/workshops';
-import { getSession } from '@/data/auth';
-import { getWishlistCheck } from '@/data/wishlist';
-import { WorkshopStatus, WorkshopCategory, WorkshopLevel, CATEGORY_LABELS, LEVEL_LABELS } from '@skillity/shared';
-import { cn } from '@/lib/utils';
-import WishlistButton from '@/components/workshops/WishlistButton';
+import { Link } from "react-router";
+import { format } from "date-fns";
+import { WorkshopStatus, WorkshopCategory, WorkshopLevel, CATEGORY_LABELS, LEVEL_LABELS } from "@skillity/shared";
+import type { Workshop } from "@skillity/shared";
+import { cn } from "@/lib/utils";
+import WishlistButton from "@/components/workshops/WishlistButton";
 
 function StatusBadge({ status }: { status: WorkshopStatus }) {
   if (status === WorkshopStatus.PUBLISHED) return null;
 
   const config = {
-    [WorkshopStatus.COMPLETED]: { label: 'Past', className: 'bg-muted text-muted-foreground' },
-    [WorkshopStatus.CANCELLED]: { label: 'Cancelled', className: 'bg-destructive/80 text-white' },
-    [WorkshopStatus.DRAFT]: { label: 'Draft', className: 'bg-yellow-500/80 text-white' },
-    [WorkshopStatus.PUBLISHED]: { label: '', className: '' },
+    [WorkshopStatus.COMPLETED]: { label: "Past", className: "bg-muted text-muted-foreground" },
+    [WorkshopStatus.CANCELLED]: { label: "Cancelled", className: "bg-destructive/80 text-white" },
+    [WorkshopStatus.DRAFT]: { label: "Draft", className: "bg-yellow-500/80 text-white" },
+    [WorkshopStatus.PUBLISHED]: { label: "", className: "" },
   };
 
   const { label, className } = config[status];
@@ -22,7 +20,7 @@ function StatusBadge({ status }: { status: WorkshopStatus }) {
   return (
     <span
       className={cn(
-        'absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-xs font-medium',
+        "absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-xs font-medium",
         className,
       )}
     >
@@ -37,51 +35,43 @@ function buildFilterUrl(params: Record<string, string | undefined>) {
     if (value) qs.set(key, value);
   }
   const str = qs.toString();
-  return str ? `/workshops?${str}` : '/workshops';
+  return str ? `/workshops?${str}` : "/workshops";
 }
 
 interface WorkshopsListingProps {
+  workshops: Workshop[];
+  wishlistMap: Record<string, boolean>;
+  isAuthenticated: boolean;
   category?: string;
   level?: string;
   search?: string;
 }
 
-export default async function WorkshopsListing({ category, level, search }: WorkshopsListingProps) {
-  const workshops = await getWorkshops(category, level, search);
-
-  const visible = (workshops ?? []).filter(
-    (w) => w.status !== WorkshopStatus.DRAFT,
-  );
-
-  const upcoming = visible.filter(
-    (w) => w.status === WorkshopStatus.PUBLISHED,
-  );
+export default function WorkshopsListing({
+  workshops,
+  wishlistMap,
+  isAuthenticated,
+  category,
+  level,
+  search,
+}: WorkshopsListingProps) {
+  const visible = workshops.filter((w) => w.status !== WorkshopStatus.DRAFT);
+  const upcoming = visible.filter((w) => w.status === WorkshopStatus.PUBLISHED);
   const past = visible.filter(
     (w) => w.status === WorkshopStatus.COMPLETED || w.status === WorkshopStatus.CANCELLED,
   );
   const sorted = [...upcoming, ...past];
 
-  const session = await getSession();
-  const isAuthenticated = !!session?.user;
-  let wishlistMap: Record<string, boolean> = {};
-  if (isAuthenticated && sorted.length > 0) {
-    try {
-      wishlistMap = await getWishlistCheck(sorted.map((w) => w.id));
-    } catch {
-      wishlistMap = {};
-    }
-  }
-
   return (
     <>
       <div className="mb-4 flex flex-wrap gap-2">
         <Link
-          href={buildFilterUrl({ level, search })}
+          to={buildFilterUrl({ level, search })}
           className={cn(
-            'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+            "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
             !category
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80',
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:bg-muted/80",
           )}
         >
           All
@@ -89,12 +79,12 @@ export default async function WorkshopsListing({ category, level, search }: Work
         {Object.values(WorkshopCategory).map((cat) => (
           <Link
             key={cat}
-            href={buildFilterUrl({ category: cat, level, search })}
+            to={buildFilterUrl({ category: cat, level, search })}
             className={cn(
-              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
+              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
               category === cat
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80",
             )}
           >
             {CATEGORY_LABELS[cat]}
@@ -104,12 +94,12 @@ export default async function WorkshopsListing({ category, level, search }: Work
 
       <div className="mb-6 flex flex-wrap gap-2">
         <Link
-          href={buildFilterUrl({ category, search })}
+          to={buildFilterUrl({ category, search })}
           className={cn(
-            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+            "rounded-full px-3 py-1 text-xs font-medium transition-colors",
             !level
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80',
+              ? "bg-primary text-primary-foreground"
+              : "bg-muted text-muted-foreground hover:bg-muted/80",
           )}
         >
           All Levels
@@ -117,12 +107,12 @@ export default async function WorkshopsListing({ category, level, search }: Work
         {Object.values(WorkshopLevel).map((lvl) => (
           <Link
             key={lvl}
-            href={buildFilterUrl({ category, level: lvl, search })}
+            to={buildFilterUrl({ category, level: lvl, search })}
             className={cn(
-              'rounded-full px-3 py-1 text-xs font-medium transition-colors',
+              "rounded-full px-3 py-1 text-xs font-medium transition-colors",
               level === lvl
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80',
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80",
             )}
           >
             {LEVEL_LABELS[lvl]}
@@ -142,10 +132,10 @@ export default async function WorkshopsListing({ category, level, search }: Work
             return (
               <Link
                 key={workshop.id}
-                href={`/workshops/${workshop.id}`}
+                to={`/workshops/${workshop.id}`}
                 className={cn(
-                  'group relative aspect-[3/2] overflow-hidden rounded-xl',
-                  isPast && 'opacity-60',
+                  "group relative aspect-[3/2] overflow-hidden rounded-xl",
+                  isPast && "opacity-60",
                 )}
               >
                 <img
@@ -167,7 +157,7 @@ export default async function WorkshopsListing({ category, level, search }: Work
                   <div className="flex items-center gap-2 mb-1">
                     {workshop.startsAt && (
                       <p className="text-xs text-white/70 font-medium uppercase tracking-wider">
-                        {format(new Date(workshop.startsAt), 'MMM d, yyyy')}
+                        {format(new Date(workshop.startsAt), "MMM d, yyyy")}
                       </p>
                     )}
                     {workshop.level && (
