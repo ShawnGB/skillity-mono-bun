@@ -15,9 +15,11 @@ import {
 import type { Route } from "./+types/root";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import { getSession } from "@/lib/session.server";
 
-export async function loader(): Promise<{ user: null }> {
-  return { user: null };
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request);
+  return { user: session?.user ?? null };
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
