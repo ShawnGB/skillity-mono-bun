@@ -47,6 +47,11 @@ type Pages = {
       "bookingId": string;
     };
   };
+  "/hosts/:id": {
+    params: {
+      "id": string;
+    };
+  };
   "/profile": {
     params: {};
   };
@@ -117,7 +122,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/workshops" | "/workshops/:id" | "/workshops/new" | "/workshops/:id/edit" | "/login" | "/register" | "/logout" | "/onboarding" | "/checkout/:bookingId" | "/profile" | "/profile/bookings" | "/profile/saved" | "/profile/workshops" | "/profile/settings" | "/api/wishlist/:workshopId" | "/api/reviews/:workshopId" | "/api/book/:workshopId" | "/api/become-host" | "/api/workshops" | "/api/workshops/:workshopId" | "/api/profile" | "/api/profile/delete" | "/api/profile/export" | "/api/workshops/:workshopId/status" | "/api/bookings/:bookingId/cancel" | "/api/bookings/:bookingId/confirm";
+    page: "/" | "/workshops" | "/workshops/:id" | "/workshops/new" | "/workshops/:id/edit" | "/login" | "/register" | "/logout" | "/onboarding" | "/checkout/:bookingId" | "/hosts/:id" | "/profile" | "/profile/bookings" | "/profile/saved" | "/profile/workshops" | "/profile/settings" | "/api/wishlist/:workshopId" | "/api/reviews/:workshopId" | "/api/book/:workshopId" | "/api/become-host" | "/api/workshops" | "/api/workshops/:workshopId" | "/api/profile" | "/api/profile/delete" | "/api/profile/export" | "/api/workshops/:workshopId/status" | "/api/bookings/:bookingId/cancel" | "/api/bookings/:bookingId/confirm";
   };
   "routes/workshops.tsx": {
     id: "routes/workshops";
@@ -154,6 +159,10 @@ type RouteFiles = {
   "routes/checkout.$bookingId.tsx": {
     id: "routes/checkout.$bookingId";
     page: "/checkout/:bookingId";
+  };
+  "routes/hosts.$id.tsx": {
+    id: "routes/hosts.$id";
+    page: "/hosts/:id";
   };
   "routes/profile.tsx": {
     id: "routes/profile";
@@ -240,6 +249,7 @@ type RouteModules = {
   "routes/logout": typeof import("./app/routes/logout.tsx");
   "routes/onboarding": typeof import("./app/routes/onboarding.tsx");
   "routes/checkout.$bookingId": typeof import("./app/routes/checkout.$bookingId.tsx");
+  "routes/hosts.$id": typeof import("./app/routes/hosts.$id.tsx");
   "routes/profile": typeof import("./app/routes/profile.tsx");
   "routes/profile._index": typeof import("./app/routes/profile._index.tsx");
   "routes/profile.bookings": typeof import("./app/routes/profile.bookings.tsx");

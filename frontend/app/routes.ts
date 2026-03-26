@@ -10,6 +10,7 @@ export default [
   route("/logout", "routes/logout.tsx"),
   route("/onboarding", "routes/onboarding.tsx"),
   route("/checkout/:bookingId", "routes/checkout.$bookingId.tsx"),
+  route("/hosts/:id", "routes/hosts.$id.tsx"),
 
   layout("routes/profile.tsx", [
     route("/profile", "routes/profile._index.tsx"),
