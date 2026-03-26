@@ -1,18 +1,16 @@
-'use client';
-
 import { useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useNavigate, useFetcher } from 'react-router';
 import { Button } from '@/components/ui/button';
-import { logout } from '@/actions/auth';
 
 export default function LogoutButton() {
-  const router = useRouter();
+  const navigate = useNavigate();
+  const fetcher = useFetcher();
   const [isPending, startTransition] = useTransition();
 
   const handleLogout = () => {
     startTransition(async () => {
-      await logout();
-      router.push('/login');
+      await fetcher.submit(null, { method: 'post', action: '/logout' });
+      navigate('/');
     });
   };
 

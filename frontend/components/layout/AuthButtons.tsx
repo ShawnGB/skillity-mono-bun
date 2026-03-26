@@ -1,13 +1,13 @@
-import Link from 'next/link';
+import { Link } from 'react-router';
 import { buttonVariants } from '@/components/ui/button';
 
 export default function AuthButtons() {
   return (
     <>
-      <Link href="/login" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
+      <Link to="/login" className={buttonVariants({ variant: 'ghost', size: 'sm' })}>
         Log in
       </Link>
-      <Link href="/register" className={buttonVariants({ size: 'sm' })}>
+      <Link to="/register" className={buttonVariants({ size: 'sm' })}>
         Sign up
       </Link>
     </>

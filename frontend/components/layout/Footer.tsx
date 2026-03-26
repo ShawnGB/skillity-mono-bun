@@ -1,5 +1,4 @@
-import Link from 'next/link';
-import Image from 'next/image';
+import { Link } from 'react-router';
 import { Instagram, Github, Mail } from 'lucide-react';
 
 const explore = [
@@ -34,13 +33,7 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">
           <div>
-            <Image
-              src="/logo.svg"
-              alt="uSkillity"
-              width={108}
-              height={30}
-              className="mb-3"
-            />
+            <img src="/logo.svg" alt="uSkillity" width={108} height={30} className="mb-3" />
             <p className="text-sm text-muted-foreground">
               Share &middot; Connect &middot; Purpose
             </p>
@@ -52,7 +45,7 @@ export default function Footer() {
               {explore.map((link) => (
                 <li key={link.href + link.label}>
                   <Link
-                    href={link.href}
+                    to={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.label}
@@ -68,7 +61,7 @@ export default function Footer() {
               {create.map((link) => (
                 <li key={link.href + link.label}>
                   <Link
-                    href={link.href}
+                    to={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.label}
@@ -84,7 +77,7 @@ export default function Footer() {
               {legal.map((link) => (
                 <li key={link.href}>
                   <Link
-                    href={link.href}
+                    to={link.href}
                     className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {link.label}
@@ -100,7 +93,7 @@ export default function Footer() {
               {socials.map((social) => (
                 <Link
                   key={social.label}
-                  href={social.href}
+                  to={social.href}
                   className="flex h-9 w-9 items-center justify-center rounded-full bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
                 >
                   <social.icon className="h-4 w-4" />

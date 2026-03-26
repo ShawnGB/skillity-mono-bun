@@ -1,35 +1,29 @@
-import Link from 'next/link';
-import Image from 'next/image';
+import { Link } from 'react-router';
+import type { AuthUser } from '@skillity/shared';
 import LogoutButton from '@/components/layout/LogoutButton';
 import AuthButtons from '@/components/layout/AuthButtons';
-import { getSession } from '@/data/auth';
 
-export default async function Header() {
-  const session = await getSession();
-  const user = session?.user;
-  const isAuthenticated = !!user;
+interface HeaderProps {
+  user: AuthUser | null;
+}
 
+export default function Header({ user }: HeaderProps) {
   return (
     <header className="border-b bg-background/95 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
-          <Link href="/" className="flex items-center">
-            <Image
-              src="/logo.svg"
-              alt="uSkillity"
-              width={108}
-              height={30}
-            />
+          <Link to="/" className="flex items-center">
+            <img src="/logo.svg" alt="uSkillity" width={108} height={30} />
           </Link>
           <nav className="flex items-center gap-4">
             <Link
-              href="/workshops"
+              to="/workshops"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Browse Workshops
             </Link>
             <Link
-              href="/teach"
+              to="/teach"
               className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
             >
               Become a Guide
@@ -38,13 +32,13 @@ export default async function Header() {
         </div>
 
         <div className="flex items-center gap-3">
-          {isAuthenticated ? (
+          {user ? (
             <>
               <Link
-                href="/profile"
+                to="/profile"
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
-                {user?.firstName} {user?.lastName}
+                {user.firstName} {user.lastName}
               </Link>
               <LogoutButton />
             </>
