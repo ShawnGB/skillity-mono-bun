@@ -13,6 +13,9 @@
 # testing
 /coverage
 
+# react-router generated types
+.react-router/
+
 # next.js
 /.next/
 /out/
