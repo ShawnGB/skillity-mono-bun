@@ -9,6 +9,7 @@ export default [
   route("/register", "routes/register.tsx"),
   route("/logout", "routes/logout.tsx"),
   route("/onboarding", "routes/onboarding.tsx"),
+  route("/checkout/:bookingId", "routes/checkout.$bookingId.tsx"),
 
   layout("routes/profile.tsx", [
     route("/profile", "routes/profile._index.tsx"),
@@ -30,4 +31,5 @@ export default [
   route("/api/profile/export", "routes/api.profile.export.tsx"),
   route("/api/workshops/:workshopId/status", "routes/api.workshops.$workshopId.status.tsx"),
   route("/api/bookings/:bookingId/cancel", "routes/api.bookings.$bookingId.cancel.tsx"),
+  route("/api/bookings/:bookingId/confirm", "routes/api.bookings.$bookingId.confirm.tsx"),
 ] satisfies RouteConfig;

@@ -1,16 +1,12 @@
-'use client';
-
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { confirmBooking } from '@/actions/bookings';
+import { useState } from "react";
+import { useFetcher, Link } from "react-router";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const PAYMENT_METHODS = [
-  { id: 'ideal', label: 'iDEAL' },
-  { id: 'card', label: 'Credit Card' },
-  { id: 'bancontact', label: 'Bancontact' },
+  { id: "ideal", label: "iDEAL" },
+  { id: "card", label: "Credit Card" },
+  { id: "bancontact", label: "Bancontact" },
 ];
 
 interface CheckoutFormProps {
@@ -19,27 +15,12 @@ interface CheckoutFormProps {
 }
 
 export default function CheckoutForm({ bookingId, isFree }: CheckoutFormProps) {
-  const router = useRouter();
-  const [selectedMethod, setSelectedMethod] = useState<string | null>(
-    isFree ? 'free' : null,
-  );
+  const fetcher = useFetcher<{ error?: string }>();
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(isFree ? "free" : null);
   const [accepted, setAccepted] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  async function handleConfirm() {
-    setLoading(true);
-    setError(null);
-    const result = await confirmBooking(bookingId);
-    if (result.error) {
-      setError(result.error);
-      setLoading(false);
-      return;
-    }
-    router.push('/profile/bookings?confirmed=true');
-  }
-
-  const canSubmit = accepted && (isFree || !!selectedMethod) && !loading;
+  const isPending = fetcher.state !== "idle";
+  const canSubmit = accepted && (isFree || !!selectedMethod) && !isPending;
 
   return (
     <div className="space-y-6">
@@ -53,10 +34,10 @@ export default function CheckoutForm({ bookingId, isFree }: CheckoutFormProps) {
                 type="button"
                 onClick={() => setSelectedMethod(method.id)}
                 className={cn(
-                  'rounded-lg border-2 p-4 text-sm font-medium transition-colors text-center',
+                  "rounded-lg border-2 p-4 text-sm font-medium transition-colors text-center",
                   selectedMethod === method.id
-                    ? 'border-primary bg-primary/5'
-                    : 'border-border hover:border-primary/50',
+                    ? "border-primary bg-primary/5"
+                    : "border-border hover:border-primary/50",
                 )}
               >
                 {method.label}
@@ -74,31 +55,28 @@ export default function CheckoutForm({ bookingId, isFree }: CheckoutFormProps) {
           className="mt-1 h-4 w-4 rounded border-border accent-primary"
         />
         <span className="text-sm text-muted-foreground">
-          I accept the{' '}
-          <Link href="/agb" target="_blank" className="underline text-foreground hover:text-primary">
+          I accept the{" "}
+          <Link to="/agb" target="_blank" className="underline text-foreground hover:text-primary">
             AGB
-          </Link>{' '}
-          and acknowledge the{' '}
-          <Link href="/widerruf" target="_blank" className="underline text-foreground hover:text-primary">
+          </Link>{" "}
+          and acknowledge the{" "}
+          <Link
+            to="/widerruf"
+            target="_blank"
+            className="underline text-foreground hover:text-primary"
+          >
             Cancellation Policy
           </Link>
         </span>
       </label>
 
-      {error && <p className="text-sm text-destructive">{error}</p>}
+      {fetcher.data?.error && <p className="text-sm text-destructive">{fetcher.data.error}</p>}
 
-      <Button
-        size="lg"
-        className="w-full"
-        disabled={!canSubmit}
-        onClick={handleConfirm}
-      >
-        {loading
-          ? 'Processing...'
-          : isFree
-            ? 'Confirm Registration'
-            : 'Pay'}
-      </Button>
+      <fetcher.Form method="post" action={`/api/bookings/${bookingId}/confirm`}>
+        <Button size="lg" className="w-full" type="submit" disabled={!canSubmit}>
+          {isPending ? "Processing..." : isFree ? "Confirm Registration" : "Pay"}
+        </Button>
+      </fetcher.Form>
     </div>
   );
 }
