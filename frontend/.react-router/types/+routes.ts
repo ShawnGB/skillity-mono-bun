@@ -22,6 +22,14 @@ type Pages = {
       "id": string;
     };
   };
+  "/workshops/new": {
+    params: {};
+  };
+  "/workshops/:id/edit": {
+    params: {
+      "id": string;
+    };
+  };
   "/login": {
     params: {};
   };
@@ -67,6 +75,14 @@ type Pages = {
   "/api/become-host": {
     params: {};
   };
+  "/api/workshops": {
+    params: {};
+  };
+  "/api/workshops/:workshopId": {
+    params: {
+      "workshopId": string;
+    };
+  };
   "/api/profile": {
     params: {};
   };
@@ -91,7 +107,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/workshops" | "/workshops/:id" | "/login" | "/register" | "/logout" | "/onboarding" | "/profile" | "/profile/bookings" | "/profile/saved" | "/profile/workshops" | "/profile/settings" | "/api/wishlist/:workshopId" | "/api/reviews/:workshopId" | "/api/book/:workshopId" | "/api/become-host" | "/api/profile" | "/api/profile/delete" | "/api/profile/export" | "/api/workshops/:workshopId/status" | "/api/bookings/:bookingId/cancel";
+    page: "/" | "/workshops" | "/workshops/:id" | "/workshops/new" | "/workshops/:id/edit" | "/login" | "/register" | "/logout" | "/onboarding" | "/profile" | "/profile/bookings" | "/profile/saved" | "/profile/workshops" | "/profile/settings" | "/api/wishlist/:workshopId" | "/api/reviews/:workshopId" | "/api/book/:workshopId" | "/api/become-host" | "/api/workshops" | "/api/workshops/:workshopId" | "/api/profile" | "/api/profile/delete" | "/api/profile/export" | "/api/workshops/:workshopId/status" | "/api/bookings/:bookingId/cancel";
   };
   "routes/workshops.tsx": {
     id: "routes/workshops";
@@ -100,6 +116,14 @@ type RouteFiles = {
   "routes/workshops.$id.tsx": {
     id: "routes/workshops.$id";
     page: "/workshops/:id";
+  };
+  "routes/workshops.new.tsx": {
+    id: "routes/workshops.new";
+    page: "/workshops/new";
+  };
+  "routes/workshops.$id.edit.tsx": {
+    id: "routes/workshops.$id.edit";
+    page: "/workshops/:id/edit";
   };
   "routes/login.tsx": {
     id: "routes/login";
@@ -157,6 +181,14 @@ type RouteFiles = {
     id: "routes/api.become-host";
     page: "/api/become-host";
   };
+  "routes/api.workshops.tsx": {
+    id: "routes/api.workshops";
+    page: "/api/workshops";
+  };
+  "routes/api.workshops.$workshopId.tsx": {
+    id: "routes/api.workshops.$workshopId";
+    page: "/api/workshops/:workshopId";
+  };
   "routes/api.profile.tsx": {
     id: "routes/api.profile";
     page: "/api/profile";
@@ -183,6 +215,8 @@ type RouteModules = {
   "root": typeof import("./app/root.tsx");
   "routes/workshops": typeof import("./app/routes/workshops.tsx");
   "routes/workshops.$id": typeof import("./app/routes/workshops.$id.tsx");
+  "routes/workshops.new": typeof import("./app/routes/workshops.new.tsx");
+  "routes/workshops.$id.edit": typeof import("./app/routes/workshops.$id.edit.tsx");
   "routes/login": typeof import("./app/routes/login.tsx");
   "routes/register": typeof import("./app/routes/register.tsx");
   "routes/logout": typeof import("./app/routes/logout.tsx");
@@ -197,6 +231,8 @@ type RouteModules = {
   "routes/api.reviews.$workshopId": typeof import("./app/routes/api.reviews.$workshopId.tsx");
   "routes/api.book.$workshopId": typeof import("./app/routes/api.book.$workshopId.tsx");
   "routes/api.become-host": typeof import("./app/routes/api.become-host.tsx");
+  "routes/api.workshops": typeof import("./app/routes/api.workshops.tsx");
+  "routes/api.workshops.$workshopId": typeof import("./app/routes/api.workshops.$workshopId.tsx");
   "routes/api.profile": typeof import("./app/routes/api.profile.tsx");
   "routes/api.profile.delete": typeof import("./app/routes/api.profile.delete.tsx");
   "routes/api.profile.export": typeof import("./app/routes/api.profile.export.tsx");

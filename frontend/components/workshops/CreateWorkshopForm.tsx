@@ -1,29 +1,22 @@
-'use client';
-
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm, Controller } from 'react-hook-form';
-import { format } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { useState, useEffect } from "react";
+import { useFetcher } from "react-router";
+import { useForm, Controller } from "react-hook-form";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { createWorkshop } from '@/actions/workshops';
-import { WorkshopCategory, WorkshopLevel, CATEGORY_LABELS, LEVEL_LABELS } from '@skillity/shared';
-import { cn } from '@/lib/utils';
+} from "@/components/ui/select";
+import { WorkshopCategory, WorkshopLevel, CATEGORY_LABELS, LEVEL_LABELS } from "@skillity/shared";
+import { cn } from "@/lib/utils";
 
 interface FormValues {
   title: string;
@@ -40,26 +33,25 @@ interface FormValues {
 
 interface CreateWorkshopFormProps {
   onSuccess?: () => void;
-  defaultValues?: Partial<Pick<FormValues, 'title' | 'category' | 'description' | 'maxParticipants' | 'ticketPrice' | 'location'>> & { seriesId?: string };
+  defaultValues?: Partial<
+    Pick<FormValues, "title" | "category" | "description" | "maxParticipants" | "ticketPrice" | "location">
+  > & { seriesId?: string };
 }
 
 const DURATION_OPTIONS = [
-  { value: '30', label: '30 min' },
-  { value: '60', label: '1 hour' },
-  { value: '90', label: '1.5 hours' },
-  { value: '120', label: '2 hours' },
-  { value: '150', label: '2.5 hours' },
-  { value: '180', label: '3 hours' },
-  { value: '240', label: '4 hours' },
+  { value: "30", label: "30 min" },
+  { value: "60", label: "1 hour" },
+  { value: "90", label: "1.5 hours" },
+  { value: "120", label: "2 hours" },
+  { value: "150", label: "2.5 hours" },
+  { value: "180", label: "3 hours" },
+  { value: "240", label: "4 hours" },
 ];
 
-export default function CreateWorkshopForm({
-  onSuccess,
-  defaultValues,
-}: CreateWorkshopFormProps) {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
+export default function CreateWorkshopForm({ onSuccess, defaultValues }: CreateWorkshopFormProps) {
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const [localError, setLocalError] = useState<string | null>(null);
+  const isPending = fetcher.state !== "idle";
 
   const {
     register,
@@ -68,62 +60,61 @@ export default function CreateWorkshopForm({
     formState: { errors },
   } = useForm<FormValues>({ defaultValues });
 
-  const onSubmit = (data: FormValues) => {
-    setError(null);
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data?.ok) {
+      onSuccess?.();
+    }
+  }, [fetcher.state, fetcher.data, onSuccess]);
 
-    const [hours, minutes] = data.startTime.split(':').map(Number);
+  const onSubmit = (data: FormValues) => {
+    setLocalError(null);
+
+    const [hours, minutes] = data.startTime.split(":").map(Number);
     const startsAt = new Date(data.date);
     startsAt.setHours(hours, minutes, 0, 0);
 
     if (startsAt <= new Date()) {
-      setError('Workshop must be scheduled in the future');
+      setLocalError("Workshop must be scheduled in the future");
       return;
     }
 
-    startTransition(async () => {
-      const result = await createWorkshop({
+    fetcher.submit(
+      {
         title: data.title,
         category: data.category,
         description: data.description,
-        maxParticipants: Number(data.maxParticipants),
-        ticketPrice: Number(data.ticketPrice),
-        currency: 'EUR',
+        maxParticipants: String(data.maxParticipants),
+        ticketPrice: String(data.ticketPrice),
+        currency: "EUR",
         location: data.location,
         startsAt: startsAt.toISOString(),
-        duration: Number(data.duration),
+        duration: String(data.duration),
         ...(data.level && { level: data.level }),
         ...(defaultValues?.seriesId && { seriesId: defaultValues.seriesId }),
-      });
-      if (result.error) {
-        setError(result.error);
-      } else {
-        router.refresh();
-        onSuccess?.();
-      }
-    });
+      },
+      { method: "post", action: "/api/workshops" },
+    );
   };
+
+  const error = localError ?? fetcher.data?.error;
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       {error && (
-        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-          {error}
-        </div>
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">{error}</div>
       )}
 
       <div className="space-y-2">
         <Label htmlFor="title">Title</Label>
         <Input
           id="title"
-          {...register('title', {
-            required: 'Title is required',
-            maxLength: { value: 50, message: 'Title must be at most 50 characters' },
+          {...register("title", {
+            required: "Title is required",
+            maxLength: { value: 50, message: "Title must be at most 50 characters" },
           })}
           placeholder="Workshop title"
         />
-        {errors.title && (
-          <p className="text-sm text-destructive">{errors.title.message}</p>
-        )}
+        {errors.title && <p className="text-sm text-destructive">{errors.title.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -131,7 +122,7 @@ export default function CreateWorkshopForm({
         <Controller
           name="category"
           control={control}
-          rules={{ required: 'Category is required' }}
+          rules={{ required: "Category is required" }}
           render={({ field }) => (
             <Select onValueChange={field.onChange} value={field.value}>
               <SelectTrigger className="w-full">
@@ -147,9 +138,7 @@ export default function CreateWorkshopForm({
             </Select>
           )}
         />
-        {errors.category && (
-          <p className="text-sm text-destructive">{errors.category.message}</p>
-        )}
+        {errors.category && <p className="text-sm text-destructive">{errors.category.message}</p>}
       </div>
 
       <div className="space-y-2">
@@ -158,7 +147,7 @@ export default function CreateWorkshopForm({
           name="level"
           control={control}
           render={({ field }) => (
-            <Select onValueChange={field.onChange} value={field.value ?? ''}>
+            <Select onValueChange={field.onChange} value={field.value ?? ""}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select a level (optional)" />
               </SelectTrigger>
@@ -178,7 +167,7 @@ export default function CreateWorkshopForm({
         <Label htmlFor="description">Description</Label>
         <Input
           id="description"
-          {...register('description', { required: 'Description is required' })}
+          {...register("description", { required: "Description is required" })}
           placeholder="Workshop description"
         />
         {errors.description && (
@@ -191,19 +180,19 @@ export default function CreateWorkshopForm({
         <Controller
           name="date"
           control={control}
-          rules={{ required: 'Date is required' }}
+          rules={{ required: "Date is required" }}
           render={({ field }) => (
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    'w-full justify-start text-left font-normal',
-                    !field.value && 'text-muted-foreground',
+                    "w-full justify-start text-left font-normal",
+                    !field.value && "text-muted-foreground",
                   )}
                 >
                   <CalendarIcon className="mr-2 size-4" />
-                  {field.value ? format(field.value, 'PPP') : 'Pick a date'}
+                  {field.value ? format(field.value, "PPP") : "Pick a date"}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="z-[52] w-auto p-0" align="start">
@@ -217,9 +206,7 @@ export default function CreateWorkshopForm({
             </Popover>
           )}
         />
-        {errors.date && (
-          <p className="text-sm text-destructive">{errors.date.message}</p>
-        )}
+        {errors.date && <p className="text-sm text-destructive">{errors.date.message}</p>}
       </div>
 
       <div className="grid grid-cols-2 gap-4">
@@ -228,7 +215,7 @@ export default function CreateWorkshopForm({
           <Input
             id="startTime"
             type="time"
-            {...register('startTime', { required: 'Start time is required' })}
+            {...register("startTime", { required: "Start time is required" })}
           />
           {errors.startTime && (
             <p className="text-sm text-destructive">{errors.startTime.message}</p>
@@ -240,12 +227,9 @@ export default function CreateWorkshopForm({
           <Controller
             name="duration"
             control={control}
-            rules={{ required: 'Duration is required' }}
+            rules={{ required: "Duration is required" }}
             render={({ field }) => (
-              <Select
-                onValueChange={field.onChange}
-                value={field.value?.toString()}
-              >
+              <Select onValueChange={field.onChange} value={field.value?.toString()}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select duration" />
                 </SelectTrigger>
@@ -271,35 +255,31 @@ export default function CreateWorkshopForm({
           <Input
             id="maxParticipants"
             type="number"
-            {...register('maxParticipants', {
-              required: 'Required',
-              min: { value: 1, message: 'Must be at least 1' },
+            {...register("maxParticipants", {
+              required: "Required",
+              min: { value: 1, message: "Must be at least 1" },
             })}
             placeholder="10"
           />
           {errors.maxParticipants && (
-            <p className="text-sm text-destructive">
-              {errors.maxParticipants.message}
-            </p>
+            <p className="text-sm text-destructive">{errors.maxParticipants.message}</p>
           )}
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="ticketPrice">Ticket Price</Label>
+          <Label htmlFor="ticketPrice">Ticket Price (EUR)</Label>
           <Input
             id="ticketPrice"
             type="number"
             step="0.01"
-            {...register('ticketPrice', {
-              required: 'Required',
-              min: { value: 0, message: 'Cannot be negative' },
+            {...register("ticketPrice", {
+              required: "Required",
+              min: { value: 0, message: "Cannot be negative" },
             })}
             placeholder="0"
           />
           {errors.ticketPrice && (
-            <p className="text-sm text-destructive">
-              {errors.ticketPrice.message}
-            </p>
+            <p className="text-sm text-destructive">{errors.ticketPrice.message}</p>
           )}
         </div>
       </div>
@@ -308,16 +288,14 @@ export default function CreateWorkshopForm({
         <Label htmlFor="location">Location</Label>
         <Input
           id="location"
-          {...register('location', { required: 'Required' })}
+          {...register("location", { required: "Required" })}
           placeholder="Berlin, Germany"
         />
-        {errors.location && (
-          <p className="text-sm text-destructive">{errors.location.message}</p>
-        )}
+        {errors.location && <p className="text-sm text-destructive">{errors.location.message}</p>}
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? 'Creating...' : 'Create Workshop'}
+        {isPending ? "Creating..." : "Create Workshop"}
       </Button>
     </form>
   );

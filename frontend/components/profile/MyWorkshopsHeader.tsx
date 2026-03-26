@@ -1,17 +1,24 @@
-import { Link } from "react-router";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import FormModal from "@/components/modals/FormModal";
+import CreateWorkshopForm from "@/components/workshops/CreateWorkshopForm";
 
 export default function MyWorkshopsHeader() {
   return (
     <div className="flex items-center justify-between">
       <h2 className="text-lg font-semibold">My Workshops</h2>
-      <Button asChild size="sm">
-        <Link to="/workshops/new">
-          <Plus className="mr-2 size-4" />
-          Create Workshop
-        </Link>
-      </Button>
+      <FormModal
+        trigger={
+          <Button size="sm">
+            <Plus className="mr-2 size-4" />
+            Create Workshop
+          </Button>
+        }
+        title="Create a workshop"
+        description="Fill in the details for your new workshop."
+      >
+        {({ onSuccess }) => <CreateWorkshopForm onSuccess={onSuccess} />}
+      </FormModal>
     </div>
   );
 }

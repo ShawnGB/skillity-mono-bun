@@ -1,0 +1,20 @@
+import { redirect } from "react-router";
+import type { Route } from "./+types/api.workshops";
+import { serverPost } from "@/lib/api-client.server";
+import { getCurrentUser } from "@/lib/session.server";
+import type { Workshop } from "@skillity/shared";
+
+export async function action({ request }: Route.ActionArgs) {
+  const user = await getCurrentUser(request);
+  if (!user) return redirect("/login");
+
+  const formData = await request.formData();
+  const payload = Object.fromEntries(formData.entries());
+
+  try {
+    const workshop = await serverPost<Workshop>("/workshops", payload, request);
+    return redirect(`/workshops/${workshop.id}`);
+  } catch (err) {
+    return { error: (err as Error).message || "Failed to create workshop" };
+  }
+}

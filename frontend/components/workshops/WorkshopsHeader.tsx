@@ -3,6 +3,8 @@ import { Link, useNavigate, useSearchParams } from "react-router";
 import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import FormModal from "@/components/modals/FormModal";
+import CreateWorkshopForm from "@/components/workshops/CreateWorkshopForm";
 import type { UserRole } from "@skillity/shared";
 
 interface WorkshopsHeaderProps {
@@ -34,9 +36,13 @@ export default function WorkshopsHeader({ isAuthenticated, role, search }: Works
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Workshops</h1>
         {isAuthenticated && isHost && (
-          <Button asChild>
-            <Link to="/workshops/new">Create Workshop</Link>
-          </Button>
+          <FormModal
+            trigger={<Button>Create Workshop</Button>}
+            title="Create a workshop"
+            description="Fill in the details for your new workshop."
+          >
+            {({ onSuccess }) => <CreateWorkshopForm onSuccess={onSuccess} />}
+          </FormModal>
         )}
         {isAuthenticated && !isHost && (
           <Button asChild variant="outline">
