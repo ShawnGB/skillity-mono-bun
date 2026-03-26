@@ -33,4 +33,16 @@ export default [
   route("/api/workshops/:workshopId/status", "routes/api.workshops.$workshopId.status.tsx"),
   route("/api/bookings/:bookingId/cancel", "routes/api.bookings.$bookingId.cancel.tsx"),
   route("/api/bookings/:bookingId/confirm", "routes/api.bookings.$bookingId.confirm.tsx"),
+
+  // Content pages
+  route("/about", "routes/about.tsx"),
+  route("/teach", "routes/teach.tsx"),
+  route("/faq", "routes/faq.tsx"),
+
+  // Legal pages
+  route("/agb", "routes/agb.tsx"),
+  route("/datenschutz", "routes/datenschutz.tsx"),
+  route("/impressum", "routes/impressum.tsx"),
+  route("/widerruf", "routes/widerruf.tsx"),
+  route("/guidelines", "routes/guidelines.tsx"),
 ] satisfies RouteConfig;
