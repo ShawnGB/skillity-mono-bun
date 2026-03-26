@@ -1,16 +1,13 @@
-'use client';
-
-import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import ConfirmDialog from '@/components/ui/confirm-dialog';
-import { cancelBooking } from '@/actions/bookings';
+import { useFetcher } from "react-router";
+import { Button } from "@/components/ui/button";
+import ConfirmDialog from "@/components/ui/confirm-dialog";
 
 interface CancelBookingButtonProps {
   bookingId: string;
 }
 
 export default function CancelBookingButton({ bookingId }: CancelBookingButtonProps) {
-  const router = useRouter();
+  const fetcher = useFetcher();
 
   return (
     <ConfirmDialog
@@ -18,10 +15,11 @@ export default function CancelBookingButton({ bookingId }: CancelBookingButtonPr
       title="Cancel booking?"
       description="This will cancel your booking for this workshop."
       confirmLabel="Yes, cancel booking"
-      onConfirm={async () => {
-        const result = await cancelBooking(bookingId);
-        if (result.error) return;
-        router.refresh();
+      onConfirm={() => {
+        fetcher.submit(null, {
+          method: "post",
+          action: `/api/bookings/${bookingId}/cancel`,
+        });
       }}
     />
   );

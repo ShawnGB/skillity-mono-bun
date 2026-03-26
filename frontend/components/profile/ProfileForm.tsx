@@ -1,13 +1,10 @@
-'use client';
-
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import type { AuthUser } from '@skillity/shared';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { updateProfile } from '@/actions/profile';
+import { useState, useEffect } from "react";
+import { useFetcher } from "react-router";
+import { useForm } from "react-hook-form";
+import type { AuthUser } from "@skillity/shared";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface ProfileFormProps {
   user: AuthUser;
@@ -20,11 +17,9 @@ interface FormValues {
 }
 
 export default function ProfileForm({ user }: ProfileFormProps) {
-  const router = useRouter();
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [isEditing, setIsEditing] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const isPending = fetcher.state !== "idle";
 
   const {
     register,
@@ -39,32 +34,25 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     },
   });
 
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data?.ok) {
+      setIsEditing(false);
+    }
+  }, [fetcher.state, fetcher.data]);
+
   const onSubmit = (data: FormValues) => {
-    setError(null);
-    setSuccess(false);
-    startTransition(async () => {
-      const result = await updateProfile(data);
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setSuccess(true);
-        setIsEditing(false);
-        router.refresh();
-      }
-    });
+    fetcher.submit(data, { method: "post", action: "/api/profile" });
   };
 
   const handleCancel = () => {
     reset();
-    setError(null);
-    setSuccess(false);
     setIsEditing(false);
   };
 
   if (!isEditing) {
     return (
       <div className="space-y-4">
-        {success && (
+        {fetcher.data?.ok && (
           <div className="rounded-md bg-primary/10 p-3 text-sm text-primary">
             Profile updated successfully.
           </div>
@@ -92,9 +80,9 @@ export default function ProfileForm({ user }: ProfileFormProps) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      {error && (
+      {fetcher.data?.error && (
         <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-          {error}
+          {fetcher.data.error}
         </div>
       )}
 
@@ -103,25 +91,20 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           <Label htmlFor="firstName">First Name</Label>
           <Input
             id="firstName"
-            {...register('firstName', { required: 'First name is required' })}
+            {...register("firstName", { required: "First name is required" })}
           />
           {errors.firstName && (
-            <p className="text-sm text-destructive">
-              {errors.firstName.message}
-            </p>
+            <p className="text-sm text-destructive">{errors.firstName.message}</p>
           )}
         </div>
-
         <div className="space-y-2">
           <Label htmlFor="lastName">Last Name</Label>
           <Input
             id="lastName"
-            {...register('lastName', { required: 'Last name is required' })}
+            {...register("lastName", { required: "Last name is required" })}
           />
           {errors.lastName && (
-            <p className="text-sm text-destructive">
-              {errors.lastName.message}
-            </p>
+            <p className="text-sm text-destructive">{errors.lastName.message}</p>
           )}
         </div>
       </div>
@@ -131,11 +114,11 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         <Input
           id="email"
           type="email"
-          {...register('email', {
-            required: 'Email is required',
+          {...register("email", {
+            required: "Email is required",
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: 'Invalid email address',
+              message: "Invalid email address",
             },
           })}
         />
@@ -146,7 +129,7 @@ export default function ProfileForm({ user }: ProfileFormProps) {
 
       <div className="flex gap-2">
         <Button type="submit" disabled={isPending}>
-          {isPending ? 'Saving...' : 'Save Changes'}
+          {isPending ? "Saving..." : "Save Changes"}
         </Button>
         <Button type="button" variant="outline" onClick={handleCancel} disabled={isPending}>
           Cancel

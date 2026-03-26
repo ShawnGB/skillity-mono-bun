@@ -22,6 +22,30 @@ type Pages = {
       "id": string;
     };
   };
+  "/login": {
+    params: {};
+  };
+  "/register": {
+    params: {};
+  };
+  "/logout": {
+    params: {};
+  };
+  "/profile": {
+    params: {};
+  };
+  "/profile/bookings": {
+    params: {};
+  };
+  "/profile/saved": {
+    params: {};
+  };
+  "/profile/workshops": {
+    params: {};
+  };
+  "/profile/settings": {
+    params: {};
+  };
   "/api/wishlist/:workshopId": {
     params: {
       "workshopId": string;
@@ -37,12 +61,31 @@ type Pages = {
       "workshopId": string;
     };
   };
+  "/api/profile": {
+    params: {};
+  };
+  "/api/profile/delete": {
+    params: {};
+  };
+  "/api/profile/export": {
+    params: {};
+  };
+  "/api/workshops/:workshopId/status": {
+    params: {
+      "workshopId": string;
+    };
+  };
+  "/api/bookings/:bookingId/cancel": {
+    params: {
+      "bookingId": string;
+    };
+  };
 };
 
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/workshops" | "/workshops/:id" | "/api/wishlist/:workshopId" | "/api/reviews/:workshopId" | "/api/book/:workshopId";
+    page: "/" | "/workshops" | "/workshops/:id" | "/login" | "/register" | "/logout" | "/profile" | "/profile/bookings" | "/profile/saved" | "/profile/workshops" | "/profile/settings" | "/api/wishlist/:workshopId" | "/api/reviews/:workshopId" | "/api/book/:workshopId" | "/api/profile" | "/api/profile/delete" | "/api/profile/export" | "/api/workshops/:workshopId/status" | "/api/bookings/:bookingId/cancel";
   };
   "routes/workshops.tsx": {
     id: "routes/workshops";
@@ -51,6 +94,42 @@ type RouteFiles = {
   "routes/workshops.$id.tsx": {
     id: "routes/workshops.$id";
     page: "/workshops/:id";
+  };
+  "routes/login.tsx": {
+    id: "routes/login";
+    page: "/login";
+  };
+  "routes/register.tsx": {
+    id: "routes/register";
+    page: "/register";
+  };
+  "routes/logout.tsx": {
+    id: "routes/logout";
+    page: "/logout";
+  };
+  "routes/profile.tsx": {
+    id: "routes/profile";
+    page: "/profile" | "/profile/bookings" | "/profile/saved" | "/profile/workshops" | "/profile/settings";
+  };
+  "routes/profile._index.tsx": {
+    id: "routes/profile._index";
+    page: "/profile";
+  };
+  "routes/profile.bookings.tsx": {
+    id: "routes/profile.bookings";
+    page: "/profile/bookings";
+  };
+  "routes/profile.saved.tsx": {
+    id: "routes/profile.saved";
+    page: "/profile/saved";
+  };
+  "routes/profile.workshops.tsx": {
+    id: "routes/profile.workshops";
+    page: "/profile/workshops";
+  };
+  "routes/profile.settings.tsx": {
+    id: "routes/profile.settings";
+    page: "/profile/settings";
   };
   "routes/api.wishlist.$workshopId.tsx": {
     id: "routes/api.wishlist.$workshopId";
@@ -64,13 +143,47 @@ type RouteFiles = {
     id: "routes/api.book.$workshopId";
     page: "/api/book/:workshopId";
   };
+  "routes/api.profile.tsx": {
+    id: "routes/api.profile";
+    page: "/api/profile";
+  };
+  "routes/api.profile.delete.tsx": {
+    id: "routes/api.profile.delete";
+    page: "/api/profile/delete";
+  };
+  "routes/api.profile.export.tsx": {
+    id: "routes/api.profile.export";
+    page: "/api/profile/export";
+  };
+  "routes/api.workshops.$workshopId.status.tsx": {
+    id: "routes/api.workshops.$workshopId.status";
+    page: "/api/workshops/:workshopId/status";
+  };
+  "routes/api.bookings.$bookingId.cancel.tsx": {
+    id: "routes/api.bookings.$bookingId.cancel";
+    page: "/api/bookings/:bookingId/cancel";
+  };
 };
 
 type RouteModules = {
   "root": typeof import("./app/root.tsx");
   "routes/workshops": typeof import("./app/routes/workshops.tsx");
   "routes/workshops.$id": typeof import("./app/routes/workshops.$id.tsx");
+  "routes/login": typeof import("./app/routes/login.tsx");
+  "routes/register": typeof import("./app/routes/register.tsx");
+  "routes/logout": typeof import("./app/routes/logout.tsx");
+  "routes/profile": typeof import("./app/routes/profile.tsx");
+  "routes/profile._index": typeof import("./app/routes/profile._index.tsx");
+  "routes/profile.bookings": typeof import("./app/routes/profile.bookings.tsx");
+  "routes/profile.saved": typeof import("./app/routes/profile.saved.tsx");
+  "routes/profile.workshops": typeof import("./app/routes/profile.workshops.tsx");
+  "routes/profile.settings": typeof import("./app/routes/profile.settings.tsx");
   "routes/api.wishlist.$workshopId": typeof import("./app/routes/api.wishlist.$workshopId.tsx");
   "routes/api.reviews.$workshopId": typeof import("./app/routes/api.reviews.$workshopId.tsx");
   "routes/api.book.$workshopId": typeof import("./app/routes/api.book.$workshopId.tsx");
+  "routes/api.profile": typeof import("./app/routes/api.profile.tsx");
+  "routes/api.profile.delete": typeof import("./app/routes/api.profile.delete.tsx");
+  "routes/api.profile.export": typeof import("./app/routes/api.profile.export.tsx");
+  "routes/api.workshops.$workshopId.status": typeof import("./app/routes/api.workshops.$workshopId.status.tsx");
+  "routes/api.bookings.$bookingId.cancel": typeof import("./app/routes/api.bookings.$bookingId.cancel.tsx");
 };
