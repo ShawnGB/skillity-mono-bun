@@ -11,4 +11,4 @@ COPY packages/shared ./packages/shared
 COPY frontend ./frontend
 WORKDIR /app/frontend
 EXPOSE 3000
-CMD ["bun", "run", "dev"]
+CMD ["bun", "run", "start"]
