@@ -1,3 +1,4 @@
+import { useOptimistic, startTransition } from "react";
 import { useFetcher } from "react-router";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -10,25 +11,22 @@ interface WishlistButtonProps {
 
 export default function WishlistButton({ workshopId, isSaved, className }: WishlistButtonProps) {
   const fetcher = useFetcher();
-  const optimisticSaved =
-    fetcher.state !== "idle"
-      ? fetcher.formData?.get("intent") === "save"
-      : isSaved;
+  const [optimisticSaved, setOptimisticSaved] = useOptimistic(isSaved);
 
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    fetcher.submit(
-      { intent: isSaved ? "remove" : "save" },
-      { method: "post", action: `/api/wishlist/${workshopId}` },
-    );
+    const intent = optimisticSaved ? "remove" : "save";
+    startTransition(() => {
+      setOptimisticSaved(!optimisticSaved);
+      fetcher.submit({ intent }, { method: "post", action: `/api/wishlist/${workshopId}` });
+    });
   };
 
   return (
     <button
       type="button"
       onClick={handleClick}
-      disabled={fetcher.state !== "idle"}
       className={cn(
         "rounded-full p-1.5 transition-colors",
         optimisticSaved

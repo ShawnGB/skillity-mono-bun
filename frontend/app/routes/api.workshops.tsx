@@ -9,7 +9,13 @@ export async function action({ request }: Route.ActionArgs) {
   if (!user) return redirect("/login");
 
   const formData = await request.formData();
-  const payload = Object.fromEntries(formData.entries());
+  const raw = Object.fromEntries(formData.entries());
+  const payload = {
+    ...raw,
+    maxParticipants: Number(raw.maxParticipants),
+    ticketPrice: Number(raw.ticketPrice),
+    duration: Number(raw.duration),
+  };
 
   try {
     const workshop = await serverPost<Workshop>("/workshops", payload, request);

@@ -12,7 +12,16 @@ function getAuthHeaders(request?: Request): HeadersInit {
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const text = await res.text().catch(() => res.statusText);
-    throw new Error(text || `Request failed: ${res.status}`);
+    try {
+      const json = JSON.parse(text);
+      const msg = Array.isArray(json.message)
+        ? json.message.join(", ")
+        : json.message || json.error || `Request failed: ${res.status}`;
+      throw new Error(msg);
+    } catch (e) {
+      if (e instanceof SyntaxError) throw new Error(text || `Request failed: ${res.status}`);
+      throw e;
+    }
   }
   const text = await res.text();
   return text ? (JSON.parse(text) as T) : (undefined as T);

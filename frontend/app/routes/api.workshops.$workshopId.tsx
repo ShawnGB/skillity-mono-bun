@@ -10,9 +10,13 @@ export async function action({ request, params }: Route.ActionArgs) {
 
   const { workshopId } = params;
   const formData = await request.formData();
-  const payload = Object.fromEntries(
+  const raw = Object.fromEntries(
     [...formData.entries()].filter(([, v]) => v !== ""),
   );
+  const payload: Record<string, unknown> = { ...raw };
+  if (raw.maxParticipants !== undefined) payload.maxParticipants = Number(raw.maxParticipants);
+  if (raw.ticketPrice !== undefined) payload.ticketPrice = Number(raw.ticketPrice);
+  if (raw.duration !== undefined) payload.duration = Number(raw.duration);
 
   try {
     await serverPatch<Workshop>(`/workshops/${workshopId}`, payload, request);
