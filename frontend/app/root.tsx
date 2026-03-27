@@ -14,6 +14,7 @@ import {
 import type { Route } from './+types/root';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import CookieBanner from '@/components/layout/CookieBanner';
 import { getSession } from '@/lib/session.server';
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -49,6 +50,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
         <Outlet />
       </main>
       <Footer />
+      <CookieBanner />
     </div>
   );
 }
