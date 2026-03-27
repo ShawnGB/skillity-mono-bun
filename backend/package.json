@@ -12,7 +12,8 @@
     "migration:generate": "bunx typeorm migration:generate -d data-source.ts",
     "migration:run": "bunx typeorm migration:run -d data-source.ts",
     "migration:revert": "bunx typeorm migration:revert -d data-source.ts",
-    "migration:create": "bunx typeorm migration:create"
+    "migration:create": "bunx typeorm migration:create",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.13",
