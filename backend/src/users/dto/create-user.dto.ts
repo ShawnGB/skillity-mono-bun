@@ -31,8 +31,8 @@ export class CreateUserDto {
 
 export class UserResponseDTO {
   email: string;
-  firstName: string;
-  lastName: string;
+  firstName: string | null;
+  lastName: string | null;
 
   @Exclude()
   password: string;

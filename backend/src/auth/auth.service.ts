@@ -56,6 +56,7 @@ export class AuthService {
 
     await this.usersService.create(createUserDto);
     const user = await this.usersService.findByEmail(createUserDto.email);
+    if (!user) throw new ConflictException('User creation failed');
     this.eventEmitter.emit('user.registered', { userId: user.id, email: user.email });
     return this.generateTokens(user);
   }
