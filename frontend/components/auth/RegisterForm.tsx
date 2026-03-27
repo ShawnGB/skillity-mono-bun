@@ -1,4 +1,4 @@
-import { Form, useNavigation, useActionData } from 'react-router';
+import { Form, Link, useNavigation, useActionData } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -92,6 +92,14 @@ export default function RegisterForm({ redirectTo }: RegisterFormProps) {
       <Button type="submit" className="w-full" disabled={isPending}>
         {isPending ? 'Registering...' : 'Register'}
       </Button>
+
+      <p className="text-center text-xs text-muted-foreground">
+        Mit der Registrierung stimmst du unserer{' '}
+        <Link to="/datenschutz" className="underline hover:text-foreground">
+          Datenschutzerklärung
+        </Link>{' '}
+        zu.
+      </p>
     </Form>
   );
 }
