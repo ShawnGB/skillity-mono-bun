@@ -16,6 +16,9 @@ interface FormValues {
   city: string;
   tagline: string;
   bio: string;
+  conductorType: 'individual' | 'company' | '';
+  companyName: string;
+  vatNumber: string;
 }
 
 function FieldValue({ value }: { value: string | null | undefined }) {
@@ -30,12 +33,18 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const isPending = fetcher.state !== 'idle';
 
-  const { register, handleSubmit, reset } = useForm<FormValues>({
+  const { register, handleSubmit, reset, watch } = useForm<FormValues>({
     defaultValues: {
       profession: user.profession ?? '',
       city: user.city ?? '',
       tagline: user.tagline ?? '',
       bio: user.bio ?? '',
+      conductorType: (user.conductorType ?? '') as
+        | 'individual'
+        | 'company'
+        | '',
+      companyName: user.companyName ?? '',
+      vatNumber: user.vatNumber ?? '',
     },
   });
 
@@ -45,8 +54,20 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
     }
   }, [fetcher.state, fetcher.data]);
 
+  const conductorType = watch('conductorType');
+
   const onSubmit = (data: FormValues) => {
-    fetcher.submit(data, { method: 'post', action: '/api/profile' });
+    const payload: Record<string, string> = {
+      profession: data.profession,
+      city: data.city,
+      tagline: data.tagline,
+      bio: data.bio,
+      vatNumber: data.vatNumber,
+    };
+    if (data.conductorType) payload.conductorType = data.conductorType;
+    if (data.conductorType === 'company')
+      payload.companyName = data.companyName;
+    fetcher.submit(payload, { method: 'post', action: '/api/profile' });
   };
 
   const handleCancel = () => {
@@ -90,6 +111,34 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
             <FieldValue value={user.bio} />
           </p>
         </div>
+        {user.conductorType && (
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">
+                Conductor Type
+              </p>
+              <p className="capitalize">{user.conductorType}</p>
+            </div>
+            {user.conductorType === 'company' && (
+              <div className="space-y-1">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Company Name
+                </p>
+                <p>
+                  <FieldValue value={user.companyName} />
+                </p>
+              </div>
+            )}
+          </div>
+        )}
+        {user.vatNumber && (
+          <div className="space-y-1">
+            <p className="text-sm font-medium text-muted-foreground">
+              VAT / Kleingewerbe Number
+            </p>
+            <p>{user.vatNumber}</p>
+          </div>
+        )}
         <Button variant="outline" onClick={() => setIsEditing(true)}>
           Edit
         </Button>
@@ -148,6 +197,62 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
           rows={5}
           {...register('bio')}
         />
+      </div>
+
+      <div className="space-y-3 rounded-lg border p-4">
+        <Label className="text-sm font-medium">Conductor Type</Label>
+        <div className="flex gap-4">
+          <label className="flex items-center gap-2 cursor-pointer text-sm">
+            <input
+              type="radio"
+              value="individual"
+              {...register('conductorType')}
+            />
+            Individual
+          </label>
+          <label className="flex items-center gap-2 cursor-pointer text-sm">
+            <input
+              type="radio"
+              value="company"
+              {...register('conductorType')}
+            />
+            Company
+          </label>
+        </div>
+        {conductorType === 'individual' && (
+          <p className="text-xs text-muted-foreground">
+            In Germany, workshop conductors typically register a Kleingewerbe
+            (free, ~15 min at your Finanzamt).{' '}
+            <a
+              href="https://www.existenzgruender.de/DE/Gruendung-vorbereiten/Gruendungswissen/Kleingewerbe/inhalt.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground"
+            >
+              Learn more
+            </a>
+          </p>
+        )}
+        {conductorType === 'company' && (
+          <div className="space-y-2">
+            <Label htmlFor="companyName">Company Name</Label>
+            <Input
+              id="companyName"
+              placeholder="e.g. Kreativ Studio GmbH"
+              maxLength={200}
+              {...register('companyName')}
+            />
+          </div>
+        )}
+        <div className="space-y-2">
+          <Label htmlFor="vatNumber">VAT / Kleingewerbe Number</Label>
+          <Input
+            id="vatNumber"
+            placeholder="e.g. DE123456789 or Steuernummer"
+            maxLength={50}
+            {...register('vatNumber')}
+          />
+        </div>
       </div>
 
       <div className="flex gap-2">

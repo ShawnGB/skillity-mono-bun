@@ -26,7 +26,11 @@ export class AuthService {
 
   async validateUser(email: string, password: string): Promise<User | null> {
     const user = await this.usersService.findByEmail(email);
-    if (user && !user.deletedAt && (await bcrypt.compare(password, user.password))) {
+    if (
+      user &&
+      !user.deletedAt &&
+      (await bcrypt.compare(password, user.password))
+    ) {
       return user;
     }
     return null;
@@ -109,6 +113,9 @@ export class AuthService {
         tagline: user.tagline,
         profession: user.profession,
         city: user.city,
+        conductorType: user.conductorType,
+        companyName: user.companyName,
+        vatNumber: user.vatNumber,
       },
     };
   }
