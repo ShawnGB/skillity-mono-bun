@@ -13,7 +13,11 @@ import {
   IsEnum,
   IsUUID,
 } from 'class-validator';
-import { WorkshopCategory, WorkshopLevel } from 'src/types/enums';
+import {
+  WorkshopCategory,
+  WorkshopLevel,
+  WorkshopSource,
+} from 'src/types/enums';
 
 export class CreateWorkshopDto {
   @IsString()
@@ -62,6 +66,10 @@ export class CreateWorkshopDto {
   @IsOptional()
   @IsUrl()
   externalUrl?: string;
+
+  @IsOptional()
+  @IsEnum(WorkshopSource)
+  source?: WorkshopSource;
 
   @IsOptional()
   @IsUUID()
