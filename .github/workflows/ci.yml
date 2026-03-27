@@ -6,6 +6,9 @@ on:
   push:
     branches: [main]
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   lint-typecheck:
     name: Lint & Typecheck
@@ -22,14 +25,20 @@ jobs:
       - name: Install dependencies
         run: bun install
 
+      - name: Add node_modules/.bin to PATH
+        run: echo "$PWD/node_modules/.bin" >> $GITHUB_PATH
+
       - name: Typecheck frontend
-        run: bun run --filter frontend typecheck
+        run: react-router typegen && tsc
+        working-directory: frontend
 
       - name: Lint frontend
-        run: bun run --filter frontend lint
+        run: eslint .
+        working-directory: frontend
 
       - name: Typecheck backend
-        run: bun run --filter backend tsc --noEmit
+        run: tsc --noEmit
+        working-directory: backend
 
   build-docker:
     name: Build Docker images
