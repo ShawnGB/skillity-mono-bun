@@ -2,7 +2,7 @@ import { redirect, Link } from 'react-router';
 import { ApiError } from '@/lib/api-client.server';
 import { format } from 'date-fns';
 import type { Route } from './+types/profile.workshops';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import { getMyWorkshops } from '@/lib/workshops.server';
 import { getWorkshopBookings } from '@/lib/bookings.server';
 import { WorkshopStatus, CATEGORY_LABELS } from '@skillity/shared';
@@ -12,16 +12,16 @@ import MyWorkshopsHeader from '@/components/profile/MyWorkshopsHeader';
 import WorkshopActions from '@/components/profile/WorkshopActions';
 import WorkshopParticipants from '@/components/profile/WorkshopParticipants';
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const session = await getSession(request);
-  if (!session?.user) return redirect('/login?redirect=/profile/workshops');
+export async function loader({ context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext);
+  if (!session) return redirect('/login?redirect=/profile/workshops');
   if (session.user.role !== 'host' && session.user.role !== 'admin') {
     return redirect('/profile');
   }
 
   let workshops: Workshop[];
   try {
-    workshops = await getMyWorkshops(request);
+    workshops = await getMyWorkshops(session.cookie);
   } catch (err) {
     if (err instanceof ApiError && err.status === 401)
       return redirect('/login?redirect=/profile/workshops');
@@ -45,7 +45,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       .filter((w) => w.status === WorkshopStatus.PUBLISHED)
       .map(async (w) => {
         try {
-          bookingsMap[w.id] = await getWorkshopBookings(request, w.id);
+          bookingsMap[w.id] = await getWorkshopBookings(session.cookie, w.id);
         } catch {
           bookingsMap[w.id] = [];
         }

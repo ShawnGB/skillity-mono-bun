@@ -3,22 +3,20 @@ import { Search, Ticket, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WorkshopsListing from '@/components/workshops/WorkshopsListing';
 import type { Route } from './+types/home';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import { getWorkshops } from '@/lib/workshops.server';
 import { getWishlistCheck } from '@/lib/wishlist.server';
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const [session, workshops] = await Promise.all([
-    getSession(request),
-    getWorkshops(request),
-  ]);
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext);
+  const workshops = await getWorkshops(request);
 
-  const isAuthenticated = !!session?.user;
+  const isAuthenticated = !!session;
   let wishlistMap: Record<string, boolean> = {};
-  if (isAuthenticated && workshops.length > 0) {
+  if (session && workshops.length > 0) {
     try {
       wishlistMap = await getWishlistCheck(
-        request,
+        session.cookie,
         workshops.map((w) => w.id),
       );
     } catch {

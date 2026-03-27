@@ -10,10 +10,13 @@ export class ApiError extends Error {
   }
 }
 
-function getAuthHeaders(request?: Request): HeadersInit {
+type RequestSource = Request | string;
+
+function getAuthHeaders(source?: RequestSource): HeadersInit {
   const headers: HeadersInit = { 'Content-Type': 'application/json' };
-  if (request) {
-    const cookie = request.headers.get('cookie');
+  if (source) {
+    const cookie =
+      typeof source === 'string' ? source : source.headers.get('cookie');
     if (cookie) headers['cookie'] = cookie;
   }
   return headers;
@@ -43,10 +46,10 @@ async function handleResponse<T>(res: Response): Promise<T> {
 
 export async function serverGet<T>(
   endpoint: string,
-  request?: Request,
+  source?: RequestSource,
 ): Promise<T> {
   const res = await fetch(`${API_URL}${endpoint}`, {
-    headers: getAuthHeaders(request),
+    headers: getAuthHeaders(source),
   });
   return handleResponse<T>(res);
 }
@@ -54,11 +57,11 @@ export async function serverGet<T>(
 export async function serverPost<T>(
   endpoint: string,
   body: unknown,
-  request?: Request,
+  source?: RequestSource,
 ): Promise<T> {
   const res = await fetch(`${API_URL}${endpoint}`, {
     method: 'POST',
-    headers: getAuthHeaders(request),
+    headers: getAuthHeaders(source),
     body: JSON.stringify(body),
   });
   return handleResponse<T>(res);
@@ -67,11 +70,11 @@ export async function serverPost<T>(
 export async function serverPatch<T>(
   endpoint: string,
   body: unknown,
-  request?: Request,
+  source?: RequestSource,
 ): Promise<T> {
   const res = await fetch(`${API_URL}${endpoint}`, {
     method: 'PATCH',
-    headers: getAuthHeaders(request),
+    headers: getAuthHeaders(source),
     body: JSON.stringify(body),
   });
   return handleResponse<T>(res);
@@ -79,11 +82,11 @@ export async function serverPatch<T>(
 
 export async function serverDelete<T>(
   endpoint: string,
-  request?: Request,
+  source?: RequestSource,
 ): Promise<T> {
   const res = await fetch(`${API_URL}${endpoint}`, {
     method: 'DELETE',
-    headers: getAuthHeaders(request),
+    headers: getAuthHeaders(source),
   });
   return handleResponse<T>(res);
 }

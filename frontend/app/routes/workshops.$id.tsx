@@ -2,7 +2,7 @@ import { data, Link } from 'react-router';
 import { format } from 'date-fns';
 import { ArrowRight } from 'lucide-react';
 import type { Route } from './+types/workshops.$id';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import {
   getWorkshop,
   getWorkshopReviews,
@@ -24,7 +24,7 @@ import ReviewButton from '@/components/workshops/ReviewButton';
 import WishlistButton from '@/components/workshops/WishlistButton';
 import { getAvatarUrl } from '@/lib/avatar';
 
-export async function loader({ request, params }: Route.LoaderArgs) {
+export async function loader({ request, params, context }: Route.LoaderArgs) {
   const { id } = params;
 
   let workshop;
@@ -34,14 +34,14 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     throw data(null, { status: 404 });
   }
 
-  const session = await getSession(request);
-  const isAuthenticated = !!session?.user;
+  const session = context.get(sessionContext);
+  const isAuthenticated = !!session;
 
   const [reviews, bookings, seriesSiblings] = await Promise.all([
     workshop.seriesId
       ? getSeriesReviews(request, workshop.seriesId)
       : getWorkshopReviews(request, id),
-    isAuthenticated ? getMyBookings(request) : [],
+    session ? getMyBookings(session.cookie) : [],
     workshop.seriesId
       ? getSeriesWorkshops(request, workshop.seriesId).then((ws) =>
           ws.filter((w) => w.id !== id),
@@ -50,9 +50,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   ]);
 
   let isSaved = false;
-  if (isAuthenticated) {
+  if (session) {
     try {
-      const wishlistMap = await getWishlistCheck(request, [id]);
+      const wishlistMap = await getWishlistCheck(session.cookie, [id]);
       isSaved = wishlistMap[id] ?? false;
     } catch (err) {
       console.error('Wishlist check failed:', err);
@@ -62,7 +62,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const hasConfirmedBooking = bookings.some(
     (b) => b.workshopId === id && b.status === BookingStatus.CONFIRMED,
   );
-  const alreadyReviewed = reviews.some((r) => r.userId === session?.user?.id);
+  const alreadyReviewed = reviews.some((r) => r.userId === session?.user.id);
   const canReview =
     isAuthenticated &&
     workshop.status === WorkshopStatus.COMPLETED &&
@@ -78,7 +78,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     isAuthenticated,
     canReview,
     spotsLeft,
-    userId: session?.user?.id,
+    userId: session?.user.id,
   };
 }
 

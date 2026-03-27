@@ -1,18 +1,18 @@
 import { redirect } from 'react-router';
 import type { Route } from './+types/api.workshops.$workshopId.status';
 import { serverPatch } from '@/lib/api-client.server';
-import { getCurrentUser } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 
-export async function action({ request, params }: Route.ActionArgs) {
-  const user = await getCurrentUser(request);
-  if (!user) return redirect('/login');
+export async function action({ request, params, context }: Route.ActionArgs) {
+  const session = context.get(sessionContext);
+  if (!session) return redirect('/login');
 
   const { workshopId } = params;
   const formData = await request.formData();
   const status = formData.get('status') as string;
 
   try {
-    await serverPatch(`/workshops/${workshopId}`, { status }, request);
+    await serverPatch(`/workshops/${workshopId}`, { status }, session.cookie);
     return { ok: true };
   } catch (err) {
     return {
