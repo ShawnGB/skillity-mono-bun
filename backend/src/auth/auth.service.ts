@@ -96,7 +96,7 @@ export class AuthService {
     const refreshToken = this.refreshTokenRepository.create({
       token: refreshTokenValue,
       userId: user.id,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     });
     await this.refreshTokenRepository.save(refreshToken);
 

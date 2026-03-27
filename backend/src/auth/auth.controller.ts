@@ -43,7 +43,7 @@ export class AuthController {
 
     res.cookie('refresh_token', refreshToken, {
       ...COOKIE_OPTIONS,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 90 * 24 * 60 * 60 * 1000,
     });
 
     return { user, message: 'Login successful' };
@@ -65,7 +65,7 @@ export class AuthController {
 
     res.cookie('refresh_token', refreshToken, {
       ...COOKIE_OPTIONS,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 90 * 24 * 60 * 60 * 1000,
     });
 
     return { user, message: 'Registration successful' };
@@ -95,7 +95,7 @@ export class AuthController {
 
     res.cookie('refresh_token', refreshToken, {
       ...COOKIE_OPTIONS,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 90 * 24 * 60 * 60 * 1000,
     });
 
     return { user, message: 'Token refreshed' };
