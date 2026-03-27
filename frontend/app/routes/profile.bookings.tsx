@@ -1,4 +1,5 @@
 import { redirect, Link } from 'react-router';
+import { ApiError } from '@/lib/api-client.server';
 import { format } from 'date-fns';
 import type { Route } from './+types/profile.bookings';
 import { getSession } from '@/lib/session.server';
@@ -17,18 +18,18 @@ export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const confirmed = url.searchParams.get('confirmed') === 'true';
 
-  let bookings: Booking[] = [];
-  let reviewedWorkshopIds = new Set<string>();
   try {
     const [fetchedBookings, myReviews] = await Promise.all([
       getMyBookings(request),
       getMyReviews(request),
     ]);
-    bookings = fetchedBookings;
-    reviewedWorkshopIds = new Set(myReviews.map((r) => r.workshopId));
-  } catch {}
-
-  return { bookings, reviewedWorkshopIds: [...reviewedWorkshopIds], confirmed };
+    const reviewedWorkshopIds = new Set(myReviews.map((r) => r.workshopId));
+    return { bookings: fetchedBookings, reviewedWorkshopIds: [...reviewedWorkshopIds], confirmed };
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401)
+      return redirect('/login?redirect=/profile/bookings');
+    throw err;
+  }
 }
 
 export function meta() {

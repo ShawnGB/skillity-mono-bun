@@ -54,7 +54,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     try {
       const wishlistMap = await getWishlistCheck(request, [id]);
       isSaved = wishlistMap[id] ?? false;
-    } catch {}
+    } catch (err) {
+      console.error('Wishlist check failed:', err);
+    }
   }
 
   const hasConfirmedBooking = bookings.some(

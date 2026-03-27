@@ -1,4 +1,5 @@
 import { redirect, Link } from 'react-router';
+import { ApiError } from '@/lib/api-client.server';
 import { format } from 'date-fns';
 import type { Route } from './+types/profile.saved';
 import { getSession } from '@/lib/session.server';
@@ -12,12 +13,14 @@ export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request);
   if (!session?.user) return redirect('/login?redirect=/profile/saved');
 
-  let items: WishlistItem[] = [];
   try {
-    items = await getMyWishlist(request);
-  } catch {}
-
-  return { items };
+    const items = await getMyWishlist(request);
+    return { items };
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401)
+      return redirect('/login?redirect=/profile/saved');
+    throw err;
+  }
 }
 
 export function meta() {

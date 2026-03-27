@@ -1,5 +1,15 @@
 export const API_URL = process.env.API_URL ?? 'http://localhost:3000';
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 function getAuthHeaders(request?: Request): HeadersInit {
   const headers: HeadersInit = { 'Content-Type': 'application/json' };
   if (request) {
@@ -17,10 +27,13 @@ async function handleResponse<T>(res: Response): Promise<T> {
       const msg = Array.isArray(json.message)
         ? json.message.join(', ')
         : json.message || json.error || `Request failed: ${res.status}`;
-      throw new Error(msg);
+      throw new ApiError(msg, res.status);
     } catch (e) {
       if (e instanceof SyntaxError)
-        throw new Error(text || `Request failed: ${res.status}`);
+        throw new ApiError(
+          text || `Request failed: ${res.status}`,
+          res.status,
+        );
       throw e;
     }
   }

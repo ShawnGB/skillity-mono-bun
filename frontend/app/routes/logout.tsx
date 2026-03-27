@@ -3,15 +3,16 @@ import type { Route } from './+types/logout';
 import { API_URL } from '@/lib/api-client.server';
 
 export async function action({ request }: Route.ActionArgs) {
-  // Best-effort backend logout
   try {
     await fetch(`${API_URL}/auth/logout`, {
       method: 'POST',
       headers: { Cookie: request.headers.get('cookie') ?? '' },
     });
-  } catch {}
+  } catch (err) {
+    // Backend unreachable — cookies are still cleared below
+    console.error('Backend logout failed:', err);
+  }
 
-  // Clear cookies regardless of backend response
   const headers = new Headers();
   headers.append(
     'Set-Cookie',

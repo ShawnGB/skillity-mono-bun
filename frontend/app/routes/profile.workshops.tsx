@@ -1,4 +1,5 @@
 import { redirect, Link } from 'react-router';
+import { ApiError } from '@/lib/api-client.server';
 import { format } from 'date-fns';
 import type { Route } from './+types/profile.workshops';
 import { getSession } from '@/lib/session.server';
@@ -21,7 +22,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   let workshops: Workshop[] = [];
   try {
     workshops = await getMyWorkshops(request);
-  } catch {}
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401)
+      return redirect('/login?redirect=/profile/workshops');
+    throw err;
+  }
 
   const upcoming = workshops.filter(
     (w) =>

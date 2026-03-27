@@ -16,7 +16,7 @@ export function meta() {
   return [{ title: 'Become a Host | Skillity' }];
 }
 
-export default function OnboardingPage(_: Route.ComponentProps) {
+export default function OnboardingPage() {
   return (
     <main className="container mx-auto px-4 py-16 max-w-lg">
       <OnboardingFlow />
