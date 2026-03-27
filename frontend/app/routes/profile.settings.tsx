@@ -1,4 +1,3 @@
-import type { Route } from './+types/profile.settings';
 import ExportDataSection from '@/components/profile/ExportDataSection';
 import DeleteAccountSection from '@/components/profile/DeleteAccountSection';
 

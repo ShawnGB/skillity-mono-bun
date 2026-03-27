@@ -19,7 +19,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     return redirect('/profile');
   }
 
-  let workshops: Workshop[] = [];
+  let workshops: Workshop[];
   try {
     workshops = await getMyWorkshops(request);
   } catch (err) {
