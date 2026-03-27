@@ -2,7 +2,9 @@ import { data, redirect } from 'react-router';
 import type { Route } from './+types/workshops.$id.edit';
 import { getSession } from '@/lib/session.server';
 import { getWorkshop } from '@/lib/workshops.server';
-import EditWorkshopForm from '@/components/workshops/EditWorkshopForm';
+import EditWorkshopForm, {
+  ConductorsSection,
+} from '@/components/workshops/EditWorkshopForm';
 import { useNavigate } from 'react-router';
 
 export async function loader({ request, params }: Route.LoaderArgs) {
@@ -41,11 +43,21 @@ export default function EditWorkshopPage({ loaderData }: Route.ComponentProps) {
   return (
     <main className="container mx-auto px-4 py-12 max-w-2xl">
       <h1 className="text-3xl mb-8">Edit Workshop</h1>
-      <div className="rounded-xl border bg-card p-6">
-        <EditWorkshopForm
-          workshop={workshop}
-          onSuccess={() => navigate(`/workshops/${workshop.id}`)}
-        />
+      <div className="space-y-6">
+        <div className="rounded-xl border bg-card p-6">
+          <EditWorkshopForm
+            workshop={workshop}
+            onSuccess={() => navigate(`/workshops/${workshop.id}`)}
+          />
+        </div>
+        {workshop.conductors && (
+          <div className="rounded-xl border bg-card p-6">
+            <ConductorsSection
+              workshopId={workshop.id}
+              conductors={workshop.conductors}
+            />
+          </div>
+        )}
       </div>
     </main>
   );
