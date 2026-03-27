@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -26,6 +27,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
       { name: 'global', ttl: 60000, limit: 100 },
       { name: 'auth', ttl: 60000, limit: 10 },
     ]),
+    EventEmitterModule.forRoot(),
     UsersModule,
     WorkshopsModule,
     AuthModule,

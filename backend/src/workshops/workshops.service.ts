@@ -12,6 +12,7 @@ import { Workshop } from './entities/workshop.entity';
 import { WorkshopConductor } from './entities/workshop-conductor.entity';
 import { In, Not, Repository } from 'typeorm';
 import { randomUUID } from 'crypto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserRole, WorkshopStatus, BookingStatus } from 'src/types/enums';
 import { Booking } from 'src/bookings/entities/booking.entity';
 
@@ -31,6 +32,7 @@ export class WorkshopsService {
     private readonly conductorRepository: Repository<WorkshopConductor>,
     @InjectRepository(Booking)
     private readonly bookingRepository: Repository<Booking>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async create(createWorkshopDto: CreateWorkshopDto, hostId: string) {
@@ -215,8 +217,13 @@ export class WorkshopsService {
       delete (updateWorkshopDto as Record<string, unknown>).duration;
     }
 
+    const wasPublished = updateWorkshopDto.status === WorkshopStatus.PUBLISHED;
     Object.assign(workshop, updateWorkshopDto);
-    return await this.workshopRepository.save(workshop);
+    const saved = await this.workshopRepository.save(workshop);
+    if (wasPublished) {
+      this.eventEmitter.emit('workshop.published', { workshopId: saved.id, hostId: saved.hostId });
+    }
+    return saved;
   }
 
   async addConductor(

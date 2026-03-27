@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { UsersService } from '../users/users.service';
 import { RefreshToken } from './entities/refresh-token.entity';
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -54,6 +56,7 @@ export class AuthService {
 
     await this.usersService.create(createUserDto);
     const user = await this.usersService.findByEmail(createUserDto.email);
+    this.eventEmitter.emit('user.registered', { userId: user.id, email: user.email });
     return this.generateTokens(user);
   }
 
