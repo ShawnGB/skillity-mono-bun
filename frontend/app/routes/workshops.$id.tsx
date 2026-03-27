@@ -13,6 +13,7 @@ import { getMyBookings } from '@/lib/bookings.server';
 import { getWishlistCheck } from '@/lib/wishlist.server';
 import {
   WorkshopStatus,
+  WorkshopSource,
   BookingStatus,
   CATEGORY_LABELS,
 } from '@skillity/shared';
@@ -140,6 +141,9 @@ export default function WorkshopDetailPage({
   const isCancelled = workshop.status === WorkshopStatus.CANCELLED;
   const isCompleted = workshop.status === WorkshopStatus.COMPLETED;
   const isInactive = isCancelled || isCompleted;
+  const isExternal =
+    workshop.source === WorkshopSource.EXTERNAL ||
+    workshop.source === WorkshopSource.DISCOVERED;
 
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -373,16 +377,22 @@ export default function WorkshopDetailPage({
                 <Button disabled className="w-full" variant="outline">
                   {isCancelled ? 'Workshop Cancelled' : 'Workshop Ended'}
                 </Button>
-              ) : workshop.externalUrl ? (
-                <Button asChild size="lg" className="w-full">
-                  <a
-                    href={workshop.externalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Visit Website
-                  </a>
-                </Button>
+              ) : isExternal && workshop.externalUrl ? (
+                <>
+                  <Button asChild size="lg" className="w-full">
+                    <a
+                      href={workshop.externalUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Get Tickets &rarr;
+                    </a>
+                  </Button>
+                  <p className="text-xs text-muted-foreground text-center">
+                    Tickets sold externally. Sign up on Skillity to get reviews,
+                    saved audiences, and zero manual ticketing.
+                  </p>
+                </>
               ) : (
                 <RegisterButton
                   isAuthenticated={isAuthenticated}
