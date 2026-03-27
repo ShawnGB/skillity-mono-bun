@@ -34,6 +34,15 @@ export class User extends BaseEntity {
   @Column({ length: 100, nullable: true })
   city: string | null;
 
+  @Column({ name: 'conductor_type', length: 20, nullable: true })
+  conductorType: 'individual' | 'company' | null;
+
+  @Column({ name: 'company_name', length: 200, nullable: true })
+  companyName: string | null;
+
+  @Column({ name: 'vat_number', length: 50, nullable: true })
+  vatNumber: string | null;
+
   @Column({ name: 'deleted_at', type: 'timestamptz', nullable: true })
   deletedAt: Date | null;
 

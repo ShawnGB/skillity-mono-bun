@@ -2,6 +2,7 @@ import { Link } from 'react-router';
 import { format } from 'date-fns';
 import {
   WorkshopStatus,
+  WorkshopSource,
   WorkshopCategory,
   WorkshopLevel,
   CATEGORY_LABELS,
@@ -162,6 +163,13 @@ export default function WorkshopsListing({
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
                 <StatusBadge status={workshop.status} />
+                {workshop.status === WorkshopStatus.PUBLISHED &&
+                  (workshop.source === WorkshopSource.EXTERNAL ||
+                    workshop.source === WorkshopSource.DISCOVERED) && (
+                    <span className="absolute top-3 right-3 rounded-full bg-black/50 px-2.5 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+                      External
+                    </span>
+                  )}
                 {isAuthenticated && (
                   <div className="absolute top-3 left-3 z-10">
                     <WishlistButton

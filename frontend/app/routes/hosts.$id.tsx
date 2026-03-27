@@ -44,6 +44,10 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
 
 export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
   const { host, workshops } = loaderData;
+  const displayName =
+    host.conductorType === 'company' && host.companyName
+      ? host.companyName
+      : [host.firstName, host.lastName].filter(Boolean).join(' ');
   const name = [host.firstName, host.lastName].filter(Boolean).join(' ');
 
   const personJsonLd: Record<string, unknown> = {
@@ -83,7 +87,10 @@ export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
                 className="size-28 rounded-full"
               />
               <div>
-                <h1 className="text-2xl font-semibold">{name}</h1>
+                <h1 className="text-2xl font-semibold">{displayName}</h1>
+                {host.conductorType === 'company' && host.companyName && (
+                  <p className="mt-0.5 text-sm text-muted-foreground">{name}</p>
+                )}
                 {host.profession && (
                   <p className="mt-0.5 text-sm font-medium text-foreground/80">
                     {host.profession}

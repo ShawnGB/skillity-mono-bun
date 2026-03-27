@@ -1,4 +1,10 @@
-import { IsEmail, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsString,
+  MaxLength,
+} from 'class-validator';
 
 export class UpdateProfileDto {
   @IsOptional()
@@ -34,4 +40,18 @@ export class UpdateProfileDto {
   @IsString()
   @MaxLength(100)
   city?: string;
+
+  @IsOptional()
+  @IsEnum(['individual', 'company'])
+  conductorType?: 'individual' | 'company';
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  companyName?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  vatNumber?: string;
 }

@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { useFetcher } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { format, differenceInMinutes } from 'date-fns';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, Trash2 } from 'lucide-react';
 import {
   WorkshopStatus,
   WorkshopCategory,
   CATEGORY_LABELS,
 } from '@skillity/shared';
-import type { Workshop } from '@skillity/shared';
+import type { Workshop, ConductorProfile } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -317,5 +317,114 @@ export default function EditWorkshopForm({
         {isPending ? 'Saving...' : 'Save Changes'}
       </Button>
     </form>
+  );
+}
+
+interface ConductorsSectionProps {
+  workshopId: string;
+  conductors: ConductorProfile[];
+}
+
+export function ConductorsSection({
+  workshopId,
+  conductors,
+}: ConductorsSectionProps) {
+  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const [newUserId, setNewUserId] = useState('');
+  const [newShare, setNewShare] = useState('');
+  const isPending = fetcher.state !== 'idle';
+
+  const usedShare = conductors.reduce((sum, c) => sum + c.payoutShare, 0);
+  const remaining = Math.round((1 - usedShare) * 100);
+
+  return (
+    <div className="space-y-3">
+      <h3 className="text-sm font-medium">Co-conductors</h3>
+
+      {fetcher.data?.error && (
+        <p className="text-sm text-destructive">{fetcher.data.error}</p>
+      )}
+
+      <div className="space-y-2">
+        {conductors.map((c) => (
+          <div
+            key={c.userId}
+            className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm"
+          >
+            <div>
+              <span className="font-medium">
+                {c.firstName} {c.lastName}
+              </span>
+              {c.isPrimary && (
+                <span className="ml-2 text-xs text-muted-foreground">
+                  primary
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-muted-foreground">
+                {Math.round(c.payoutShare * 100)}%
+              </span>
+              {!c.isPrimary && (
+                <fetcher.Form
+                  method="post"
+                  action={`/api/workshops/${workshopId}/conductors`}
+                >
+                  <input type="hidden" name="intent" value="remove" />
+                  <input type="hidden" name="userId" value={c.userId} />
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="text-muted-foreground hover:text-destructive"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </fetcher.Form>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <fetcher.Form
+        method="post"
+        action={`/api/workshops/${workshopId}/conductors`}
+        className="flex gap-2"
+        onSubmit={() => {
+          setNewUserId('');
+          setNewShare('');
+        }}
+      >
+        <Input
+          name="userId"
+          placeholder="User ID"
+          value={newUserId}
+          onChange={(e) => setNewUserId(e.target.value)}
+          className="flex-1 text-sm"
+        />
+        <Input
+          name="payoutShare"
+          type="number"
+          step="1"
+          min="1"
+          max={remaining}
+          placeholder={`% (max ${remaining})`}
+          value={newShare}
+          onChange={(e) => setNewShare(e.target.value)}
+          className="w-28 text-sm"
+        />
+        <Button
+          type="submit"
+          size="sm"
+          variant="outline"
+          disabled={isPending || !newUserId || !newShare}
+        >
+          Add
+        </Button>
+      </fetcher.Form>
+      <p className="text-xs text-muted-foreground">
+        Payout shares must sum to 100%. Remaining: {remaining}%.
+      </p>
+    </div>
   );
 }

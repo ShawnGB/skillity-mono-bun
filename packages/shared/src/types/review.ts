@@ -4,7 +4,9 @@ export interface Review {
   comment: string | null;
   userId: string;
   workshopId: string;
+  seriesId: string | null;
   reviewerName: string;
+  workshopDate: string | null;
   createdAt: string;
 }
 

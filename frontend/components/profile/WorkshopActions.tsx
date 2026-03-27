@@ -4,7 +4,9 @@ import type { Workshop } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import FormModal from '@/components/modals/FormModal';
-import EditWorkshopForm from '@/components/workshops/EditWorkshopForm';
+import EditWorkshopForm, {
+  ConductorsSection,
+} from '@/components/workshops/EditWorkshopForm';
 import CreateWorkshopForm from '@/components/workshops/CreateWorkshopForm';
 
 interface WorkshopActionsProps {
@@ -64,7 +66,15 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
         description="Update your workshop details."
       >
         {({ onSuccess }) => (
-          <EditWorkshopForm workshop={workshop} onSuccess={onSuccess} />
+          <div className="space-y-6">
+            <EditWorkshopForm workshop={workshop} onSuccess={onSuccess} />
+            {workshop.conductors && (
+              <ConductorsSection
+                workshopId={workshop.id}
+                conductors={workshop.conductors}
+              />
+            )}
+          </div>
         )}
       </FormModal>
       <FormModal

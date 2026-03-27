@@ -1,8 +1,15 @@
-import { Column, Entity, ManyToOne, JoinColumn, Unique } from 'typeorm';
+import { Column, Entity, ManyToOne, JoinColumn, Index } from 'typeorm';
 import { BaseEntity } from 'src/common/entities/base.entity';
 
 @Entity()
-@Unique(['userId', 'workshopId'])
+@Index(['userId', 'seriesId'], {
+  unique: true,
+  where: '"series_id" IS NOT NULL',
+})
+@Index(['userId', 'workshopId'], {
+  unique: true,
+  where: '"series_id" IS NULL',
+})
 export class Review extends BaseEntity {
   @Column({ type: 'int' })
   rating: number;
@@ -15,6 +22,9 @@ export class Review extends BaseEntity {
 
   @Column({ name: 'workshop_id' })
   workshopId: string;
+
+  @Column({ name: 'series_id', type: 'uuid', nullable: true })
+  seriesId: string | null;
 
   @ManyToOne('User', 'reviews')
   @JoinColumn({ name: 'user_id' })

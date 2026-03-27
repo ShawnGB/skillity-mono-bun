@@ -22,6 +22,9 @@ export interface UpdateProfileInput {
   tagline?: string;
   profession?: string;
   city?: string;
+  conductorType?: 'individual' | 'company';
+  companyName?: string;
+  vatNumber?: string;
 }
 
 export interface HostProfile {
@@ -32,6 +35,8 @@ export interface HostProfile {
   tagline: string | null;
   profession: string | null;
   city: string | null;
+  conductorType: 'individual' | 'company' | null;
+  companyName: string | null;
   averageRating: number | null;
   reviewCount: number;
   workshopCount: number;

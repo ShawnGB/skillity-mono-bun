@@ -6,13 +6,26 @@ export type {
   AuthResponse,
 } from './types/auth';
 
-export type { User, CreateUserInput, UpdateProfileInput, HostProfile } from './types/user';
+export type {
+  User,
+  CreateUserInput,
+  UpdateProfileInput,
+  HostProfile,
+} from './types/user';
 
 export type { Review, CreateReviewInput } from './types/review';
 
-export { WorkshopStatus, WorkshopCategory, WorkshopLevel, CATEGORY_LABELS, LEVEL_LABELS } from './types/workshop';
+export {
+  WorkshopStatus,
+  WorkshopCategory,
+  WorkshopLevel,
+  WorkshopSource,
+  CATEGORY_LABELS,
+  LEVEL_LABELS,
+} from './types/workshop';
 export type {
   Workshop,
+  ConductorProfile,
   CreateWorkshopInput,
   UpdateWorkshopInput,
 } from './types/workshop';

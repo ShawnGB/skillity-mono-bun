@@ -1,14 +1,13 @@
-import {
-  Column,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  JoinColumn,
-} from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import type { User } from 'src/users/entities/user.entity';
 import type { Booking } from 'src/bookings/entities/booking.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { WorkshopStatus, WorkshopCategory, WorkshopLevel } from 'src/types/enums';
+import {
+  WorkshopStatus,
+  WorkshopCategory,
+  WorkshopLevel,
+  WorkshopSource,
+} from 'src/types/enums';
 
 @Entity()
 export class Workshop extends BaseEntity {
@@ -55,6 +54,13 @@ export class Workshop extends BaseEntity {
   @Column({ name: 'external_url', nullable: true })
   externalUrl: string | null;
 
+  @Column({
+    type: 'enum',
+    enum: WorkshopSource,
+    default: WorkshopSource.PLATFORM,
+  })
+  source: WorkshopSource;
+
   @Column({ name: 'host_id' })
   hostId: string;
 
@@ -67,4 +73,7 @@ export class Workshop extends BaseEntity {
 
   @OneToMany('Review', 'workshop')
   reviews: any[];
+
+  @OneToMany('WorkshopConductor', 'workshop')
+  conductors: any[];
 }

@@ -81,6 +81,9 @@ export class UsersService {
     if (dto.tagline !== undefined) user.tagline = dto.tagline;
     if (dto.profession !== undefined) user.profession = dto.profession;
     if (dto.city !== undefined) user.city = dto.city;
+    if (dto.conductorType !== undefined) user.conductorType = dto.conductorType;
+    if (dto.companyName !== undefined) user.companyName = dto.companyName;
+    if (dto.vatNumber !== undefined) user.vatNumber = dto.vatNumber;
 
     await this.UsersRepository.save(user);
 
@@ -94,12 +97,18 @@ export class UsersService {
       tagline: user.tagline,
       profession: user.profession,
       city: user.city,
+      conductorType: user.conductorType,
+      companyName: user.companyName,
+      vatNumber: user.vatNumber,
     };
   }
 
   async getHostProfile(id: string) {
     const user = await this.UsersRepository.findOne({ where: { id } });
-    if (!user || (user.role !== UserRole.HOST && user.role !== UserRole.ADMIN)) {
+    if (
+      !user ||
+      (user.role !== UserRole.HOST && user.role !== UserRole.ADMIN)
+    ) {
       throw new NotFoundException('Host not found');
     }
 
@@ -121,6 +130,8 @@ export class UsersService {
       tagline: user.tagline,
       profession: user.profession,
       city: user.city,
+      conductorType: user.conductorType,
+      companyName: user.companyName,
       averageRating,
       reviewCount,
       workshopCount,

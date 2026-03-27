@@ -10,6 +10,9 @@ export interface AuthUser {
   tagline?: string | null;
   profession?: string | null;
   city?: string | null;
+  conductorType?: 'individual' | 'company' | null;
+  companyName?: string | null;
+  vatNumber?: string | null;
 }
 
 export interface LoginInput {

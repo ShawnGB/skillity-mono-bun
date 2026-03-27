@@ -22,6 +22,7 @@ import {
 import {
   WorkshopCategory,
   WorkshopLevel,
+  WorkshopSource,
   CATEGORY_LABELS,
   LEVEL_LABELS,
 } from '@skillity/shared';
@@ -39,6 +40,7 @@ interface FormValues {
   date: Date;
   startTime: string;
   duration: number;
+  externalUrl?: string;
 }
 
 interface CreateWorkshopFormProps {
@@ -62,6 +64,7 @@ export default function CreateWorkshopForm({
 }: CreateWorkshopFormProps) {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [localError, setLocalError] = useState<string | null>(null);
+  const [externalTickets, setExternalTickets] = useState(false);
   const isPending = fetcher.state !== 'idle';
 
   const {
@@ -102,6 +105,9 @@ export default function CreateWorkshopForm({
         duration: String(data.duration),
         ...(data.level && { level: data.level }),
         ...(defaultValues?.seriesId && { seriesId: defaultValues.seriesId }),
+        ...(externalTickets && data.externalUrl
+          ? { externalUrl: data.externalUrl, source: WorkshopSource.EXTERNAL }
+          : {}),
       },
       { method: 'post', action: '/api/workshops' },
     );
@@ -329,6 +335,37 @@ export default function CreateWorkshopForm({
         {errors.location && (
           <p className="text-sm text-destructive">{errors.location.message}</p>
         )}
+      </div>
+
+      <div className="rounded-lg border p-4 space-y-3">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={externalTickets}
+            onChange={(e) => setExternalTickets(e.target.checked)}
+            className="size-4 rounded"
+          />
+          <span className="text-sm font-medium">I sell tickets elsewhere</span>
+        </label>
+        {externalTickets ? (
+          <div className="space-y-2">
+            <Input
+              {...register('externalUrl', {
+                required: externalTickets ? 'Ticket URL is required' : false,
+              })}
+              placeholder="https://your-ticket-shop.com/workshop"
+            />
+            {errors.externalUrl && (
+              <p className="text-sm text-destructive">
+                {errors.externalUrl.message}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Sell on Skillity to get reviews, saved audiences, and zero manual
+              ticketing.
+            </p>
+          </div>
+        ) : null}
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>

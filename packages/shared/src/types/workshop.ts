@@ -1,5 +1,14 @@
 import type { User } from './user';
 
+export interface ConductorProfile {
+  userId: string;
+  isPrimary: boolean;
+  payoutShare: number;
+  firstName: string;
+  lastName: string;
+  tagline: string | null;
+}
+
 export enum WorkshopLevel {
   BEGINNER = 'beginner',
   INTERMEDIATE = 'intermediate',
@@ -32,6 +41,12 @@ export enum WorkshopCategory {
   BUSINESS_AND_ENTREPRENEURSHIP = 'business_and_entrepreneurship',
 }
 
+export enum WorkshopSource {
+  PLATFORM = 'platform',
+  EXTERNAL = 'external',
+  DISCOVERED = 'discovered',
+}
+
 export const CATEGORY_LABELS: Record<WorkshopCategory, string> = {
   [WorkshopCategory.CRAFTS_AND_MAKING]: 'Crafts & Making',
   [WorkshopCategory.COOKING_AND_FOOD]: 'Cooking & Food',
@@ -42,7 +57,8 @@ export const CATEGORY_LABELS: Record<WorkshopCategory, string> = {
   [WorkshopCategory.MOVEMENT_AND_BODY]: 'Movement & Body',
   [WorkshopCategory.LANGUAGES]: 'Languages',
   [WorkshopCategory.SCIENCE_AND_NATURE]: 'Science & Nature',
-  [WorkshopCategory.BUSINESS_AND_ENTREPRENEURSHIP]: 'Business & Entrepreneurship',
+  [WorkshopCategory.BUSINESS_AND_ENTREPRENEURSHIP]:
+    'Business & Entrepreneurship',
 };
 
 export interface Workshop {
@@ -65,6 +81,8 @@ export interface Workshop {
   pendingCount?: number;
   estimatedRevenue?: number;
   externalUrl: string | null;
+  source: WorkshopSource;
+  conductors?: ConductorProfile[];
   createdAt: string;
   updatedAt: string;
 }
@@ -81,6 +99,7 @@ export interface CreateWorkshopInput {
   duration: number;
   level?: WorkshopLevel;
   externalUrl?: string;
+  source?: WorkshopSource;
   seriesId?: string;
 }
 
@@ -97,4 +116,5 @@ export interface UpdateWorkshopInput {
   level?: WorkshopLevel;
   status?: WorkshopStatus;
   externalUrl?: string;
+  source?: WorkshopSource;
 }

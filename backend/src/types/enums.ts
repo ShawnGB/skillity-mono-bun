@@ -36,3 +36,9 @@ export enum BookingStatus {
   CANCELLED = 'cancelled',
   REFUNDED = 'refunded',
 }
+
+export enum WorkshopSource {
+  PLATFORM = 'platform',
+  EXTERNAL = 'external',
+  DISCOVERED = 'discovered',
+}
