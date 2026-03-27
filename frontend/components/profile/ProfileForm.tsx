@@ -14,6 +14,7 @@ interface FormValues {
   firstName: string;
   lastName: string;
   email: string;
+  [key: string]: string;
 }
 
 export default function ProfileForm({ user }: ProfileFormProps) {
@@ -28,8 +29,8 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
-      firstName: user.firstName,
-      lastName: user.lastName,
+      firstName: user.firstName ?? '',
+      lastName: user.lastName ?? '',
       email: user.email,
     },
   });

@@ -33,6 +33,10 @@ export default [
   route('/api/become-host', 'routes/api.become-host.tsx'),
   route('/api/workshops', 'routes/api.workshops.tsx'),
   route('/api/workshops/:workshopId', 'routes/api.workshops.$workshopId.tsx'),
+  route(
+    '/api/workshops/:workshopId/conductors',
+    'routes/api.workshops.$workshopId.conductors.tsx',
+  ),
   route('/api/profile', 'routes/api.profile.tsx'),
   route('/api/profile/delete', 'routes/api.profile.delete.tsx'),
   route('/api/profile/export', 'routes/api.profile.export.tsx'),
