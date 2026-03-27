@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
-import { useFetcher } from "react-router";
-import { useForm } from "react-hook-form";
-import type { AuthUser } from "@skillity/shared";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
+import { useState, useEffect } from 'react';
+import { useFetcher } from 'react-router';
+import { useForm } from 'react-hook-form';
+import type { AuthUser } from '@skillity/shared';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 interface HostProfileSectionProps {
   user: AuthUser;
@@ -19,7 +19,7 @@ interface FormValues {
 }
 
 function FieldValue({ value }: { value: string | null | undefined }) {
-  if (!value || value.trim() === "") {
+  if (!value || value.trim() === '') {
     return <span className="text-muted-foreground italic">Not set</span>;
   }
   return <>{value}</>;
@@ -28,25 +28,25 @@ function FieldValue({ value }: { value: string | null | undefined }) {
 export default function HostProfileSection({ user }: HostProfileSectionProps) {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [isEditing, setIsEditing] = useState(false);
-  const isPending = fetcher.state !== "idle";
+  const isPending = fetcher.state !== 'idle';
 
   const { register, handleSubmit, reset } = useForm<FormValues>({
     defaultValues: {
-      profession: user.profession ?? "",
-      city: user.city ?? "",
-      tagline: user.tagline ?? "",
-      bio: user.bio ?? "",
+      profession: user.profession ?? '',
+      city: user.city ?? '',
+      tagline: user.tagline ?? '',
+      bio: user.bio ?? '',
     },
   });
 
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data?.ok) {
+    if (fetcher.state === 'idle' && fetcher.data?.ok) {
       setIsEditing(false);
     }
   }, [fetcher.state, fetcher.data]);
 
   const onSubmit = (data: FormValues) => {
-    fetcher.submit(data, { method: "post", action: "/api/profile" });
+    fetcher.submit(data, { method: 'post', action: '/api/profile' });
   };
 
   const handleCancel = () => {
@@ -64,21 +64,31 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
         )}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">Profession</p>
-            <p><FieldValue value={user.profession} /></p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Profession
+            </p>
+            <p>
+              <FieldValue value={user.profession} />
+            </p>
           </div>
           <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">City</p>
-            <p><FieldValue value={user.city} /></p>
+            <p>
+              <FieldValue value={user.city} />
+            </p>
           </div>
         </div>
         <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">Tagline</p>
-          <p><FieldValue value={user.tagline} /></p>
+          <p>
+            <FieldValue value={user.tagline} />
+          </p>
         </div>
         <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">Bio</p>
-          <p className="whitespace-pre-wrap"><FieldValue value={user.bio} /></p>
+          <p className="whitespace-pre-wrap">
+            <FieldValue value={user.bio} />
+          </p>
         </div>
         <Button variant="outline" onClick={() => setIsEditing(true)}>
           Edit
@@ -102,7 +112,7 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
             id="profession"
             placeholder="e.g. Ceramic Artist"
             maxLength={120}
-            {...register("profession")}
+            {...register('profession')}
           />
         </div>
         <div className="space-y-2">
@@ -111,7 +121,7 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
             id="city"
             placeholder="e.g. Berlin"
             maxLength={100}
-            {...register("city")}
+            {...register('city')}
           />
         </div>
       </div>
@@ -122,7 +132,7 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
           id="tagline"
           placeholder="e.g. Passionate pottery instructor"
           maxLength={120}
-          {...register("tagline")}
+          {...register('tagline')}
         />
         <p className="text-xs text-muted-foreground">
           A short description that appears below your name (max 120 characters).
@@ -136,15 +146,20 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
           placeholder="Tell people about yourself and your experience..."
           maxLength={1000}
           rows={5}
-          {...register("bio")}
+          {...register('bio')}
         />
       </div>
 
       <div className="flex gap-2">
         <Button type="submit" disabled={isPending}>
-          {isPending ? "Saving..." : "Save Host Profile"}
+          {isPending ? 'Saving...' : 'Save Host Profile'}
         </Button>
-        <Button type="button" variant="outline" onClick={handleCancel} disabled={isPending}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleCancel}
+          disabled={isPending}
+        >
           Cancel
         </Button>
       </div>

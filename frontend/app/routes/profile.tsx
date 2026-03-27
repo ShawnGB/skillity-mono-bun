@@ -1,7 +1,7 @@
-import { redirect, Outlet } from "react-router";
-import type { Route } from "./+types/profile";
-import { getSession } from "@/lib/session.server";
-import ProfileNav from "@/components/profile/ProfileNav";
+import { redirect, Outlet } from 'react-router';
+import type { Route } from './+types/profile';
+import { getSession } from '@/lib/session.server';
+import ProfileNav from '@/components/profile/ProfileNav';
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request);

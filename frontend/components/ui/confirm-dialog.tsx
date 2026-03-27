@@ -1,5 +1,3 @@
-'use client';
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,7 +22,7 @@ interface ConfirmDialogProps {
     | 'secondary'
     | 'ghost'
     | 'link';
-  onConfirm: () => Promise<void>;
+  onConfirm: () => void | Promise<void>;
 }
 
 export default function ConfirmDialog({

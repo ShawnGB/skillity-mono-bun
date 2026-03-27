@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { useFetcher } from "react-router";
-import { useForm } from "react-hook-form";
-import type { AuthUser } from "@skillity/shared";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { useState, useEffect } from 'react';
+import { useFetcher } from 'react-router';
+import { useForm } from 'react-hook-form';
+import type { AuthUser } from '@skillity/shared';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 interface ProfileFormProps {
   user: AuthUser;
@@ -19,7 +19,7 @@ interface FormValues {
 export default function ProfileForm({ user }: ProfileFormProps) {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [isEditing, setIsEditing] = useState(false);
-  const isPending = fetcher.state !== "idle";
+  const isPending = fetcher.state !== 'idle';
 
   const {
     register,
@@ -35,13 +35,13 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   });
 
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data?.ok) {
+    if (fetcher.state === 'idle' && fetcher.data?.ok) {
       setIsEditing(false);
     }
   }, [fetcher.state, fetcher.data]);
 
   const onSubmit = (data: FormValues) => {
-    fetcher.submit(data, { method: "post", action: "/api/profile" });
+    fetcher.submit(data, { method: 'post', action: '/api/profile' });
   };
 
   const handleCancel = () => {
@@ -59,12 +59,24 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         )}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">First Name</p>
-            <p>{user.firstName || <span className="text-muted-foreground italic">Not set</span>}</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              First Name
+            </p>
+            <p>
+              {user.firstName || (
+                <span className="text-muted-foreground italic">Not set</span>
+              )}
+            </p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">Last Name</p>
-            <p>{user.lastName || <span className="text-muted-foreground italic">Not set</span>}</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Last Name
+            </p>
+            <p>
+              {user.lastName || (
+                <span className="text-muted-foreground italic">Not set</span>
+              )}
+            </p>
           </div>
         </div>
         <div className="space-y-1">
@@ -91,20 +103,24 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           <Label htmlFor="firstName">First Name</Label>
           <Input
             id="firstName"
-            {...register("firstName", { required: "First name is required" })}
+            {...register('firstName', { required: 'First name is required' })}
           />
           {errors.firstName && (
-            <p className="text-sm text-destructive">{errors.firstName.message}</p>
+            <p className="text-sm text-destructive">
+              {errors.firstName.message}
+            </p>
           )}
         </div>
         <div className="space-y-2">
           <Label htmlFor="lastName">Last Name</Label>
           <Input
             id="lastName"
-            {...register("lastName", { required: "Last name is required" })}
+            {...register('lastName', { required: 'Last name is required' })}
           />
           {errors.lastName && (
-            <p className="text-sm text-destructive">{errors.lastName.message}</p>
+            <p className="text-sm text-destructive">
+              {errors.lastName.message}
+            </p>
           )}
         </div>
       </div>
@@ -114,11 +130,11 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         <Input
           id="email"
           type="email"
-          {...register("email", {
-            required: "Email is required",
+          {...register('email', {
+            required: 'Email is required',
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Invalid email address",
+              message: 'Invalid email address',
             },
           })}
         />
@@ -129,9 +145,14 @@ export default function ProfileForm({ user }: ProfileFormProps) {
 
       <div className="flex gap-2">
         <Button type="submit" disabled={isPending}>
-          {isPending ? "Saving..." : "Save Changes"}
+          {isPending ? 'Saving...' : 'Save Changes'}
         </Button>
-        <Button type="button" variant="outline" onClick={handleCancel} disabled={isPending}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={handleCancel}
+          disabled={isPending}
+        >
           Cancel
         </Button>
       </div>

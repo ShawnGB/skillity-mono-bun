@@ -33,7 +33,13 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">
           <div>
-            <img src="/logo.svg" alt="uSkillity" width={108} height={30} className="mb-3" />
+            <img
+              src="/logo.svg"
+              alt="uSkillity"
+              width={108}
+              height={30}
+              className="mb-3"
+            />
             <p className="text-sm text-muted-foreground">
               Share &middot; Connect &middot; Purpose
             </p>

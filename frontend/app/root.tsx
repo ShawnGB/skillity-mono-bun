@@ -1,6 +1,6 @@
-import "@fontsource/inter/index.css";
-import "@fontsource/fraunces/index.css";
-import "./app.css";
+import '@fontsource/inter/index.css';
+import '@fontsource/fraunces/index.css';
+import './app.css';
 
 import {
   isRouteErrorResponse,
@@ -9,13 +9,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLoaderData,
-} from "react-router";
+} from 'react-router';
 
-import type { Route } from "./+types/root";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import { getSession } from "@/lib/session.server";
+import type { Route } from './+types/root';
+import Header from '@/components/layout/Header';
+import Footer from '@/components/layout/Footer';
+import { getSession } from '@/lib/session.server';
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request);
@@ -40,8 +39,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
-  const { user } = useLoaderData<typeof loader>();
+export default function App({ loaderData }: Route.ComponentProps) {
+  const { user } = loaderData;
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -55,15 +54,15 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  let message = 'Oops!';
+  let details = 'An unexpected error occurred.';
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message = error.status === 404 ? '404' : 'Error';
     details =
       error.status === 404
-        ? "The requested page could not be found."
+        ? 'The requested page could not be found.'
         : error.statusText || details;
   } else if (import.meta.env.DEV && error instanceof Error) {
     details = error.message;

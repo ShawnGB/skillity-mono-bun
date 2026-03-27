@@ -1,14 +1,14 @@
-import { data, redirect } from "react-router";
-import { format } from "date-fns";
-import type { Route } from "./+types/checkout.$bookingId";
-import { getSession } from "@/lib/session.server";
-import { getBooking } from "@/lib/bookings.server";
-import { BookingStatus } from "@skillity/shared";
-import CheckoutForm from "@/components/checkout/CheckoutForm";
+import { data, redirect } from 'react-router';
+import { format } from 'date-fns';
+import type { Route } from './+types/checkout.$bookingId';
+import { getSession } from '@/lib/session.server';
+import { getBooking } from '@/lib/bookings.server';
+import { BookingStatus } from '@skillity/shared';
+import CheckoutForm from '@/components/checkout/CheckoutForm';
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await getSession(request);
-  if (!session?.user) return redirect("/login?redirect=/workshops");
+  if (!session?.user) return redirect('/login?redirect=/workshops');
 
   const { bookingId } = params;
 
@@ -20,14 +20,14 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   }
 
   if (booking.status !== BookingStatus.PENDING) {
-    return redirect("/profile/bookings");
+    return redirect('/profile/bookings');
   }
 
   return { booking, isFree: Number(booking.amount) === 0 };
 }
 
 export function meta() {
-  return [{ title: "Checkout | Skillity" }];
+  return [{ title: 'Checkout | Skillity' }];
 }
 
 export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
@@ -45,7 +45,7 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
             <div className="flex justify-between">
               <span>Date</span>
               <span className="font-medium text-foreground">
-                {format(new Date(workshop.startsAt), "EEEE, MMMM d, yyyy")}
+                {format(new Date(workshop.startsAt), 'EEEE, MMMM d, yyyy')}
               </span>
             </div>
           )}
@@ -53,14 +53,16 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
             <div className="flex justify-between">
               <span>Time</span>
               <span className="font-medium text-foreground">
-                {format(new Date(workshop.startsAt), "HH:mm")} -{" "}
-                {format(new Date(workshop.endsAt), "HH:mm")}
+                {format(new Date(workshop.startsAt), 'HH:mm')} -{' '}
+                {format(new Date(workshop.endsAt), 'HH:mm')}
               </span>
             </div>
           )}
           <div className="flex justify-between">
             <span>Location</span>
-            <span className="font-medium text-foreground">{workshop.location}</span>
+            <span className="font-medium text-foreground">
+              {workshop.location}
+            </span>
           </div>
           <div className="flex justify-between">
             <span>Host</span>
@@ -72,9 +74,13 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
             <span className="font-medium text-foreground">Total</span>
             <div className="text-right">
               <span className="font-bold text-foreground">
-                {isFree ? "Free" : `${booking.amount} ${booking.currency}`}
+                {isFree ? 'Free' : `${booking.amount} ${booking.currency}`}
               </span>
-              {!isFree && <p className="text-xs text-muted-foreground mt-0.5">inkl. MwSt.</p>}
+              {!isFree && (
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  inkl. MwSt.
+                </p>
+              )}
             </div>
           </div>
         </div>

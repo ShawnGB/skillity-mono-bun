@@ -1,22 +1,22 @@
-import type { AuthUser } from "@skillity/shared";
-import { serverGet } from "@/lib/api-client.server";
-
-const API_URL = process.env.API_URL ?? "http://localhost:3000";
+import type { AuthUser } from '@skillity/shared';
+import { API_URL, serverGet } from '@/lib/api-client.server';
 
 function getCookieValue(cookieHeader: string, name: string): string | null {
   const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
   return match ? match[1] : null;
 }
 
-async function tryRefreshAndGetMe(cookieHeader: string): Promise<{ user: AuthUser } | null> {
-  const refreshToken = getCookieValue(cookieHeader, "refresh_token");
+async function tryRefreshAndGetMe(
+  cookieHeader: string,
+): Promise<{ user: AuthUser } | null> {
+  const refreshToken = getCookieValue(cookieHeader, 'refresh_token');
   if (!refreshToken) return null;
 
   try {
     const refreshResponse = await fetch(`${API_URL}/auth/refresh`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Cookie: `refresh_token=${refreshToken}`,
       },
     });
@@ -24,11 +24,11 @@ async function tryRefreshAndGetMe(cookieHeader: string): Promise<{ user: AuthUse
     if (!refreshResponse.ok) return null;
 
     const newCookies = refreshResponse.headers.getSetCookie();
-    const forwardCookie = newCookies.map((c) => c.split(";")[0]).join("; ");
+    const forwardCookie = newCookies.map((c) => c.split(';')[0]).join('; ');
 
     const meResponse = await fetch(`${API_URL}/auth/me`, {
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Cookie: forwardCookie,
       },
     });
@@ -40,21 +40,26 @@ async function tryRefreshAndGetMe(cookieHeader: string): Promise<{ user: AuthUse
   }
 }
 
-export async function getSession(request: Request): Promise<{ user: AuthUser } | null> {
-  const cookieHeader = request.headers.get("cookie") ?? "";
+export async function getSession(
+  request: Request,
+): Promise<{ user: AuthUser } | null> {
+  const cookieHeader = request.headers.get('cookie') ?? '';
   const hasAuth =
-    cookieHeader.includes("access_token=") || cookieHeader.includes("refresh_token=");
+    cookieHeader.includes('access_token=') ||
+    cookieHeader.includes('refresh_token=');
 
   if (!hasAuth) return null;
 
   try {
-    return await serverGet<{ user: AuthUser }>("/auth/me", request);
+    return await serverGet<{ user: AuthUser }>('/auth/me', request);
   } catch {
     return tryRefreshAndGetMe(cookieHeader);
   }
 }
 
-export async function getCurrentUser(request: Request): Promise<AuthUser | null> {
+export async function getCurrentUser(
+  request: Request,
+): Promise<AuthUser | null> {
   const session = await getSession(request);
   return session?.user ?? null;
 }

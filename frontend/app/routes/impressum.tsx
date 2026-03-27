@@ -1,7 +1,7 @@
 export function meta() {
   return [
-    { title: "Impressum | Skillity" },
-    { name: "robots", content: "noindex" },
+    { title: 'Impressum | Skillity' },
+    { name: 'robots', content: 'noindex' },
   ];
 }
 
@@ -13,8 +13,10 @@ export default function ImpressumPage() {
         <section>
           <h2 className="text-2xl mb-4">Angaben gem. &sect; 5 TMG</h2>
           <p className="text-muted-foreground">
-            Shawn G. Becker<br />
-            Baseler Str 38<br />
+            Shawn G. Becker
+            <br />
+            Baseler Str 38
+            <br />
             12205 Berlin
           </p>
         </section>
@@ -22,7 +24,8 @@ export default function ImpressumPage() {
         <section>
           <h2 className="text-2xl mb-4">Kontakt</h2>
           <p className="text-muted-foreground">
-            E-Mail: contact@shawnbecker.de<br />
+            E-Mail: contact@shawnbecker.de
+            <br />
             Telefon: +49 170 966 47 25
           </p>
         </section>
@@ -32,8 +35,10 @@ export default function ImpressumPage() {
             Verantwortlich f. d. Inhalt gem. &sect; 55 Abs. 2 RSt
           </h2>
           <p className="text-muted-foreground">
-            Shawn G. Becker<br />
-            Baseler Str 38<br />
+            Shawn G. Becker
+            <br />
+            Baseler Str 38
+            <br />
             12205 Berlin
           </p>
         </section>
@@ -43,14 +48,14 @@ export default function ImpressumPage() {
           <p className="text-muted-foreground">
             Die Inhalte unserer Seiten wurden mit gr&ouml;&szlig;ter Sorgfalt
             erstellt. F&uuml;r die Richtigkeit, Vollst&auml;ndigkeit und
-            Aktualit&auml;t der Inhalte k&ouml;nnen wir jedoch keine
-            Gew&auml;hr &uuml;bernehmen. Als Diensteanbieter sind wir
-            gem&auml;&szlig; &sect; 7 Abs. 1 TMG f&uuml;r eigene Inhalte auf
-            diesen Seiten nach den allgemeinen Gesetzen verantwortlich. Nach
-            &sect;&sect; 8 bis 10 TMG sind wir als Diensteanbieter jedoch nicht
-            verpflichtet, &uuml;bermittelte oder gespeicherte fremde
-            Informationen zu &uuml;berwachen oder nach Umst&auml;nden zu
-            forschen, die auf eine rechtswidrige T&auml;tigkeit hinweisen.
+            Aktualit&auml;t der Inhalte k&ouml;nnen wir jedoch keine Gew&auml;hr
+            &uuml;bernehmen. Als Diensteanbieter sind wir gem&auml;&szlig;
+            &sect; 7 Abs. 1 TMG f&uuml;r eigene Inhalte auf diesen Seiten nach
+            den allgemeinen Gesetzen verantwortlich. Nach &sect;&sect; 8 bis 10
+            TMG sind wir als Diensteanbieter jedoch nicht verpflichtet,
+            &uuml;bermittelte oder gespeicherte fremde Informationen zu
+            &uuml;berwachen oder nach Umst&auml;nden zu forschen, die auf eine
+            rechtswidrige T&auml;tigkeit hinweisen.
           </p>
         </section>
 

@@ -1,14 +1,21 @@
-import { Link } from "react-router";
-import { Heart, Wallet, Users, ListChecks, Handshake, BadgeEuro } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Link } from 'react-router';
+import {
+  Heart,
+  Wallet,
+  Users,
+  ListChecks,
+  Handshake,
+  BadgeEuro,
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function meta() {
   return [
-    { title: "Become a Guide | Skillity" },
+    { title: 'Become a Guide | Skillity' },
     {
-      name: "description",
+      name: 'description',
       content:
-        "Share your passion and earn on your terms. Host workshops on uSkillity. No teaching degree required.",
+        'Share your passion and earn on your terms. Host workshops on uSkillity. No teaching degree required.',
     },
   ];
 }
@@ -16,42 +23,42 @@ export function meta() {
 const benefits = [
   {
     icon: Heart,
-    title: "Share Your Passion",
+    title: 'Share Your Passion',
     description:
-      "Turn what you love into an experience others will remember. No teaching degree required, just enthusiasm.",
+      'Turn what you love into an experience others will remember. No teaching degree required, just enthusiasm.',
   },
   {
     icon: Wallet,
-    title: "Earn on Your Terms",
+    title: 'Earn on Your Terms',
     description:
-      "Set your own price, schedule, and group size. Your workshop, your rules.",
+      'Set your own price, schedule, and group size. Your workshop, your rules.',
   },
   {
     icon: Users,
-    title: "Build Community",
+    title: 'Build Community',
     description:
-      "Connect with like-minded people in your city. Every workshop creates bonds that last beyond the session.",
+      'Connect with like-minded people in your city. Every workshop creates bonds that last beyond the session.',
   },
 ];
 
 const howItWorks = [
   {
     icon: ListChecks,
-    title: "Create a Listing",
+    title: 'Create a Listing',
     description:
-      "Describe your workshop, set the price and capacity, and publish it in minutes.",
+      'Describe your workshop, set the price and capacity, and publish it in minutes.',
   },
   {
     icon: Handshake,
-    title: "Welcome Learners",
+    title: 'Welcome Learners',
     description:
-      "Learners book their spot and show up. You focus on what you do best.",
+      'Learners book their spot and show up. You focus on what you do best.',
   },
   {
     icon: BadgeEuro,
-    title: "Get Paid",
+    title: 'Get Paid',
     description:
-      "Receive your earnings within 24 hours. Simple, transparent, fair.",
+      'Receive your earnings within 24 hours. Simple, transparent, fair.',
   },
 ];
 
@@ -125,9 +132,9 @@ export default function TeachPage() {
             You Keep Everything
           </h2>
           <p className="mt-6 text-lg text-primary-foreground/80">
-            You set your price and you get 100% of it. We add a small 5%
-            service fee for learners at checkout. No hidden fees, no
-            subscriptions, no commission taken from you.
+            You set your price and you get 100% of it. We add a small 5% service
+            fee for learners at checkout. No hidden fees, no subscriptions, no
+            commission taken from you.
           </p>
         </div>
       </section>

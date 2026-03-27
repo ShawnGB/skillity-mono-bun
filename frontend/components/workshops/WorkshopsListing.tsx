@@ -1,18 +1,33 @@
-import { Link } from "react-router";
-import { format } from "date-fns";
-import { WorkshopStatus, WorkshopCategory, WorkshopLevel, CATEGORY_LABELS, LEVEL_LABELS } from "@skillity/shared";
-import type { Workshop } from "@skillity/shared";
-import { cn } from "@/lib/utils";
-import WishlistButton from "@/components/workshops/WishlistButton";
+import { Link } from 'react-router';
+import { format } from 'date-fns';
+import {
+  WorkshopStatus,
+  WorkshopCategory,
+  WorkshopLevel,
+  CATEGORY_LABELS,
+  LEVEL_LABELS,
+} from '@skillity/shared';
+import type { Workshop } from '@skillity/shared';
+import { cn } from '@/lib/utils';
+import WishlistButton from '@/components/workshops/WishlistButton';
 
 function StatusBadge({ status }: { status: WorkshopStatus }) {
   if (status === WorkshopStatus.PUBLISHED) return null;
 
   const config = {
-    [WorkshopStatus.COMPLETED]: { label: "Past", className: "bg-muted text-muted-foreground" },
-    [WorkshopStatus.CANCELLED]: { label: "Cancelled", className: "bg-destructive/80 text-white" },
-    [WorkshopStatus.DRAFT]: { label: "Draft", className: "bg-yellow-500/80 text-white" },
-    [WorkshopStatus.PUBLISHED]: { label: "", className: "" },
+    [WorkshopStatus.COMPLETED]: {
+      label: 'Past',
+      className: 'bg-muted text-muted-foreground',
+    },
+    [WorkshopStatus.CANCELLED]: {
+      label: 'Cancelled',
+      className: 'bg-destructive/80 text-white',
+    },
+    [WorkshopStatus.DRAFT]: {
+      label: 'Draft',
+      className: 'bg-yellow-500/80 text-white',
+    },
+    [WorkshopStatus.PUBLISHED]: { label: '', className: '' },
   };
 
   const { label, className } = config[status];
@@ -20,7 +35,7 @@ function StatusBadge({ status }: { status: WorkshopStatus }) {
   return (
     <span
       className={cn(
-        "absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-xs font-medium",
+        'absolute top-3 right-3 rounded-full px-2.5 py-0.5 text-xs font-medium',
         className,
       )}
     >
@@ -35,7 +50,7 @@ function buildFilterUrl(params: Record<string, string | undefined>) {
     if (value) qs.set(key, value);
   }
   const str = qs.toString();
-  return str ? `/workshops?${str}` : "/workshops";
+  return str ? `/workshops?${str}` : '/workshops';
 }
 
 interface WorkshopsListingProps {
@@ -58,7 +73,9 @@ export default function WorkshopsListing({
   const visible = workshops.filter((w) => w.status !== WorkshopStatus.DRAFT);
   const upcoming = visible.filter((w) => w.status === WorkshopStatus.PUBLISHED);
   const past = visible.filter(
-    (w) => w.status === WorkshopStatus.COMPLETED || w.status === WorkshopStatus.CANCELLED,
+    (w) =>
+      w.status === WorkshopStatus.COMPLETED ||
+      w.status === WorkshopStatus.CANCELLED,
   );
   const sorted = [...upcoming, ...past];
 
@@ -68,10 +85,10 @@ export default function WorkshopsListing({
         <Link
           to={buildFilterUrl({ level, search })}
           className={cn(
-            "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+            'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
             !category
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground hover:bg-muted/80",
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground hover:bg-muted/80',
           )}
         >
           All
@@ -81,10 +98,10 @@ export default function WorkshopsListing({
             key={cat}
             to={buildFilterUrl({ category: cat, level, search })}
             className={cn(
-              "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
+              'rounded-full px-4 py-1.5 text-sm font-medium transition-colors',
               category === cat
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80",
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80',
             )}
           >
             {CATEGORY_LABELS[cat]}
@@ -96,10 +113,10 @@ export default function WorkshopsListing({
         <Link
           to={buildFilterUrl({ category, search })}
           className={cn(
-            "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+            'rounded-full px-3 py-1 text-xs font-medium transition-colors',
             !level
-              ? "bg-primary text-primary-foreground"
-              : "bg-muted text-muted-foreground hover:bg-muted/80",
+              ? 'bg-primary text-primary-foreground'
+              : 'bg-muted text-muted-foreground hover:bg-muted/80',
           )}
         >
           All Levels
@@ -109,10 +126,10 @@ export default function WorkshopsListing({
             key={lvl}
             to={buildFilterUrl({ category, level: lvl, search })}
             className={cn(
-              "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+              'rounded-full px-3 py-1 text-xs font-medium transition-colors',
               level === lvl
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground hover:bg-muted/80",
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80',
             )}
           >
             {LEVEL_LABELS[lvl]}
@@ -134,8 +151,8 @@ export default function WorkshopsListing({
                 key={workshop.id}
                 to={`/workshops/${workshop.id}`}
                 className={cn(
-                  "group relative aspect-[3/2] overflow-hidden rounded-xl",
-                  isPast && "opacity-60",
+                  'group relative aspect-[3/2] overflow-hidden rounded-xl',
+                  isPast && 'opacity-60',
                 )}
               >
                 <img
@@ -157,7 +174,7 @@ export default function WorkshopsListing({
                   <div className="flex items-center gap-2 mb-1">
                     {workshop.startsAt && (
                       <p className="text-xs text-white/70 font-medium uppercase tracking-wider">
-                        {format(new Date(workshop.startsAt), "MMM d, yyyy")}
+                        {format(new Date(workshop.startsAt), 'MMM d, yyyy')}
                       </p>
                     )}
                     {workshop.level && (

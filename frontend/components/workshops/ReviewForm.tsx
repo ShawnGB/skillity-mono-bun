@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
-import { useFetcher } from "react-router";
-import { Star } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { useEffect, useState } from 'react';
+import { useFetcher } from 'react-router';
+import { Star } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 
 interface ReviewFormProps {
   workshopId: string;
@@ -14,11 +14,11 @@ export default function ReviewForm({ workshopId, onSuccess }: ReviewFormProps) {
   const [rating, setRating] = useState(0);
   const [hoveredRating, setHoveredRating] = useState(0);
 
-  const isPending = fetcher.state !== "idle";
+  const isPending = fetcher.state !== 'idle';
   const displayRating = hoveredRating || rating;
 
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data && !fetcher.data.error) {
+    if (fetcher.state === 'idle' && fetcher.data && !fetcher.data.error) {
       onSuccess();
     }
   }, [fetcher.state, fetcher.data, onSuccess]);
@@ -52,8 +52,8 @@ export default function ReviewForm({ workshopId, onSuccess }: ReviewFormProps) {
                 size={24}
                 className={
                   i < displayRating
-                    ? "fill-yellow-400 text-yellow-400"
-                    : "text-muted-foreground/30"
+                    ? 'fill-yellow-400 text-yellow-400'
+                    : 'text-muted-foreground/30'
                 }
               />
             </button>
@@ -72,7 +72,7 @@ export default function ReviewForm({ workshopId, onSuccess }: ReviewFormProps) {
       </div>
 
       <Button type="submit" disabled={isPending || rating === 0}>
-        {isPending ? "Submitting..." : "Submit Review"}
+        {isPending ? 'Submitting...' : 'Submit Review'}
       </Button>
     </fetcher.Form>
   );

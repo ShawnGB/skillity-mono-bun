@@ -1,16 +1,16 @@
-import { redirect, Link } from "react-router";
-import { format } from "date-fns";
-import type { Route } from "./+types/profile.saved";
-import { getSession } from "@/lib/session.server";
-import { getMyWishlist } from "@/lib/wishlist.server";
-import { WorkshopStatus, CATEGORY_LABELS } from "@skillity/shared";
-import type { WishlistItem } from "@skillity/shared";
-import { cn } from "@/lib/utils";
-import WishlistButton from "@/components/workshops/WishlistButton";
+import { redirect, Link } from 'react-router';
+import { format } from 'date-fns';
+import type { Route } from './+types/profile.saved';
+import { getSession } from '@/lib/session.server';
+import { getMyWishlist } from '@/lib/wishlist.server';
+import { WorkshopStatus, CATEGORY_LABELS } from '@skillity/shared';
+import type { WishlistItem } from '@skillity/shared';
+import { cn } from '@/lib/utils';
+import WishlistButton from '@/components/workshops/WishlistButton';
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request);
-  if (!session?.user) return redirect("/login?redirect=/profile/saved");
+  if (!session?.user) return redirect('/login?redirect=/profile/saved');
 
   let items: WishlistItem[] = [];
   try {
@@ -21,7 +21,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 }
 
 export function meta() {
-  return [{ title: "Saved Workshops | Skillity" }];
+  return [{ title: 'Saved Workshops | Skillity' }];
 }
 
 function SavedWorkshopRow({ item }: { item: WishlistItem }) {
@@ -33,8 +33,8 @@ function SavedWorkshopRow({ item }: { item: WishlistItem }) {
   return (
     <div
       className={cn(
-        "flex items-center justify-between gap-4 rounded-xl border bg-card p-5",
-        isPast && "opacity-60",
+        'flex items-center justify-between gap-4 rounded-xl border bg-card p-5',
+        isPast && 'opacity-60',
       )}
     >
       <div className="min-w-0 flex-1">
@@ -51,11 +51,13 @@ function SavedWorkshopRow({ item }: { item: WishlistItem }) {
         </div>
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           {workshop.startsAt && (
-            <span>{format(new Date(workshop.startsAt), "MMM d, yyyy")}</span>
+            <span>{format(new Date(workshop.startsAt), 'MMM d, yyyy')}</span>
           )}
           <span>{workshop.location}</span>
           <span>
-            {Number(workshop.ticketPrice) > 0 ? `${workshop.ticketPrice} EUR` : "Free"}
+            {Number(workshop.ticketPrice) > 0
+              ? `${workshop.ticketPrice} EUR`
+              : 'Free'}
           </span>
         </div>
       </div>
@@ -68,7 +70,9 @@ function SavedWorkshopRow({ item }: { item: WishlistItem }) {
   );
 }
 
-export default function SavedWorkshopsPage({ loaderData }: Route.ComponentProps) {
+export default function SavedWorkshopsPage({
+  loaderData,
+}: Route.ComponentProps) {
   const { items } = loaderData;
 
   return (
@@ -78,7 +82,7 @@ export default function SavedWorkshopsPage({ loaderData }: Route.ComponentProps)
       {items.length === 0 ? (
         <div className="text-center py-16">
           <p className="text-muted-foreground">
-            No saved workshops yet.{" "}
+            No saved workshops yet.{' '}
             <Link to="/workshops" className="underline hover:text-foreground">
               Browse workshops
             </Link>

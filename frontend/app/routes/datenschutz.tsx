@@ -1,7 +1,7 @@
 export function meta() {
   return [
-    { title: "Datenschutz | Skillity" },
-    { name: "robots", content: "noindex" },
+    { title: 'Datenschutz | Skillity' },
+    { name: 'robots', content: 'noindex' },
   ];
 }
 
@@ -13,37 +13,39 @@ export default function DatenschutzPage() {
         <section>
           <h2 className="text-2xl mb-4">1. Verantwortlicher</h2>
           <p className="text-muted-foreground">
-            Shawn G. Becker<br />
-            Baseler Str 38<br />
-            12205 Berlin<br />
-            E-Mail: contact@shawnbecker.de<br />
+            Shawn G. Becker
+            <br />
+            Baseler Str 38
+            <br />
+            12205 Berlin
+            <br />
+            E-Mail: contact@shawnbecker.de
+            <br />
             Telefon: +49 170 966 47 25
           </p>
         </section>
 
         <section>
-          <h2 className="text-2xl mb-4">
-            2. Erhebung personenbezogener Daten
-          </h2>
+          <h2 className="text-2xl mb-4">2. Erhebung personenbezogener Daten</h2>
           <p className="text-muted-foreground">
             Wir erheben personenbezogene Daten, wenn Sie sich auf unserer
             Plattform registrieren, einen Workshop buchen oder die Plattform
-            nutzen. Dies umfasst insbesondere: Name, E-Mail-Adresse und
-            Passwort bei der Registrierung; Buchungs- und Zahlungsdaten bei der
-            Buchung eines Workshops; Nutzungsdaten wie IP-Adresse, Browsertyp
-            und Zugriffszeiten.
+            nutzen. Dies umfasst insbesondere: Name, E-Mail-Adresse und Passwort
+            bei der Registrierung; Buchungs- und Zahlungsdaten bei der Buchung
+            eines Workshops; Nutzungsdaten wie IP-Adresse, Browsertyp und
+            Zugriffszeiten.
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl mb-4">3. Rechtsgrundlagen</h2>
           <p className="text-muted-foreground">
-            Die Verarbeitung Ihrer Daten erfolgt auf Grundlage von Art. 6
-            Abs. 1 DSGVO: Vertragserf&uuml;llung (lit. b) f&uuml;r die
-            Bereitstellung der Plattform und Abwicklung von Buchungen;
-            berechtigte Interessen (lit. f) f&uuml;r die Verbesserung unserer
-            Dienste und die Gew&auml;hrleistung der Sicherheit; Einwilligung
-            (lit. a) soweit Sie uns eine solche erteilt haben.
+            Die Verarbeitung Ihrer Daten erfolgt auf Grundlage von Art. 6 Abs. 1
+            DSGVO: Vertragserf&uuml;llung (lit. b) f&uuml;r die Bereitstellung
+            der Plattform und Abwicklung von Buchungen; berechtigte Interessen
+            (lit. f) f&uuml;r die Verbesserung unserer Dienste und die
+            Gew&auml;hrleistung der Sicherheit; Einwilligung (lit. a) soweit Sie
+            uns eine solche erteilt haben.
           </p>
         </section>
 
@@ -53,8 +55,8 @@ export default function DatenschutzPage() {
             Wir verwenden ausschlie&szlig;lich funktionale httpOnly-Cookies
             f&uuml;r die Authentifizierung. Diese Cookies sind technisch
             notwendig f&uuml;r den Betrieb der Plattform und enthalten keine
-            Tracking- oder Werbedaten. Eine gesonderte Einwilligung ist
-            f&uuml;r diese technisch notwendigen Cookies nicht erforderlich.
+            Tracking- oder Werbedaten. Eine gesonderte Einwilligung ist f&uuml;r
+            diese technisch notwendigen Cookies nicht erforderlich.
           </p>
         </section>
 
@@ -64,9 +66,10 @@ export default function DatenschutzPage() {
             F&uuml;r die Abwicklung von Zahlungen nutzen wir den
             Zahlungsdienstleister Mollie B.V., Keizersgracht 126, 1015 CW
             Amsterdam, Niederlande. Bei einer Buchung werden die f&uuml;r die
-            Zahlungsabwicklung erforderlichen Daten (Name, Zahlungsinformationen)
-            an Mollie &uuml;bermittelt. Die Datenverarbeitung durch Mollie
-            erfolgt gem&auml;&szlig; deren eigener Datenschutzerkl&auml;rung.
+            Zahlungsabwicklung erforderlichen Daten (Name,
+            Zahlungsinformationen) an Mollie &uuml;bermittelt. Die
+            Datenverarbeitung durch Mollie erfolgt gem&auml;&szlig; deren
+            eigener Datenschutzerkl&auml;rung.
           </p>
         </section>
 
@@ -77,9 +80,9 @@ export default function DatenschutzPage() {
             Auskunft &uuml;ber Ihre gespeicherten Daten (Art. 15); Berichtigung
             unrichtiger Daten (Art. 16); L&ouml;schung Ihrer Daten (Art. 17);
             Einschr&auml;nkung der Verarbeitung (Art. 18);
-            Datenportabilit&auml;t (Art. 20); Widerspruch gegen die
-            Verarbeitung (Art. 21). Zur Aus&uuml;bung Ihrer Rechte wenden Sie
-            sich bitte an contact@shawnbecker.de.
+            Datenportabilit&auml;t (Art. 20); Widerspruch gegen die Verarbeitung
+            (Art. 21). Zur Aus&uuml;bung Ihrer Rechte wenden Sie sich bitte an
+            contact@shawnbecker.de.
           </p>
         </section>
 

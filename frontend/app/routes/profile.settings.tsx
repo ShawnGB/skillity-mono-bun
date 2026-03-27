@@ -1,9 +1,9 @@
-import type { Route } from "./+types/profile.settings";
-import ExportDataSection from "@/components/profile/ExportDataSection";
-import DeleteAccountSection from "@/components/profile/DeleteAccountSection";
+import type { Route } from './+types/profile.settings';
+import ExportDataSection from '@/components/profile/ExportDataSection';
+import DeleteAccountSection from '@/components/profile/DeleteAccountSection';
 
 export function meta() {
-  return [{ title: "Settings | Skillity" }];
+  return [{ title: 'Settings | Skillity' }];
 }
 
 export default function SettingsPage(_: Route.ComponentProps) {

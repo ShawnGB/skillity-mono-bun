@@ -1,11 +1,11 @@
-import { useFetcher } from "react-router";
-import { WorkshopStatus } from "@skillity/shared";
-import type { Workshop } from "@skillity/shared";
-import { Button } from "@/components/ui/button";
-import ConfirmDialog from "@/components/ui/confirm-dialog";
-import FormModal from "@/components/modals/FormModal";
-import EditWorkshopForm from "@/components/workshops/EditWorkshopForm";
-import CreateWorkshopForm from "@/components/workshops/CreateWorkshopForm";
+import { useFetcher } from 'react-router';
+import { WorkshopStatus } from '@skillity/shared';
+import type { Workshop } from '@skillity/shared';
+import { Button } from '@/components/ui/button';
+import ConfirmDialog from '@/components/ui/confirm-dialog';
+import FormModal from '@/components/modals/FormModal';
+import EditWorkshopForm from '@/components/workshops/EditWorkshopForm';
+import CreateWorkshopForm from '@/components/workshops/CreateWorkshopForm';
 
 interface WorkshopActionsProps {
   workshop: Workshop;
@@ -13,7 +13,7 @@ interface WorkshopActionsProps {
 
 export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
   const fetcher = useFetcher();
-  const isPending = fetcher.state !== "idle";
+  const isPending = fetcher.state !== 'idle';
 
   const isPast =
     workshop.status === WorkshopStatus.COMPLETED ||
@@ -33,12 +33,19 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
     return (
       <div className="flex items-center gap-2 shrink-0">
         <FormModal
-          trigger={<Button size="sm" variant="outline">Recreate</Button>}
+          trigger={
+            <Button size="sm" variant="outline">
+              Recreate
+            </Button>
+          }
           title="Recreate workshop"
           description="Create a new workshop based on this one. Pick a new date."
         >
           {({ onSuccess }) => (
-            <CreateWorkshopForm onSuccess={onSuccess} defaultValues={seriesDefaults} />
+            <CreateWorkshopForm
+              onSuccess={onSuccess}
+              defaultValues={seriesDefaults}
+            />
           )}
         </FormModal>
       </div>
@@ -48,38 +55,58 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
   return (
     <div className="flex items-center gap-2 shrink-0">
       <FormModal
-        trigger={<Button size="sm" variant="outline">Edit</Button>}
+        trigger={
+          <Button size="sm" variant="outline">
+            Edit
+          </Button>
+        }
         title="Edit workshop"
         description="Update your workshop details."
       >
-        {({ onSuccess }) => <EditWorkshopForm workshop={workshop} onSuccess={onSuccess} />}
+        {({ onSuccess }) => (
+          <EditWorkshopForm workshop={workshop} onSuccess={onSuccess} />
+        )}
       </FormModal>
       <FormModal
-        trigger={<Button size="sm" variant="outline">Add Date</Button>}
+        trigger={
+          <Button size="sm" variant="outline">
+            Add Date
+          </Button>
+        }
         title="Add another date"
         description="Create a new session for this workshop on a different date."
       >
         {({ onSuccess }) => (
-          <CreateWorkshopForm onSuccess={onSuccess} defaultValues={seriesDefaults} />
+          <CreateWorkshopForm
+            onSuccess={onSuccess}
+            defaultValues={seriesDefaults}
+          />
         )}
       </FormModal>
       {workshop.status === WorkshopStatus.DRAFT && (
-        <fetcher.Form method="post" action={`/api/workshops/${workshop.id}/status`}>
+        <fetcher.Form
+          method="post"
+          action={`/api/workshops/${workshop.id}/status`}
+        >
           <input type="hidden" name="status" value={WorkshopStatus.PUBLISHED} />
           <Button size="sm" type="submit" disabled={isPending}>
-            {isPending ? "Publishing..." : "Publish"}
+            {isPending ? 'Publishing...' : 'Publish'}
           </Button>
         </fetcher.Form>
       )}
       <ConfirmDialog
-        trigger={<Button size="sm" variant="outline" disabled={isPending}>Cancel</Button>}
+        trigger={
+          <Button size="sm" variant="outline" disabled={isPending}>
+            Cancel
+          </Button>
+        }
         title="Cancel workshop?"
         description="This will cancel your workshop and notify any booked participants. This action cannot be undone."
         confirmLabel="Yes, cancel workshop"
         onConfirm={() => {
           fetcher.submit(
             { status: WorkshopStatus.CANCELLED },
-            { method: "post", action: `/api/workshops/${workshop.id}/status` },
+            { method: 'post', action: `/api/workshops/${workshop.id}/status` },
           );
         }}
       />

@@ -3,7 +3,14 @@ import type { AuthUser } from '@skillity/shared';
 type ProfileField = keyof AuthUser;
 
 const GUEST_FIELDS: ProfileField[] = ['firstName', 'lastName'];
-const HOST_FIELDS: ProfileField[] = ['firstName', 'lastName', 'bio', 'tagline', 'profession', 'city'];
+const HOST_FIELDS: ProfileField[] = [
+  'firstName',
+  'lastName',
+  'bio',
+  'tagline',
+  'profession',
+  'city',
+];
 
 const FIELD_LABELS: Record<string, string> = {
   firstName: 'First name',

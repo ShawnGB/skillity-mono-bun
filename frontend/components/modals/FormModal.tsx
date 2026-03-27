@@ -1,6 +1,4 @@
-'use client';
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -26,20 +24,11 @@ export default function FormModal({
   onSuccess,
 }: FormModalProps) {
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleSuccess = () => {
     setOpen(false);
     onSuccess?.();
   };
-
-  if (!mounted) {
-    return trigger;
-  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

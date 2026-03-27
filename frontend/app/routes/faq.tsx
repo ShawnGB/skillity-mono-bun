@@ -1,67 +1,67 @@
 export function meta() {
   return [
-    { title: "FAQ | Skillity" },
+    { title: 'FAQ | Skillity' },
     {
-      name: "description",
+      name: 'description',
       content:
-        "Frequently asked questions about hosting and attending workshops on uSkillity.",
+        'Frequently asked questions about hosting and attending workshops on uSkillity.',
     },
   ];
 }
 
 const hostFaq = [
   {
-    question: "What qualifications do I need to host a workshop?",
+    question: 'What qualifications do I need to host a workshop?',
     answer:
-      "No degree or certification required. If you have passion for a topic and are willing to share it, you can host a workshop on uSkillity.",
+      'No degree or certification required. If you have passion for a topic and are willing to share it, you can host a workshop on uSkillity.',
   },
   {
-    question: "How do I cancel a workshop?",
+    question: 'How do I cancel a workshop?',
     answer:
-      "You can cancel a workshop up to 72 hours before the start date. All booked participants will receive a full refund automatically.",
+      'You can cancel a workshop up to 72 hours before the start date. All booked participants will receive a full refund automatically.',
   },
   {
-    question: "When do I get paid?",
+    question: 'When do I get paid?',
     answer:
-      "Payments are processed through Mollie after your workshop concludes. You receive 100% of the price you set.",
+      'Payments are processed through Mollie after your workshop concludes. You receive 100% of the price you set.',
   },
   {
-    question: "What is the commission?",
+    question: 'What is the commission?',
     answer:
-      "We add a 5% service fee on top of your listed price. This fee is paid by the learner. You keep everything you charge.",
+      'We add a 5% service fee on top of your listed price. This fee is paid by the learner. You keep everything you charge.',
   },
   {
-    question: "What if a participant behaves inappropriately?",
+    question: 'What if a participant behaves inappropriately?',
     answer:
-      "Contact us at contact@shawnbecker.de and we will handle it. You can also leave feedback on the participant.",
+      'Contact us at contact@shawnbecker.de and we will handle it. You can also leave feedback on the participant.',
   },
 ];
 
 const learnerFaq = [
   {
-    question: "Can I get a refund?",
+    question: 'Can I get a refund?',
     answer:
-      "Yes. You can cancel a booking up to 72 hours before the workshop starts for a full refund. After that, no refund is issued. If the host cancels, you always get a full refund.",
+      'Yes. You can cancel a booking up to 72 hours before the workshop starts for a full refund. After that, no refund is issued. If the host cancels, you always get a full refund.',
   },
   {
-    question: "How do I contact the host?",
+    question: 'How do I contact the host?',
     answer:
-      "If you have questions about a workshop, contact us at contact@shawnbecker.de and we will connect you with the host.",
+      'If you have questions about a workshop, contact us at contact@shawnbecker.de and we will connect you with the host.',
   },
   {
-    question: "What payment methods are accepted?",
+    question: 'What payment methods are accepted?',
     answer:
-      "Payments are handled through Mollie, which supports a range of methods including credit card, iDEAL, and more depending on your location.",
+      'Payments are handled through Mollie, which supports a range of methods including credit card, iDEAL, and more depending on your location.',
   },
   {
-    question: "What if a workshop is cancelled?",
+    question: 'What if a workshop is cancelled?',
     answer:
-      "If a host cancels their workshop, you receive a full refund automatically. No action needed on your part.",
+      'If a host cancels their workshop, you receive a full refund automatically. No action needed on your part.',
   },
   {
-    question: "How are prices set?",
+    question: 'How are prices set?',
     answer:
-      "Each host sets their own price. A 5% service fee is added on top at checkout to support the platform.",
+      'Each host sets their own price. A 5% service fee is added on top at checkout to support the platform.',
   },
 ];
 

@@ -1,9 +1,9 @@
-import { Form, useNavigation, useActionData } from "react-router";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import type { LoginInput } from "@skillity/shared";
+import { Form, useNavigation, useActionData } from 'react-router';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import type { LoginInput } from '@skillity/shared';
 
 interface LoginFormProps {
   redirectTo?: string;
@@ -12,7 +12,7 @@ interface LoginFormProps {
 export default function LoginForm({ redirectTo }: LoginFormProps) {
   const navigation = useNavigation();
   const actionData = useActionData<{ error?: string }>();
-  const isPending = navigation.state === "submitting";
+  const isPending = navigation.state === 'submitting';
 
   const {
     register,
@@ -21,7 +21,9 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
 
   return (
     <Form method="post" className="space-y-4">
-      {redirectTo && <input type="hidden" name="redirectTo" value={redirectTo} />}
+      {redirectTo && (
+        <input type="hidden" name="redirectTo" value={redirectTo} />
+      )}
 
       {actionData?.error && (
         <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
@@ -34,11 +36,11 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
         <Input
           id="email"
           type="email"
-          {...register("email", {
-            required: "Email is required",
+          {...register('email', {
+            required: 'Email is required',
             pattern: {
               value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-              message: "Invalid email address",
+              message: 'Invalid email address',
             },
           })}
           placeholder="john@example.com"
@@ -53,11 +55,11 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
         <Input
           id="password"
           type="password"
-          {...register("password", {
-            required: "Password is required",
+          {...register('password', {
+            required: 'Password is required',
             minLength: {
               value: 6,
-              message: "Password must be at least 6 characters",
+              message: 'Password must be at least 6 characters',
             },
           })}
           placeholder="Enter your password"
@@ -68,7 +70,7 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
       </div>
 
       <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? "Signing in..." : "Sign In"}
+        {isPending ? 'Signing in...' : 'Sign In'}
       </Button>
     </Form>
   );

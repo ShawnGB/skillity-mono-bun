@@ -1,13 +1,14 @@
-import { data, redirect } from "react-router";
-import type { Route } from "./+types/workshops.$id.edit";
-import { getSession } from "@/lib/session.server";
-import { getWorkshop } from "@/lib/workshops.server";
-import EditWorkshopForm from "@/components/workshops/EditWorkshopForm";
-import { useNavigate } from "react-router";
+import { data, redirect } from 'react-router';
+import type { Route } from './+types/workshops.$id.edit';
+import { getSession } from '@/lib/session.server';
+import { getWorkshop } from '@/lib/workshops.server';
+import EditWorkshopForm from '@/components/workshops/EditWorkshopForm';
+import { useNavigate } from 'react-router';
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await getSession(request);
-  if (!session?.user) return redirect(`/login?redirect=/workshops/${params.id}/edit`);
+  if (!session?.user)
+    return redirect(`/login?redirect=/workshops/${params.id}/edit`);
 
   let workshop;
   try {
@@ -16,15 +17,21 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     throw data(null, { status: 404 });
   }
 
-  if (workshop.hostId !== session.user.id && session.user.role !== "admin") {
-    return redirect("/profile/workshops");
+  if (workshop.hostId !== session.user.id && session.user.role !== 'admin') {
+    return redirect('/profile/workshops');
   }
 
   return { workshop };
 }
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
-  return [{ title: loaderData?.workshop ? `Edit ${loaderData.workshop.title} | Skillity` : "Edit Workshop | Skillity" }];
+  return [
+    {
+      title: loaderData?.workshop
+        ? `Edit ${loaderData.workshop.title} | Skillity`
+        : 'Edit Workshop | Skillity',
+    },
+  ];
 }
 
 export default function EditWorkshopPage({ loaderData }: Route.ComponentProps) {

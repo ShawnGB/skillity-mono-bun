@@ -1,32 +1,34 @@
-import { redirect, Link } from "react-router";
-import type { Route } from "./+types/profile._index";
-import { getSession } from "@/lib/session.server";
-import { getAvatarUrl } from "@/lib/avatar";
-import { Button } from "@/components/ui/button";
-import ProfileForm from "@/components/profile/ProfileForm";
-import ProfileCompleteness from "@/components/profile/ProfileCompleteness";
-import HostProfileSection from "@/components/profile/HostProfileSection";
+import { redirect, Link } from 'react-router';
+import type { Route } from './+types/profile._index';
+import { getSession } from '@/lib/session.server';
+import { getAvatarUrl } from '@/lib/avatar';
+import { Button } from '@/components/ui/button';
+import ProfileForm from '@/components/profile/ProfileForm';
+import ProfileCompleteness from '@/components/profile/ProfileCompleteness';
+import HostProfileSection from '@/components/profile/HostProfileSection';
 
 export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request);
-  if (!session?.user) return redirect("/login?redirect=/profile");
+  if (!session?.user) return redirect('/login?redirect=/profile');
   return { user: session.user };
 }
 
 export function meta() {
-  return [{ title: "Profile | Skillity" }];
+  return [{ title: 'Profile | Skillity' }];
 }
 
 export default function ProfilePage({ loaderData }: Route.ComponentProps) {
   const { user } = loaderData;
-  const isHost = user.role === "host" || user.role === "admin";
+  const isHost = user.role === 'host' || user.role === 'admin';
 
   return (
     <div className="max-w-2xl space-y-8">
       <ProfileCompleteness user={user} />
 
       <section className="rounded-xl border bg-card p-6">
-        <h2 className="text-xl font-sans font-semibold mb-6">Personal Information</h2>
+        <h2 className="text-xl font-sans font-semibold mb-6">
+          Personal Information
+        </h2>
         <ProfileForm user={user} />
       </section>
 
@@ -59,7 +61,9 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
               <span className="inline-flex items-center rounded-full bg-muted px-3 py-1 text-sm font-medium text-muted-foreground">
                 Guest
               </span>
-              <p className="text-sm text-muted-foreground">Upgrade to Host to create workshops.</p>
+              <p className="text-sm text-muted-foreground">
+                Upgrade to Host to create workshops.
+              </p>
             </div>
             <div className="flex items-center gap-3 rounded-lg border p-3">
               <img
@@ -71,7 +75,9 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
                 <p className="text-sm font-medium">
                   {user.firstName} {user.lastName}
                 </p>
-                <p className="text-xs text-muted-foreground">How you appear on reviews</p>
+                <p className="text-xs text-muted-foreground">
+                  How you appear on reviews
+                </p>
               </div>
             </div>
             <Button asChild>

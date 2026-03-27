@@ -5,7 +5,9 @@ interface ProfileCompletenessProps {
   user: AuthUser;
 }
 
-export default function ProfileCompleteness({ user }: ProfileCompletenessProps) {
+export default function ProfileCompleteness({
+  user,
+}: ProfileCompletenessProps) {
   const { percentage, missingFields } = getProfileCompleteness(user);
 
   if (percentage === 100) return null;
@@ -24,7 +26,8 @@ export default function ProfileCompleteness({ user }: ProfileCompletenessProps) 
       </div>
       {missingFields.length > 0 && (
         <p className="text-xs text-muted-foreground">
-          Add your {missingFields.join(', ').replace(/, ([^,]*)$/, ' and $1')} to complete your profile.
+          Add your {missingFields.join(', ').replace(/, ([^,]*)$/, ' and $1')}{' '}
+          to complete your profile.
         </p>
       )}
     </div>

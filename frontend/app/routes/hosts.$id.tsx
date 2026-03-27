@@ -1,12 +1,12 @@
-import { data, Link } from "react-router";
-import { format } from "date-fns";
-import { MapPin } from "lucide-react";
-import type { Route } from "./+types/hosts.$id";
-import { getHostProfile } from "@/lib/hosts.server";
-import { getHostWorkshops } from "@/lib/workshops.server";
-import { WorkshopStatus, CATEGORY_LABELS } from "@skillity/shared";
-import StarRating from "@/components/ui/star-rating";
-import { getAvatarUrl } from "@/lib/avatar";
+import { data, Link } from 'react-router';
+import { format } from 'date-fns';
+import { MapPin } from 'lucide-react';
+import type { Route } from './+types/hosts.$id';
+import { getHostProfile } from '@/lib/hosts.server';
+import { getHostWorkshops } from '@/lib/workshops.server';
+import { WorkshopStatus, CATEGORY_LABELS } from '@skillity/shared';
+import StarRating from '@/components/ui/star-rating';
+import { getAvatarUrl } from '@/lib/avatar';
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { id } = params;
@@ -20,37 +20,40 @@ export async function loader({ request, params }: Route.LoaderArgs) {
 
   const allWorkshops = await getHostWorkshops(request, id);
   const workshops = allWorkshops.filter(
-    (w) => w.status === WorkshopStatus.PUBLISHED || w.status === WorkshopStatus.COMPLETED,
+    (w) =>
+      w.status === WorkshopStatus.PUBLISHED ||
+      w.status === WorkshopStatus.COMPLETED,
   );
 
   return { host, workshops };
 }
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
-  if (!loaderData?.host) return [{ title: "Host | Skillity" }];
+  if (!loaderData?.host) return [{ title: 'Host | Skillity' }];
   const { host } = loaderData;
-  const name = [host.firstName, host.lastName].filter(Boolean).join(" ");
-  const description = host.tagline || host.bio?.slice(0, 160) || `${name} on uSkillity`;
+  const name = [host.firstName, host.lastName].filter(Boolean).join(' ');
+  const description =
+    host.tagline || host.bio?.slice(0, 160) || `${name} on uSkillity`;
   return [
     { title: `${name} | Host | Skillity` },
-    { name: "description", content: description },
-    { property: "og:title", content: `${name} | Host` },
-    { property: "og:type", content: "profile" },
+    { name: 'description', content: description },
+    { property: 'og:title', content: `${name} | Host` },
+    { property: 'og:type', content: 'profile' },
   ];
 }
 
 export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
   const { host, workshops } = loaderData;
-  const name = [host.firstName, host.lastName].filter(Boolean).join(" ");
+  const name = [host.firstName, host.lastName].filter(Boolean).join(' ');
 
   const personJsonLd: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "Person",
+    '@context': 'https://schema.org',
+    '@type': 'Person',
     name,
     description: host.bio || undefined,
     ...(host.averageRating !== null && {
       aggregateRating: {
-        "@type": "AggregateRating",
+        '@type': 'AggregateRating',
         ratingValue: host.averageRating,
         reviewCount: host.reviewCount,
       },
@@ -82,7 +85,9 @@ export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
               <div>
                 <h1 className="text-2xl font-semibold">{name}</h1>
                 {host.profession && (
-                  <p className="mt-0.5 text-sm font-medium text-foreground/80">{host.profession}</p>
+                  <p className="mt-0.5 text-sm font-medium text-foreground/80">
+                    {host.profession}
+                  </p>
                 )}
                 {host.tagline && (
                   <p className="mt-1 text-muted-foreground">{host.tagline}</p>
@@ -93,8 +98,8 @@ export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
                 <div className="flex items-center gap-2">
                   <StarRating rating={host.averageRating} size="md" />
                   <span className="text-sm text-muted-foreground">
-                    {host.averageRating.toFixed(1)} ({host.reviewCount}{" "}
-                    {host.reviewCount === 1 ? "review" : "reviews"})
+                    {host.averageRating.toFixed(1)} ({host.reviewCount}{' '}
+                    {host.reviewCount === 1 ? 'review' : 'reviews'})
                   </span>
                 </div>
               )}
@@ -107,12 +112,14 @@ export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
                   </div>
                 )}
                 <div className="text-center">
-                  <p className="text-lg font-semibold text-foreground">{host.workshopCount}</p>
-                  <p>{host.workshopCount === 1 ? "Workshop" : "Workshops"}</p>
+                  <p className="text-lg font-semibold text-foreground">
+                    {host.workshopCount}
+                  </p>
+                  <p>{host.workshopCount === 1 ? 'Workshop' : 'Workshops'}</p>
                 </div>
                 <div className="text-center">
                   <p className="text-lg font-semibold text-foreground">
-                    {format(new Date(host.memberSince), "yyyy")}
+                    {format(new Date(host.memberSince), 'yyyy')}
                   </p>
                   <p>Member since</p>
                 </div>
@@ -167,13 +174,13 @@ export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
                     </h3>
                     {workshop.startsAt && (
                       <p className="text-sm text-muted-foreground">
-                        {format(new Date(workshop.startsAt), "MMM d, yyyy")}
+                        {format(new Date(workshop.startsAt), 'MMM d, yyyy')}
                       </p>
                     )}
                     <p className="text-sm font-medium">
                       {workshop.ticketPrice > 0
                         ? `${workshop.ticketPrice} ${workshop.currency}`
-                        : "Free"}
+                        : 'Free'}
                     </p>
                   </div>
                 </Link>

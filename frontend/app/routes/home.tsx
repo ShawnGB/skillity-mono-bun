@@ -1,11 +1,11 @@
-import { Link } from "react-router";
-import { Search, Ticket, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import WorkshopsListing from "@/components/workshops/WorkshopsListing";
-import type { Route } from "./+types/home";
-import { getSession } from "@/lib/session.server";
-import { getWorkshops } from "@/lib/workshops.server";
-import { getWishlistCheck } from "@/lib/wishlist.server";
+import { Link } from 'react-router';
+import { Search, Ticket, Sparkles } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import WorkshopsListing from '@/components/workshops/WorkshopsListing';
+import type { Route } from './+types/home';
+import { getSession } from '@/lib/session.server';
+import { getWorkshops } from '@/lib/workshops.server';
+import { getWishlistCheck } from '@/lib/wishlist.server';
 
 export async function loader({ request }: Route.LoaderArgs) {
   const [session, workshops] = await Promise.all([
@@ -17,7 +17,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   let wishlistMap: Record<string, boolean> = {};
   if (isAuthenticated && workshops.length > 0) {
     try {
-      wishlistMap = await getWishlistCheck(request, workshops.map((w) => w.id));
+      wishlistMap = await getWishlistCheck(
+        request,
+        workshops.map((w) => w.id),
+      );
     } catch {
       wishlistMap = {};
     }
@@ -28,31 +31,32 @@ export async function loader({ request }: Route.LoaderArgs) {
 
 export function meta() {
   return [
-    { title: "Hands-On Workshops in Berlin | Skillity" },
+    { title: 'Hands-On Workshops in Berlin | Skillity' },
     {
-      name: "description",
+      name: 'description',
       content:
-        "Workshops led by passionate people. Learn pottery, cooking, music, languages and more. Book your spot on uSkillity.",
+        'Workshops led by passionate people. Learn pottery, cooking, music, languages and more. Book your spot on uSkillity.',
     },
-    { property: "og:type", content: "website" },
+    { property: 'og:type', content: 'website' },
   ];
 }
 
 const steps = [
   {
     icon: Search,
-    title: "Browse",
-    description: "Find a workshop that catches your eye.",
+    title: 'Browse',
+    description: 'Find a workshop that catches your eye.',
   },
   {
     icon: Ticket,
-    title: "Join",
-    description: "Book your spot and show up. That\u2019s all it takes.",
+    title: 'Join',
+    description: 'Book your spot and show up. That\u2019s all it takes.',
   },
   {
     icon: Sparkles,
-    title: "Learn",
-    description: "Pick up something new from someone who genuinely cares about it.",
+    title: 'Learn',
+    description:
+      'Pick up something new from someone who genuinely cares about it.',
   },
 ];
 

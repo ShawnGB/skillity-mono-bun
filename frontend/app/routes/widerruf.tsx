@@ -1,7 +1,7 @@
 export function meta() {
   return [
-    { title: "Widerrufsbelehrung | Skillity" },
-    { name: "robots", content: "noindex" },
+    { title: 'Widerrufsbelehrung | Skillity' },
+    { name: 'robots', content: 'noindex' },
   ];
 }
 
@@ -24,9 +24,12 @@ export default function WiderrufPage() {
             widerrufen, informieren. Richten Sie diese an:
           </p>
           <p className="text-muted-foreground mt-4">
-            Shawn G. Becker<br />
-            Baseler Str 38<br />
-            12205 Berlin<br />
+            Shawn G. Becker
+            <br />
+            Baseler Str 38
+            <br />
+            12205 Berlin
+            <br />
             E-Mail: contact@shawnbecker.de
           </p>
           <p className="text-muted-foreground mt-4">
@@ -39,16 +42,15 @@ export default function WiderrufPage() {
         <section>
           <h2 className="text-2xl mb-4">Folgen des Widerrufs</h2>
           <p className="text-muted-foreground">
-            Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle
-            Zahlungen, die wir von Ihnen erhalten haben,
-            unverz&uuml;glich und sp&auml;testens binnen vierzehn Tagen ab dem
-            Tag zur&uuml;ckzuzahlen, an dem die Mitteilung &uuml;ber Ihren
-            Widerruf bei uns eingegangen ist. F&uuml;r diese
-            R&uuml;ckzahlung verwenden wir dasselbe Zahlungsmittel, das Sie
-            bei der urspr&uuml;nglichen Transaktion eingesetzt haben, es sei
-            denn, mit Ihnen wurde ausdr&uuml;cklich etwas anderes vereinbart.
-            In keinem Fall werden Ihnen wegen dieser R&uuml;ckzahlung Entgelte
-            berechnet.
+            Wenn Sie diesen Vertrag widerrufen, haben wir Ihnen alle Zahlungen,
+            die wir von Ihnen erhalten haben, unverz&uuml;glich und
+            sp&auml;testens binnen vierzehn Tagen ab dem Tag
+            zur&uuml;ckzuzahlen, an dem die Mitteilung &uuml;ber Ihren Widerruf
+            bei uns eingegangen ist. F&uuml;r diese R&uuml;ckzahlung verwenden
+            wir dasselbe Zahlungsmittel, das Sie bei der urspr&uuml;nglichen
+            Transaktion eingesetzt haben, es sei denn, mit Ihnen wurde
+            ausdr&uuml;cklich etwas anderes vereinbart. In keinem Fall werden
+            Ihnen wegen dieser R&uuml;ckzahlung Entgelte berechnet.
           </p>
         </section>
 
@@ -58,22 +60,25 @@ export default function WiderrufPage() {
             Das Widerrufsrecht erlischt bei einem Vertrag zur Erbringung von
             Dienstleistungen, wenn der Unternehmer die Dienstleistung
             vollst&auml;ndig erbracht hat und mit der Ausf&uuml;hrung der
-            Dienstleistung erst begonnen hat, nachdem der Verbraucher
-            dazu seine ausdr&uuml;ckliche Zustimmung gegeben hat und
-            gleichzeitig seine Kenntnis davon best&auml;tigt hat, dass er sein
-            Widerrufsrecht bei vollst&auml;ndiger Vertragserf&uuml;llung durch
-            den Unternehmer verliert.
+            Dienstleistung erst begonnen hat, nachdem der Verbraucher dazu seine
+            ausdr&uuml;ckliche Zustimmung gegeben hat und gleichzeitig seine
+            Kenntnis davon best&auml;tigt hat, dass er sein Widerrufsrecht bei
+            vollst&auml;ndiger Vertragserf&uuml;llung durch den Unternehmer
+            verliert.
           </p>
         </section>
 
         <section>
           <h2 className="text-2xl mb-4">Muster-Widerrufsformular</h2>
           <p className="text-muted-foreground">
-            Wenn Sie den Vertrag widerrufen wollen, k&ouml;nnen Sie das
-            folgende Formular verwenden (nicht vorgeschrieben):
+            Wenn Sie den Vertrag widerrufen wollen, k&ouml;nnen Sie das folgende
+            Formular verwenden (nicht vorgeschrieben):
           </p>
           <div className="mt-4 p-6 bg-muted/50 rounded-lg text-sm text-muted-foreground space-y-2">
-            <p>An: Shawn G. Becker, Baseler Str 38, 12205 Berlin, contact@shawnbecker.de</p>
+            <p>
+              An: Shawn G. Becker, Baseler Str 38, 12205 Berlin,
+              contact@shawnbecker.de
+            </p>
             <p>
               Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*)
               abgeschlossenen Vertrag &uuml;ber die Erbringung der folgenden

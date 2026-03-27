@@ -1,14 +1,14 @@
-import { Link } from "react-router";
-import { Heart, Users, Flame, MapPin } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Link } from 'react-router';
+import { Heart, Users, Flame, MapPin } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function meta() {
   return [
-    { title: "About | Skillity" },
+    { title: 'About | Skillity' },
     {
-      name: "description",
+      name: 'description',
       content:
-        "Born in Berlin in 2016, uSkillity connects passionate people with curious learners through hands-on workshops.",
+        'Born in Berlin in 2016, uSkillity connects passionate people with curious learners through hands-on workshops.',
     },
   ];
 }
@@ -16,21 +16,21 @@ export function meta() {
 const values = [
   {
     icon: Heart,
-    title: "Share",
+    title: 'Share',
     description:
-      "Everyone carries something worth passing on. We make it easy to offer what you know to people who want to learn.",
+      'Everyone carries something worth passing on. We make it easy to offer what you know to people who want to learn.',
   },
   {
     icon: Users,
-    title: "Connect",
+    title: 'Connect',
     description:
-      "Small groups, real rooms, face to face. The best learning happens between people, not through screens.",
+      'Small groups, real rooms, face to face. The best learning happens between people, not through screens.',
   },
   {
     icon: Flame,
-    title: "Purpose",
+    title: 'Purpose',
     description:
-      "In a world that automates more every year, choosing to learn and teach is an act of meaning. That matters.",
+      'In a world that automates more every year, choosing to learn and teach is an act of meaning. That matters.',
   },
 ];
 
@@ -85,8 +85,8 @@ export default function AboutPage() {
               more of this now, not less.
             </p>
             <p className="text-foreground font-medium">
-              Because learning isn&rsquo;t a path to a career. It&rsquo;s a
-              path to yourself.
+              Because learning isn&rsquo;t a path to a career. It&rsquo;s a path
+              to yourself.
             </p>
           </div>
         </div>

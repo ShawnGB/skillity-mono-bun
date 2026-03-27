@@ -1,10 +1,10 @@
 export function meta() {
   return [
-    { title: "Community Guidelines | Skillity" },
+    { title: 'Community Guidelines | Skillity' },
     {
-      name: "description",
+      name: 'description',
       content:
-        "Our guidelines for creating a respectful, safe, and welcoming community on uSkillity.",
+        'Our guidelines for creating a respectful, safe, and welcoming community on uSkillity.',
     },
   ];
 }
@@ -52,7 +52,9 @@ export default function GuidelinesPage() {
             <li>
               Reviews must reflect your personal experience as a participant.
             </li>
-            <li>Be honest and fair. Critique is welcome, personal attacks are not.</li>
+            <li>
+              Be honest and fair. Critique is welcome, personal attacks are not.
+            </li>
             <li>Paid, incentivized, or fake reviews are prohibited.</li>
           </ul>
         </section>
@@ -72,7 +74,7 @@ export default function GuidelinesPage() {
           <h2 className="text-2xl mb-4">Feedback and Issues</h2>
           <p className="text-muted-foreground">
             If you experience something that violates these guidelines, or if
-            you have feedback on how we can improve, please contact us at{" "}
+            you have feedback on how we can improve, please contact us at{' '}
             <a
               href="mailto:contact@shawnbecker.de"
               className="text-primary hover:underline"

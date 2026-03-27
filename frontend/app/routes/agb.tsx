@@ -1,8 +1,5 @@
 export function meta() {
-  return [
-    { title: "AGB | Skillity" },
-    { name: "robots", content: "noindex" },
-  ];
+  return [{ title: 'AGB | Skillity' }, { name: 'robots', content: 'noindex' }];
 }
 
 export default function AGBPage() {
@@ -39,9 +36,9 @@ export default function AGBPage() {
           <p className="text-muted-foreground">
             Die Nutzung der Plattform setzt eine Registrierung voraus. Nutzer
             m&uuml;ssen vollj&auml;hrig sein und ihren echten Namen verwenden.
-            Accounts sind nicht &uuml;bertragbar. Jeder Nutzer darf nur ein Konto
-            f&uuml;hren. Minderj&auml;hrige ben&ouml;tigen die Zustimmung eines
-            Erziehungsberechtigten.
+            Accounts sind nicht &uuml;bertragbar. Jeder Nutzer darf nur ein
+            Konto f&uuml;hren. Minderj&auml;hrige ben&ouml;tigen die Zustimmung
+            eines Erziehungsberechtigten.
           </p>
         </section>
 
@@ -50,9 +47,10 @@ export default function AGBPage() {
           <p className="text-muted-foreground">
             Nutzer sind f&uuml;r die von ihnen eingestellten Inhalte selbst
             verantwortlich. Hosts sind f&uuml;r die inhaltliche Richtigkeit
-            ihrer Workshop-Beschreibungen sowie f&uuml;r die ordnungsgem&auml;&szlig;e
-            Durchf&uuml;hrung ihrer Workshops verantwortlich. uSkillity
-            &uuml;bernimmt keine Haftung f&uuml;r nutzergenerierte Inhalte.
+            ihrer Workshop-Beschreibungen sowie f&uuml;r die
+            ordnungsgem&auml;&szlig;e Durchf&uuml;hrung ihrer Workshops
+            verantwortlich. uSkillity &uuml;bernimmt keine Haftung f&uuml;r
+            nutzergenerierte Inhalte.
           </p>
         </section>
 
@@ -73,8 +71,9 @@ export default function AGBPage() {
             vom Host festgelegten Preis wird eine Servicepauschale von 5%
             aufgeschlagen, die vom Teilnehmer getragen wird. Der Host
             erh&auml;lt 100% des von ihm festgelegten Preises. Die Zahlung
-            erfolgt &uuml;ber den Zahlungsdienstleister Mollie. Eine Vorauszahlung
-            bei Buchung ist erforderlich. Alle Preise verstehen sich in Euro.
+            erfolgt &uuml;ber den Zahlungsdienstleister Mollie. Eine
+            Vorauszahlung bei Buchung ist erforderlich. Alle Preise verstehen
+            sich in Euro.
           </p>
         </section>
 
@@ -103,13 +102,13 @@ export default function AGBPage() {
         <section>
           <h2 className="text-2xl mb-4">9. Haftung</h2>
           <p className="text-muted-foreground">
-            uSkillity haftet nur f&uuml;r Sch&auml;den, die auf vors&auml;tzlichem
-            oder grob fahrl&auml;ssigem Verhalten beruhen. Als technische
-            Plattform &uuml;bernimmt uSkillity keine Haftung f&uuml;r die
-            Qualit&auml;t, Sicherheit oder Rechtm&auml;&szlig;igkeit der
-            angebotenen Workshops. Die Haftung f&uuml;r leichte
-            Fahrl&auml;ssigkeit ist ausgeschlossen, soweit keine wesentlichen
-            Vertragspflichten verletzt werden.
+            uSkillity haftet nur f&uuml;r Sch&auml;den, die auf
+            vors&auml;tzlichem oder grob fahrl&auml;ssigem Verhalten beruhen.
+            Als technische Plattform &uuml;bernimmt uSkillity keine Haftung
+            f&uuml;r die Qualit&auml;t, Sicherheit oder
+            Rechtm&auml;&szlig;igkeit der angebotenen Workshops. Die Haftung
+            f&uuml;r leichte Fahrl&auml;ssigkeit ist ausgeschlossen, soweit
+            keine wesentlichen Vertragspflichten verletzt werden.
           </p>
         </section>
 

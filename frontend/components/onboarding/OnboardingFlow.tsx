@@ -1,12 +1,12 @@
-import { useState, useEffect } from "react";
-import { useFetcher, useNavigate, Link } from "react-router";
-import { CheckCircle, CreditCard, User } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useState, useEffect } from 'react';
+import { useFetcher, useNavigate, Link } from 'react-router';
+import { CheckCircle, CreditCard, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const steps = [
-  { label: "About You", icon: User },
-  { label: "Payment", icon: CreditCard },
-  { label: "Done", icon: CheckCircle },
+  { label: 'About You', icon: User },
+  { label: 'Payment', icon: CreditCard },
+  { label: 'Done', icon: CheckCircle },
 ];
 
 export default function OnboardingFlow() {
@@ -14,10 +14,10 @@ export default function OnboardingFlow() {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [step, setStep] = useState(0);
 
-  const isPending = fetcher.state !== "idle";
+  const isPending = fetcher.state !== 'idle';
 
   useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data?.ok) {
+    if (fetcher.state === 'idle' && fetcher.data?.ok) {
       setStep(2);
     }
   }, [fetcher.state, fetcher.data]);
@@ -30,15 +30,15 @@ export default function OnboardingFlow() {
             <div
               className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
                 i <= step
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-muted text-muted-foreground'
               }`}
             >
               {i + 1}
             </div>
             {i < steps.length - 1 && (
               <div
-                className={`h-px w-12 transition-colors ${i < step ? "bg-primary" : "bg-muted"}`}
+                className={`h-px w-12 transition-colors ${i < step ? 'bg-primary' : 'bg-muted'}`}
               />
             )}
           </div>
@@ -54,7 +54,11 @@ export default function OnboardingFlow() {
             </p>
           </div>
           <div className="flex gap-3">
-            <Button variant="outline" className="flex-1" onClick={() => setStep(1)}>
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={() => setStep(1)}
+            >
               Skip
             </Button>
             <Button className="flex-1" onClick={() => setStep(1)}>
@@ -69,8 +73,8 @@ export default function OnboardingFlow() {
           <div className="text-center">
             <h1 className="text-3xl mb-2">Connect Your Payment Account</h1>
             <p className="text-muted-foreground">
-              We use Mollie to handle payments securely. Connect your account so you can receive
-              earnings from your workshops.
+              We use Mollie to handle payments securely. Connect your account so
+              you can receive earnings from your workshops.
             </p>
           </div>
 
@@ -80,7 +84,8 @@ export default function OnboardingFlow() {
             </div>
             <h3 className="text-lg font-semibold font-sans">Mollie Payments</h3>
             <p className="text-sm text-muted-foreground">
-              Secure payment processing. We keep just 5%. The rest goes directly to you.
+              Secure payment processing. We keep just 5%. The rest goes directly
+              to you.
             </p>
 
             {fetcher.data?.error && (
@@ -90,8 +95,13 @@ export default function OnboardingFlow() {
             )}
 
             <fetcher.Form method="post" action="/api/become-host">
-              <Button size="lg" className="w-full" type="submit" disabled={isPending}>
-                {isPending ? "Connecting..." : "Connect with Mollie"}
+              <Button
+                size="lg"
+                className="w-full"
+                type="submit"
+                disabled={isPending}
+              >
+                {isPending ? 'Connecting...' : 'Connect with Mollie'}
               </Button>
             </fetcher.Form>
           </div>
@@ -110,8 +120,8 @@ export default function OnboardingFlow() {
           <div>
             <h1 className="text-3xl mb-2">You&rsquo;re All Set!</h1>
             <p className="text-muted-foreground">
-              Your account has been upgraded to Host. You can now create workshops and start sharing
-              what you know.
+              Your account has been upgraded to Host. You can now create
+              workshops and start sharing what you know.
             </p>
           </div>
           <Button size="lg" className="w-full" asChild>

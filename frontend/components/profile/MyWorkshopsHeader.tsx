@@ -1,7 +1,7 @@
-import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import FormModal from "@/components/modals/FormModal";
-import CreateWorkshopForm from "@/components/workshops/CreateWorkshopForm";
+import { Plus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import FormModal from '@/components/modals/FormModal';
+import CreateWorkshopForm from '@/components/workshops/CreateWorkshopForm';
 
 export default function MyWorkshopsHeader() {
   return (

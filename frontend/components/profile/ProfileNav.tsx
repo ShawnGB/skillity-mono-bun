@@ -1,17 +1,21 @@
-import { Link, useLocation } from "react-router";
-import { cn } from "@/lib/utils";
-import type { UserRole } from "@skillity/shared";
+import { Link, useLocation } from 'react-router';
+import { cn } from '@/lib/utils';
+import type { UserRole } from '@skillity/shared';
 
 interface ProfileNavProps {
   role: UserRole;
 }
 
 const allTabs = [
-  { href: "/profile", label: "Profile", roles: null },
-  { href: "/profile/bookings", label: "My Bookings", roles: null },
-  { href: "/profile/saved", label: "Saved", roles: null },
-  { href: "/profile/workshops", label: "My Workshops", roles: ["host", "admin"] as UserRole[] },
-  { href: "/profile/settings", label: "Settings", roles: null },
+  { href: '/profile', label: 'Profile', roles: null },
+  { href: '/profile/bookings', label: 'My Bookings', roles: null },
+  { href: '/profile/saved', label: 'Saved', roles: null },
+  {
+    href: '/profile/workshops',
+    label: 'My Workshops',
+    roles: ['host', 'admin'] as UserRole[],
+  },
+  { href: '/profile/settings', label: 'Settings', roles: null },
 ];
 
 export default function ProfileNav({ role }: ProfileNavProps) {
@@ -25,8 +29,8 @@ export default function ProfileNav({ role }: ProfileNavProps) {
     <nav className="flex gap-6 border-b mb-8">
       {tabs.map((tab) => {
         const isActive =
-          tab.href === "/profile"
-            ? pathname === "/profile"
+          tab.href === '/profile'
+            ? pathname === '/profile'
             : pathname.startsWith(tab.href);
 
         return (
@@ -34,10 +38,10 @@ export default function ProfileNav({ role }: ProfileNavProps) {
             key={tab.href}
             to={tab.href}
             className={cn(
-              "pb-3 text-sm font-medium transition-colors border-b-2 -mb-px",
+              'pb-3 text-sm font-medium transition-colors border-b-2 -mb-px',
               isActive
-                ? "border-primary text-foreground"
-                : "border-transparent text-muted-foreground hover:text-foreground",
+                ? 'border-primary text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground',
             )}
           >
             {tab.label}

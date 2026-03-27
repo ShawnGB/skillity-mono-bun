@@ -1,11 +1,11 @@
-import { useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router";
-import { Search } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import FormModal from "@/components/modals/FormModal";
-import CreateWorkshopForm from "@/components/workshops/CreateWorkshopForm";
-import type { UserRole } from "@skillity/shared";
+import { useState } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router';
+import { Search } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import FormModal from '@/components/modals/FormModal';
+import CreateWorkshopForm from '@/components/workshops/CreateWorkshopForm';
+import type { UserRole } from '@skillity/shared';
 
 interface WorkshopsHeaderProps {
   isAuthenticated: boolean;
@@ -13,22 +13,26 @@ interface WorkshopsHeaderProps {
   search?: string;
 }
 
-export default function WorkshopsHeader({ isAuthenticated, role, search }: WorkshopsHeaderProps) {
+export default function WorkshopsHeader({
+  isAuthenticated,
+  role,
+  search,
+}: WorkshopsHeaderProps) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [query, setQuery] = useState(search ?? "");
-  const isHost = role === "host" || role === "admin";
+  const [query, setQuery] = useState(search ?? '');
+  const isHost = role === 'host' || role === 'admin';
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams(searchParams.toString());
     if (query.trim()) {
-      params.set("search", query.trim());
+      params.set('search', query.trim());
     } else {
-      params.delete("search");
+      params.delete('search');
     }
     const qs = params.toString();
-    navigate(qs ? `/workshops?${qs}` : "/workshops");
+    navigate(qs ? `/workshops?${qs}` : '/workshops');
   };
 
   return (
