@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Patch, Body, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Delete,
+  Body,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { WorkshopsService } from './workshops.service';
 import { CreateWorkshopDto } from './dto/create-workshop.dto';
 import { UpdateWorkshopDto } from './dto/update-workshop.dto';
@@ -57,5 +66,25 @@ export class WorkshopsController {
     @CurrentUser() user: { id: string; role: UserRole },
   ) {
     return this.workshopsService.update(id, updateWorkshopDto, user);
+  }
+
+  @Post(':id/conductors')
+  @Roles(UserRole.HOST, UserRole.ADMIN)
+  addConductor(
+    @Param('id') id: string,
+    @Body() body: { userId: string; payoutShare: number },
+    @CurrentUser() user: { id: string },
+  ) {
+    return this.workshopsService.addConductor(id, user.id, body);
+  }
+
+  @Delete(':id/conductors/:userId')
+  @Roles(UserRole.HOST, UserRole.ADMIN)
+  removeConductor(
+    @Param('id') id: string,
+    @Param('userId') userId: string,
+    @CurrentUser() user: { id: string },
+  ) {
+    return this.workshopsService.removeConductor(id, user.id, userId);
   }
 }
