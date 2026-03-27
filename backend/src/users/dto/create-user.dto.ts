@@ -2,6 +2,7 @@ import { Exclude } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
   MaxLength,
   MinLength,
@@ -18,14 +19,14 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(150)
-  firstName: string;
+  firstName?: string;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @MaxLength(150)
-  lastName: string;
+  lastName?: string;
 }
 
 export class UserResponseDTO {
