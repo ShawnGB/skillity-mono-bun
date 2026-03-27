@@ -12,6 +12,11 @@ import { Workshop } from '../workshops/entities/workshop.entity';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { BookingStatus, WorkshopStatus } from '../types/enums';
 
+function formatReviewerName(firstName: string, lastName: string): string {
+  const initial = lastName?.trim()?.[0];
+  return initial ? `${firstName} ${initial}.` : firstName;
+}
+
 @Injectable()
 export class ReviewsService {
   constructor(
@@ -36,21 +41,37 @@ export class ReviewsService {
         workshop.endsAt < new Date());
 
     if (!isEnded) {
-      throw new ForbiddenException('Cannot review a workshop that has not ended');
+      throw new ForbiddenException(
+        'Cannot review a workshop that has not ended',
+      );
     }
 
     const booking = await this.bookingRepository.findOne({
       where: { workshopId, userId, status: BookingStatus.CONFIRMED },
     });
     if (!booking) {
-      throw new ForbiddenException('You must have a confirmed booking to review this workshop');
+      throw new ForbiddenException(
+        'You must have a confirmed booking to review this workshop',
+      );
     }
 
-    const existing = await this.reviewRepository.findOne({
-      where: { workshopId, userId },
-    });
-    if (existing) {
-      throw new ConflictException('You have already reviewed this workshop');
+    // Duplicate check: series-scoped when seriesId exists, otherwise workshop-scoped
+    if (workshop.seriesId) {
+      const existing = await this.reviewRepository.findOne({
+        where: { seriesId: workshop.seriesId, userId },
+      });
+      if (existing) {
+        throw new ConflictException(
+          'You have already reviewed this workshop series',
+        );
+      }
+    } else {
+      const existing = await this.reviewRepository.findOne({
+        where: { workshopId, userId },
+      });
+      if (existing) {
+        throw new ConflictException('You have already reviewed this workshop');
+      }
     }
 
     const review = this.reviewRepository.create({
@@ -58,17 +79,20 @@ export class ReviewsService {
       comment: dto.comment ?? null,
       userId,
       workshopId,
+      seriesId: workshop.seriesId ?? null,
     });
 
     return await this.reviewRepository.save(review);
   }
 
   async getWorkshopReviews(workshopId: string) {
-    const reviews = await this.reviewRepository.find({
-      where: { workshopId },
-      relations: ['user'],
-      order: { createdAt: 'DESC' },
-    });
+    const reviews = await this.reviewRepository
+      .createQueryBuilder('review')
+      .innerJoinAndSelect('review.user', 'user')
+      .innerJoinAndSelect('review.workshop', 'workshop')
+      .where('review.workshop_id = :workshopId', { workshopId })
+      .orderBy('review.createdAt', 'DESC')
+      .getMany();
 
     return reviews.map((r) => ({
       id: r.id,
@@ -76,7 +100,9 @@ export class ReviewsService {
       comment: r.comment,
       userId: r.userId,
       workshopId: r.workshopId,
-      reviewerName: `${r.user.firstName} ${r.user.lastName}`,
+      seriesId: r.seriesId,
+      reviewerName: formatReviewerName(r.user.firstName, r.user.lastName),
+      workshopDate: r.workshop.startsAt ?? null,
       createdAt: r.createdAt,
     }));
   }
@@ -85,7 +111,7 @@ export class ReviewsService {
     const reviews = await this.reviewRepository
       .createQueryBuilder('review')
       .innerJoinAndSelect('review.user', 'user')
-      .innerJoin('review.workshop', 'workshop')
+      .innerJoinAndSelect('review.workshop', 'workshop')
       .where('workshop.series_id = :seriesId', { seriesId })
       .orderBy('review.createdAt', 'DESC')
       .getMany();
@@ -96,7 +122,9 @@ export class ReviewsService {
       comment: r.comment,
       userId: r.userId,
       workshopId: r.workshopId,
-      reviewerName: `${r.user.firstName} ${r.user.lastName}`,
+      seriesId: r.seriesId,
+      reviewerName: formatReviewerName(r.user.firstName, r.user.lastName),
+      workshopDate: r.workshop.startsAt ?? null,
       createdAt: r.createdAt,
     }));
   }
@@ -113,7 +141,9 @@ export class ReviewsService {
       comment: r.comment,
       userId: r.userId,
       workshopId: r.workshopId,
+      seriesId: r.seriesId,
       reviewerName: '',
+      workshopDate: null,
       createdAt: r.createdAt,
     }));
   }
@@ -131,7 +161,9 @@ export class ReviewsService {
       .getRawOne();
 
     return {
-      averageRating: result.avg ? parseFloat(parseFloat(result.avg).toFixed(1)) : null,
+      averageRating: result.avg
+        ? parseFloat(parseFloat(result.avg).toFixed(1))
+        : null,
       reviewCount: parseInt(result.count, 10),
     };
   }

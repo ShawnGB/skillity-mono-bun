@@ -20,9 +20,17 @@ export default function ReviewsList({ reviews }: ReviewsListProps) {
               <span className="text-sm font-medium">{review.reviewerName}</span>
               <StarRating rating={review.rating} size="sm" />
             </div>
-            <span className="text-xs text-muted-foreground">
-              {format(new Date(review.createdAt), 'MMM d, yyyy')}
-            </span>
+            <div className="text-right">
+              {review.workshopDate && (
+                <p className="text-xs text-muted-foreground">
+                  from the {format(new Date(review.workshopDate), 'MMM d')}{' '}
+                  session
+                </p>
+              )}
+              <span className="text-xs text-muted-foreground">
+                {format(new Date(review.createdAt), 'MMM d, yyyy')}
+              </span>
+            </div>
           </div>
           {review.comment && (
             <p className="text-sm text-muted-foreground">{review.comment}</p>
