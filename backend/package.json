@@ -8,7 +8,11 @@
   "scripts": {
     "start:dev": "bun --watch src/main.ts",
     "build": "bun build ./src/main.ts --outdir ./dist",
-    "test": "bun test"
+    "test": "bun test",
+    "migration:generate": "bunx typeorm migration:generate -d data-source.ts",
+    "migration:run": "bunx typeorm migration:run -d data-source.ts",
+    "migration:revert": "bunx typeorm migration:revert -d data-source.ts",
+    "migration:create": "bunx typeorm migration:create"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.13",
