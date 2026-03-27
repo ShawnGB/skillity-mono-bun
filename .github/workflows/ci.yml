@@ -26,7 +26,10 @@ jobs:
         run: bun install
 
       - name: Add node_modules/.bin to PATH
-        run: echo "$PWD/node_modules/.bin" >> $GITHUB_PATH
+        run: |
+          echo "$PWD/node_modules/.bin" >> $GITHUB_PATH
+          echo "$PWD/frontend/node_modules/.bin" >> $GITHUB_PATH
+          echo "$PWD/backend/node_modules/.bin" >> $GITHUB_PATH
 
       - name: Typecheck frontend
         run: react-router typegen && tsc
