@@ -75,7 +75,15 @@ export class AuthService {
     refreshToken.isRevoked = true;
     await this.refreshTokenRepository.save(refreshToken);
 
-    return this.generateTokens(refreshToken.user);
+    const result = await this.generateTokens(refreshToken.user);
+
+    // Clean up all revoked tokens for this user so the table doesn't accumulate.
+    await this.refreshTokenRepository.delete({
+      userId: refreshToken.userId,
+      isRevoked: true,
+    });
+
+    return result;
   }
 
   async logout(refreshTokenValue: string) {
