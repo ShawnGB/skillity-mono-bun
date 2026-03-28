@@ -77,14 +77,38 @@ export class WorkshopsService {
     return saved;
   }
 
-  async findByHost(hostId: string) {
-    const workshops = await this.workshopRepository.find({
-      where: { hostId },
+  async findByHost(userId: string) {
+    const conductorRows = await this.conductorRepository.find({
+      where: { userId },
+      select: ['workshopId'],
+    });
+    const conductedIds = conductorRows.map((c) => c.workshopId);
+
+    const hostedWorkshops = await this.workshopRepository.find({
+      where: { hostId: userId },
       order: { startsAt: 'DESC' },
       relations: ['host', 'bookings'],
     });
 
-    return workshops.map((w) =>
+    const coCondWorkshops =
+      conductedIds.length > 0
+        ? await this.workshopRepository
+            .createQueryBuilder('workshop')
+            .leftJoinAndSelect('workshop.host', 'host')
+            .leftJoinAndSelect('workshop.bookings', 'bookings')
+            .where('workshop.id IN (:...ids)', { ids: conductedIds })
+            .andWhere('workshop.hostId != :userId', { userId })
+            .orderBy('workshop.startsAt', 'DESC')
+            .getMany()
+        : [];
+
+    const all = [...hostedWorkshops, ...coCondWorkshops];
+    all.sort(
+      (a, b) =>
+        (b.startsAt?.getTime() ?? 0) - (a.startsAt?.getTime() ?? 0),
+    );
+
+    return all.map((w) =>
       this.withParticipantCount(this.withEffectiveStatus(w)),
     );
   }

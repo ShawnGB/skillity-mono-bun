@@ -22,7 +22,7 @@ export async function action({ request, params, context }: Route.ActionArgs) {
     }
 
     const userId = formData.get('userId') as string;
-    const payoutShare = Number(formData.get('payoutShare'));
+    const payoutShare = Number(formData.get('payoutShare')) / 100;
     await serverPost(
       `/workshops/${workshopId}/conductors`,
       { userId, payoutShare },
