@@ -1,6 +1,6 @@
 import { redirect, Link } from 'react-router';
 import type { Route } from './+types/login';
-import { API_URL } from '@/lib/api-client.server';
+import { loginUser } from '@/lib/auth.server';
 import { sessionContext } from '@/app/context';
 import LoginForm from '@/components/auth/LoginForm';
 
@@ -16,24 +16,13 @@ export async function action({ request }: Route.ActionArgs) {
   const password = formData.get('password') as string;
   const redirectTo = (formData.get('redirectTo') as string) || '/';
 
-  const response = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
-
-  if (!response.ok) {
-    const err = (await response.json().catch(() => null)) as {
-      message?: string;
-    } | null;
-    return { error: err?.message ?? 'Invalid email or password' };
-  }
+  const result = await loginUser(email, password);
+  if (!result.ok) return { error: result.error };
 
   const headers = new Headers();
-  for (const cookie of response.headers.getSetCookie()) {
+  for (const cookie of result.setCookies) {
     headers.append('Set-Cookie', cookie);
   }
-
   return redirect(redirectTo, { headers });
 }
 

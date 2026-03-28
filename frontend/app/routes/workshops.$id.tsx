@@ -1,4 +1,5 @@
-import { data, Link } from 'react-router';
+import { data, Link, isRouteErrorResponse, useRouteError } from 'react-router';
+import { use, Suspense } from 'react';
 import { format } from 'date-fns';
 import { ArrowRight } from 'lucide-react';
 import type { Route } from './+types/workshops.$id';
@@ -17,6 +18,7 @@ import {
   BookingStatus,
   CATEGORY_LABELS,
 } from '@skillity/shared';
+import type { Review, Workshop } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
 import RegisterButton from '@/components/workshops/RegisterButton';
 import ReviewsList from '@/components/workshops/ReviewsList';
@@ -37,46 +39,37 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
   const session = context.get(sessionContext);
   const isAuthenticated = !!session;
 
-  const [reviews, bookings, seriesSiblings] = await Promise.all([
-    workshop.seriesId
-      ? getSeriesReviews(request, workshop.seriesId)
-      : getWorkshopReviews(request, id),
-    session ? getMyBookings(session.cookie) : [],
-    workshop.seriesId
-      ? getSeriesWorkshops(request, workshop.seriesId).then((ws) =>
-          ws.filter((w) => w.id !== id),
-        )
-      : [],
+  // Await only what's needed for booking state and the sidebar
+  const [bookings, wishlistMap] = await Promise.all([
+    session ? getMyBookings(session.cookie) : Promise.resolve([]),
+    session
+      ? getWishlistCheck(session.cookie, [id]).catch(() => ({}) as Record<string, boolean>)
+      : Promise.resolve({} as Record<string, boolean>),
   ]);
-
-  let isSaved = false;
-  if (session) {
-    try {
-      const wishlistMap = await getWishlistCheck(session.cookie, [id]);
-      isSaved = wishlistMap[id] ?? false;
-    } catch (err) {
-      console.error('Wishlist check failed:', err);
-    }
-  }
 
   const hasConfirmedBooking = bookings.some(
     (b) => b.workshopId === id && b.status === BookingStatus.CONFIRMED,
   );
-  const alreadyReviewed = reviews.some((r) => r.userId === session?.user.id);
-  const canReview =
-    isAuthenticated &&
-    workshop.status === WorkshopStatus.COMPLETED &&
-    hasConfirmedBooking &&
-    !alreadyReviewed;
+  const isSaved = wishlistMap[id] ?? false;
   const spotsLeft = workshop.maxParticipants - workshop.participantCount;
+
+  // Deferred — not needed for above-the-fold content or SEO
+  const reviewsPromise = workshop.seriesId
+    ? getSeriesReviews(request, workshop.seriesId)
+    : getWorkshopReviews(request, id);
+  const siblingsPromise = workshop.seriesId
+    ? getSeriesWorkshops(request, workshop.seriesId).then((ws) =>
+        ws.filter((w) => w.id !== id),
+      )
+    : Promise.resolve<typeof workshop[]>([]);
 
   return {
     workshop,
-    reviews,
-    seriesSiblings,
+    reviewsPromise,
+    siblingsPromise,
     isSaved,
     isAuthenticated,
-    canReview,
+    hasConfirmedBooking,
     spotsLeft,
     userId: session?.user.id,
   };
@@ -127,17 +120,96 @@ function StatusBadge({ status }: { status: WorkshopStatus }) {
   );
 }
 
+function WorkshopReviews({
+  promise,
+  userId,
+  workshopStatus,
+  hasConfirmedBooking,
+  workshopId,
+}: {
+  promise: Promise<Review[]>;
+  userId?: string;
+  workshopStatus: WorkshopStatus;
+  hasConfirmedBooking: boolean;
+  workshopId: string;
+}) {
+  const reviews = use(promise);
+  const alreadyReviewed = reviews.some((r) => r.userId === userId);
+  const canReview =
+    !!userId &&
+    workshopStatus === WorkshopStatus.COMPLETED &&
+    hasConfirmedBooking &&
+    !alreadyReviewed;
+  return (
+    <>
+      {canReview && <ReviewButton workshopId={workshopId} />}
+      <ReviewsList reviews={reviews} />
+    </>
+  );
+}
+
+function SeriesSiblings({ promise }: { promise: Promise<Workshop[]> }) {
+  const siblings = use(promise);
+  if (!siblings.length) return null;
+  return (
+    <div>
+      <h2 className="text-2xl mb-4">Other available dates</h2>
+      <div className="space-y-2">
+        {siblings.map((sibling) => (
+          <Link
+            key={sibling.id}
+            to={`/workshops/${sibling.id}`}
+            className="flex items-center justify-between rounded-xl border bg-card p-4 hover:bg-accent transition-colors"
+          >
+            <div>
+              <p className="font-medium">
+                {sibling.startsAt &&
+                  format(new Date(sibling.startsAt), 'EEEE, MMMM d, yyyy')}
+              </p>
+              {sibling.startsAt && sibling.endsAt && (
+                <p className="text-sm text-muted-foreground">
+                  {format(new Date(sibling.startsAt), 'HH:mm')} -{' '}
+                  {format(new Date(sibling.endsAt), 'HH:mm')}
+                </p>
+              )}
+            </div>
+            <ArrowRight className="size-4 text-muted-foreground" />
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return (
+      <main className="flex min-h-[60vh] items-center justify-center px-4">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl">Workshop not found</h1>
+          <p className="text-muted-foreground">
+            This workshop may have been removed or the link is incorrect.
+          </p>
+        </div>
+      </main>
+    );
+  }
+  throw error;
+}
+
 export default function WorkshopDetailPage({
   loaderData,
 }: Route.ComponentProps) {
   const {
     workshop,
-    reviews,
-    seriesSiblings,
+    reviewsPromise,
+    siblingsPromise,
     isSaved,
     isAuthenticated,
-    canReview,
+    hasConfirmedBooking,
     spotsLeft,
+    userId,
   } = loaderData;
 
   const isCancelled = workshop.status === WorkshopStatus.CANCELLED;
@@ -271,44 +343,21 @@ export default function WorkshopDetailPage({
               </Link>
             </div>
 
-            {seriesSiblings.length > 0 && (
-              <div>
-                <h2 className="text-2xl mb-4">Other available dates</h2>
-                <div className="space-y-2">
-                  {seriesSiblings.map((sibling) => (
-                    <Link
-                      key={sibling.id}
-                      to={`/workshops/${sibling.id}`}
-                      className="flex items-center justify-between rounded-xl border bg-card p-4 hover:bg-accent transition-colors"
-                    >
-                      <div>
-                        <p className="font-medium">
-                          {sibling.startsAt &&
-                            format(
-                              new Date(sibling.startsAt),
-                              'EEEE, MMMM d, yyyy',
-                            )}
-                        </p>
-                        {sibling.startsAt && sibling.endsAt && (
-                          <p className="text-sm text-muted-foreground">
-                            {format(new Date(sibling.startsAt), 'HH:mm')} -{' '}
-                            {format(new Date(sibling.endsAt), 'HH:mm')}
-                          </p>
-                        )}
-                      </div>
-                      <ArrowRight className="size-4 text-muted-foreground" />
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+            <Suspense>
+              <SeriesSiblings promise={siblingsPromise} />
+            </Suspense>
 
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-2xl">Reviews</h2>
-                {canReview && <ReviewButton workshopId={workshop.id} />}
-              </div>
-              <ReviewsList reviews={reviews} />
+              <h2 className="text-2xl mb-4">Reviews</h2>
+              <Suspense fallback={<p className="text-muted-foreground text-sm">Loading reviews…</p>}>
+                <WorkshopReviews
+                  promise={reviewsPromise}
+                  userId={userId}
+                  workshopStatus={workshop.status}
+                  hasConfirmedBooking={hasConfirmedBooking}
+                  workshopId={workshop.id}
+                />
+              </Suspense>
             </div>
           </div>
 

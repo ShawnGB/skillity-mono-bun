@@ -1,4 +1,4 @@
-import { data, Link } from 'react-router';
+import { data, Link, isRouteErrorResponse, useRouteError } from 'react-router';
 import { format } from 'date-fns';
 import { MapPin } from 'lucide-react';
 import type { Route } from './+types/hosts.$id';
@@ -198,4 +198,21 @@ export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
       </div>
     </main>
   );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return (
+      <main className="flex min-h-[60vh] items-center justify-center px-4">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl">Host not found</h1>
+          <p className="text-muted-foreground">
+            This profile may have been removed or the link is incorrect.
+          </p>
+        </div>
+      </main>
+    );
+  }
+  throw error;
 }

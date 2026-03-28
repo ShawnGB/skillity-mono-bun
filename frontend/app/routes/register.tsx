@@ -1,6 +1,6 @@
 import { redirect, Link } from 'react-router';
 import type { Route } from './+types/register';
-import { API_URL } from '@/lib/api-client.server';
+import { registerUser } from '@/lib/auth.server';
 import { sessionContext } from '@/app/context';
 import RegisterForm from '@/components/auth/RegisterForm';
 
@@ -12,30 +12,19 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 
 export async function action({ request }: Route.ActionArgs) {
   const formData = await request.formData();
-  const firstName = formData.get('firstName') as string;
-  const lastName = formData.get('lastName') as string;
+  const firstName = formData.get('firstName') as string || undefined;
+  const lastName = formData.get('lastName') as string || undefined;
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;
   const redirectTo = (formData.get('redirectTo') as string) || '/';
 
-  const response = await fetch(`${API_URL}/auth/register`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ firstName, lastName, email, password }),
-  });
-
-  if (!response.ok) {
-    const err = (await response.json().catch(() => null)) as {
-      message?: string;
-    } | null;
-    return { error: err?.message ?? 'Registration failed' };
-  }
+  const result = await registerUser(email, password, firstName, lastName);
+  if (!result.ok) return { error: result.error };
 
   const headers = new Headers();
-  for (const cookie of response.headers.getSetCookie()) {
+  for (const cookie of result.setCookies) {
     headers.append('Set-Cookie', cookie);
   }
-
   return redirect(redirectTo, { headers });
 }
 

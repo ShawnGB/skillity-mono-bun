@@ -1,4 +1,4 @@
-import { data, redirect } from 'react-router';
+import { data, redirect, isRouteErrorResponse, useRouteError } from 'react-router';
 import { format } from 'date-fns';
 import type { Route } from './+types/checkout.$bookingId';
 import { sessionContext } from '@/app/context';
@@ -89,4 +89,21 @@ export default function CheckoutPage({ loaderData }: Route.ComponentProps) {
       <CheckoutForm bookingId={booking.id} isFree={isFree} />
     </main>
   );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+  if (isRouteErrorResponse(error) && error.status === 404) {
+    return (
+      <main className="flex min-h-[60vh] items-center justify-center px-4">
+        <div className="text-center space-y-2">
+          <h1 className="text-3xl">Booking not found</h1>
+          <p className="text-muted-foreground">
+            This booking may have expired or the link is incorrect.
+          </p>
+        </div>
+      </main>
+    );
+  }
+  throw error;
 }
