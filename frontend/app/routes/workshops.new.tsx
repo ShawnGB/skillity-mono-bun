@@ -2,6 +2,7 @@ import { redirect } from 'react-router';
 import type { Route } from './+types/workshops.new';
 import { sessionContext } from '@/app/context';
 import CreateWorkshopForm from '@/components/workshops/CreateWorkshopForm';
+import { WorkshopCategory } from '@skillity/shared';
 
 export async function loader({ request, context }: Route.LoaderArgs) {
   const session = context.get(sessionContext);
@@ -15,7 +16,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
     defaultValues: {
       ...(p.get('seriesId') && { seriesId: p.get('seriesId')! }),
       ...(p.get('title') && { title: p.get('title')! }),
-      ...(p.get('category') && { category: p.get('category') as any }),
+      ...(p.get('category') && { category: p.get('category') as WorkshopCategory }),
       ...(p.get('description') && { description: p.get('description')! }),
       ...(p.get('location') && { location: p.get('location')! }),
       ...(p.get('maxParticipants') && {

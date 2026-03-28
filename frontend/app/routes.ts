@@ -55,6 +55,10 @@ export default [
     'routes/api.bookings.$bookingId.confirm.tsx',
   ),
 
+  // SEO
+  route('/sitemap.xml', 'routes/sitemap[.]xml.tsx'),
+  route('/robots.txt', 'routes/robots[.]txt.tsx'),
+
   // Guides
   route('/guides/kleingewerbe', 'routes/guides.kleingewerbe.tsx'),
   route('/guides/plan-workshop', 'routes/guides.plan-workshop.tsx'),
