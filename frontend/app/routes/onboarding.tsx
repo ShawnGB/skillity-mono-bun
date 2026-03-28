@@ -13,7 +13,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 
 export function meta() {
-  return [{ title: 'Become a Host | Skillity' }];
+  return [{ title: 'Become a Conductor | Skillity' }, { name: 'robots', content: 'noindex' }];
 }
 
 export default function OnboardingPage({ loaderData }: Route.ComponentProps) {

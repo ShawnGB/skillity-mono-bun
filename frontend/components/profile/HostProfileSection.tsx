@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useFetcher } from 'react-router';
+import { useFetcher, Link } from 'react-router';
 import { useForm } from 'react-hook-form';
 import type { AuthUser } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
@@ -223,14 +223,12 @@ export default function HostProfileSection({ user }: HostProfileSectionProps) {
           <p className="text-xs text-muted-foreground">
             In Germany, workshop conductors typically register a Kleingewerbe
             (free, ~15 min at your Finanzamt).{' '}
-            <a
-              href="https://www.existenzgruender.de/DE/Gruendung-vorbereiten/Gruendungswissen/Kleingewerbe/inhalt.html"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              to="/guides/kleingewerbe"
               className="underline hover:text-foreground"
             >
               Learn more
-            </a>
+            </Link>
           </p>
         )}
         {conductorType === 'company' && (

@@ -88,6 +88,11 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
       property: 'og:image',
       content: `https://picsum.photos/seed/${workshop.id}/1200/630`,
     },
+    {
+      tagName: 'link',
+      rel: 'canonical',
+      href: `https://skillity.de/workshops/${workshop.id}`,
+    },
   ];
 }
 

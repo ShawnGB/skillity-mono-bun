@@ -40,6 +40,7 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
         ? `Edit ${loaderData.workshop.title} | Skillity`
         : 'Edit Workshop | Skillity',
     },
+    { name: 'robots', content: 'noindex' },
   ];
 }
 

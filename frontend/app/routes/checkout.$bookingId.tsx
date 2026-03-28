@@ -27,7 +27,7 @@ export async function loader({ params, context }: Route.LoaderArgs) {
 }
 
 export function meta() {
-  return [{ title: 'Checkout | Skillity' }];
+  return [{ title: 'Checkout | Skillity' }, { name: 'robots', content: 'noindex' }];
 }
 
 export default function CheckoutPage({ loaderData }: Route.ComponentProps) {

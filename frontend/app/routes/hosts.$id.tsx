@@ -39,6 +39,11 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
     { name: 'description', content: description },
     { property: 'og:title', content: `${name} | Host` },
     { property: 'og:type', content: 'profile' },
+    {
+      tagName: 'link',
+      rel: 'canonical',
+      href: `https://skillity.de/hosts/${host.id}`,
+    },
   ];
 }
 

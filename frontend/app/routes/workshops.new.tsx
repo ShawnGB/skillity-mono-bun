@@ -29,7 +29,7 @@ export async function loader({ request, context }: Route.LoaderArgs) {
 }
 
 export function meta() {
-  return [{ title: 'Create Workshop | Skillity' }];
+  return [{ title: 'Create Workshop | Skillity' }, { name: 'robots', content: 'noindex' }];
 }
 
 export default function NewWorkshopPage({ loaderData }: Route.ComponentProps) {

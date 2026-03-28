@@ -6,6 +6,7 @@ export function meta() {
       content:
         'Frequently asked questions about hosting and attending workshops on u/skillity.',
     },
+    { tagName: 'link', rel: 'canonical', href: 'https://skillity.de/faq' },
   ];
 }
 

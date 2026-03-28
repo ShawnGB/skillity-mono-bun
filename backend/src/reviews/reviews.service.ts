@@ -155,7 +155,8 @@ export class ReviewsService {
     const result = await this.reviewRepository
       .createQueryBuilder('review')
       .innerJoin('review.workshop', 'workshop')
-      .where('workshop.host_id = :hostId', { hostId })
+      .innerJoin('workshop.conductors', 'conductor')
+      .where('conductor.user_id = :hostId', { hostId })
       .select('AVG(review.rating)', 'avg')
       .addSelect('COUNT(review.id)', 'count')
       .getRawOne();

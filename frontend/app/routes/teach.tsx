@@ -19,6 +19,7 @@ export function meta() {
       content:
         'Share your passion and earn on your terms. Host workshops on Skillity — no teaching degree required.',
     },
+    { tagName: 'link', rel: 'canonical', href: 'https://skillity.de/teach' },
   ];
 }
 
@@ -144,6 +145,77 @@ export default function TeachPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="py-20">
+        <div className="container mx-auto px-4 max-w-2xl">
+          <h2 className="text-3xl text-center mb-4">What You Actually Need</h2>
+          <p className="text-center text-muted-foreground mb-12">
+            Less than you think. Here&rsquo;s the real list.
+          </p>
+          <ul className="space-y-6">
+            <li className="flex gap-4">
+              <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+                1
+              </span>
+              <div>
+                <p className="font-semibold">Something you genuinely care about</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Not expertise — enthusiasm. You don&rsquo;t need a certificate or
+                  ten years of experience. You need something you&rsquo;d talk
+                  about for free anyway.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+                2
+              </span>
+              <div>
+                <p className="font-semibold">A space where people can gather</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Your kitchen, a rented studio, a community centre, a park.
+                  People come for the experience, not the address.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+                3
+              </span>
+              <div>
+                <p className="font-semibold">A free afternoon</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  A two-hour session is enough to start. Run it once, see what
+                  happens, adjust, and run it again.
+                </p>
+              </div>
+            </li>
+            <li className="flex gap-4">
+              <span className="mt-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary font-bold text-sm">
+                4
+              </span>
+              <div>
+                <p className="font-semibold">
+                  A Kleingewerbe registration{' '}
+                  <span className="text-muted-foreground font-normal">
+                    (in Germany, if you charge for it)
+                  </span>
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  It&rsquo;s free, takes about 15 minutes at your Finanzamt, and
+                  means everything is above board once you start earning.{' '}
+                  <Link
+                    to="/guides/kleingewerbe"
+                    className="text-primary underline hover:no-underline"
+                  >
+                    Here&rsquo;s exactly how to do it &rarr;
+                  </Link>
+                </p>
+              </div>
+            </li>
+          </ul>
         </div>
       </section>
 

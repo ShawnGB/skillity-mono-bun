@@ -27,7 +27,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export function meta() {
-  return [{ title: 'Log In | Skillity' }];
+  return [{ title: 'Log In | Skillity' }, { name: 'robots', content: 'noindex' }];
 }
 
 export default function LoginPage({ loaderData }: Route.ComponentProps) {

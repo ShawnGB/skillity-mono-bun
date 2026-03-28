@@ -14,7 +14,7 @@ export async function loader({ context }: Route.LoaderArgs) {
 }
 
 export function meta() {
-  return [{ title: "You're a Host | Skillity" }];
+  return [{ title: "You're a Conductor | Skillity" }, { name: 'robots', content: 'noindex' }];
 }
 
 const BENEFITS = [

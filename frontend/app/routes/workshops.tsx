@@ -42,6 +42,7 @@ export function meta() {
   return [
     { title: 'Workshops | Skillity' },
     { name: 'description', content: 'Browse and book workshops near you.' },
+    { tagName: 'link', rel: 'canonical', href: 'https://skillity.de/workshops' },
   ];
 }
 

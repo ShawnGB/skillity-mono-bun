@@ -55,6 +55,9 @@ export default [
     'routes/api.bookings.$bookingId.confirm.tsx',
   ),
 
+  // Guides
+  route('/guides/kleingewerbe', 'routes/guides.kleingewerbe.tsx'),
+
   // Content pages
   route('/about', 'routes/about.tsx'),
   route('/teach', 'routes/teach.tsx'),

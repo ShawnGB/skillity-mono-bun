@@ -36,6 +36,7 @@ export function meta() {
         'Workshops led by passionate people. Learn pottery, cooking, music, languages and more. Book your spot on u/skillity.',
     },
     { property: 'og:type', content: 'website' },
+    { tagName: 'link', rel: 'canonical', href: 'https://skillity.de/' },
   ];
 }
 

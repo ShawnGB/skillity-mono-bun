@@ -3,6 +3,13 @@ import type { Route } from './+types/profile';
 import { sessionContext } from '@/app/context';
 import ProfileNav from '@/components/profile/ProfileNav';
 
+export function meta() {
+  return [
+    { title: 'Dashboard | Skillity' },
+    { name: 'robots', content: 'noindex' },
+  ];
+}
+
 export async function loader({ context }: Route.LoaderArgs) {
   const session = context.get(sessionContext);
   if (!session) return redirect(`/login?redirect=/profile`);

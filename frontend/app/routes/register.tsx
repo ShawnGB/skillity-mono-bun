@@ -29,7 +29,7 @@ export async function action({ request }: Route.ActionArgs) {
 }
 
 export function meta() {
-  return [{ title: 'Sign Up | Skillity' }];
+  return [{ title: 'Sign Up | Skillity' }, { name: 'robots', content: 'noindex' }];
 }
 
 export default function RegisterPage({ loaderData }: Route.ComponentProps) {

@@ -11,6 +11,7 @@ export function meta() {
       content:
         'Born in Berlin in 2016, u/skillity connects passionate people with curious learners through hands-on workshops.',
     },
+    { tagName: 'link', rel: 'canonical', href: 'https://skillity.de/about' },
   ];
 }
 

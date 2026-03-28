@@ -6,6 +6,7 @@ export function meta() {
       content:
         'Our guidelines for creating a respectful, safe, and welcoming community on u/skillity.',
     },
+    { tagName: 'link', rel: 'canonical', href: 'https://skillity.de/guidelines' },
   ];
 }
 
