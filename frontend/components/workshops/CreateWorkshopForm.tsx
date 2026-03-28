@@ -113,7 +113,6 @@ function StepIndicator({ currentStep }: { currentStep: number }) {
 }
 
 export default function CreateWorkshopForm({
-  onSuccess,
   defaultValues,
 }: CreateWorkshopFormProps) {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();

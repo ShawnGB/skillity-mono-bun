@@ -107,25 +107,32 @@ export class BookingsService {
       throw new BadRequestException('Only pending bookings can be confirmed');
     }
 
-    if (booking.workshop.startsAt && booking.workshop.startsAt <= new Date()) {
-      throw new BadRequestException('Workshop has already started');
-    }
+    const saved = await this.bookingRepository.manager.transaction(async (manager) => {
+      const workshop = await manager.findOne(Workshop, {
+        where: { id: booking.workshopId },
+        lock: { mode: 'pessimistic_write' },
+      });
 
-    const confirmedCount = await this.bookingRepository.count({
-      where: {
-        workshopId: booking.workshopId,
-        status: BookingStatus.CONFIRMED,
-      },
+      if (!workshop) throw new NotFoundException('Workshop not found');
+
+      if (workshop.startsAt && workshop.startsAt <= new Date()) {
+        throw new BadRequestException('Workshop has already started');
+      }
+
+      const confirmedCount = await manager.count(Booking, {
+        where: { workshopId: booking.workshopId, status: BookingStatus.CONFIRMED },
+      });
+
+      if (confirmedCount >= workshop.maxParticipants) {
+        throw new BadRequestException('Workshop is full');
+      }
+
+      booking.status = BookingStatus.CONFIRMED;
+      booking.paymentId = `mock_${Date.now()}`;
+
+      return manager.save(booking);
     });
 
-    if (confirmedCount >= booking.workshop.maxParticipants) {
-      throw new BadRequestException('Workshop is full');
-    }
-
-    booking.status = BookingStatus.CONFIRMED;
-    booking.paymentId = `mock_${Date.now()}`;
-
-    const saved = await this.bookingRepository.save(booking);
     this.eventEmitter.emit('booking.confirmed', { bookingId: saved.id, userId, workshopId: saved.workshopId });
     return saved;
   }
