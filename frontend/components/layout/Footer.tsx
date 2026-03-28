@@ -113,7 +113,8 @@ export default function Footer() {
 
         <div className="border-t pt-6 text-center">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} <BrandName />. All rights reserved.
+            &copy; {new Date().getFullYear()} Shawn G. Becker &mdash;{' '}
+            <BrandName />. All rights reserved.
           </p>
         </div>
       </div>
