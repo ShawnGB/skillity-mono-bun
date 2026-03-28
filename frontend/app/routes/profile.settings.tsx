@@ -1,4 +1,3 @@
-import type { Route } from './+types/profile.settings';
 import ExportDataSection from '@/components/profile/ExportDataSection';
 import DeleteAccountSection from '@/components/profile/DeleteAccountSection';
 
@@ -6,7 +5,7 @@ export function meta() {
   return [{ title: 'Settings | Skillity' }];
 }
 
-export default function SettingsPage(_: Route.ComponentProps) {
+export default function SettingsPage() {
   return (
     <div className="max-w-2xl space-y-8">
       <h2 className="text-2xl">Settings</h2>

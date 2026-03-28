@@ -1,7 +1,8 @@
 import { redirect, Link } from 'react-router';
+import { ApiError } from '@/lib/api-client.server';
 import { format } from 'date-fns';
 import type { Route } from './+types/profile.bookings';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import { getMyBookings } from '@/lib/bookings.server';
 import { getMyReviews } from '@/lib/workshops.server';
 import { BookingStatus, WorkshopStatus } from '@skillity/shared';
@@ -10,25 +11,25 @@ import { cn } from '@/lib/utils';
 import CancelBookingButton from '@/components/profile/CancelBookingButton';
 import ReviewButton from '@/components/workshops/ReviewButton';
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const session = await getSession(request);
-  if (!session?.user) return redirect('/login?redirect=/profile/bookings');
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext);
+  if (!session) return redirect('/login?redirect=/profile/bookings');
 
   const url = new URL(request.url);
   const confirmed = url.searchParams.get('confirmed') === 'true';
 
-  let bookings: Booking[] = [];
-  let reviewedWorkshopIds = new Set<string>();
   try {
     const [fetchedBookings, myReviews] = await Promise.all([
-      getMyBookings(request),
-      getMyReviews(request),
+      getMyBookings(session.cookie),
+      getMyReviews(session.cookie),
     ]);
-    bookings = fetchedBookings;
-    reviewedWorkshopIds = new Set(myReviews.map((r) => r.workshopId));
-  } catch {}
-
-  return { bookings, reviewedWorkshopIds: [...reviewedWorkshopIds], confirmed };
+    const reviewedWorkshopIds = new Set(myReviews.map((r) => r.workshopId));
+    return { bookings: fetchedBookings, reviewedWorkshopIds: [...reviewedWorkshopIds], confirmed };
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401)
+      return redirect('/login?redirect=/profile/bookings');
+    throw err;
+  }
 }
 
 export function meta() {

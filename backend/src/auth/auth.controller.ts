@@ -9,6 +9,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import type { Response, Request } from 'express';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -22,6 +23,7 @@ const COOKIE_OPTIONS = {
   path: '/',
 };
 
+@Throttle({ auth: { ttl: 60000, limit: 10 } })
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -43,7 +45,7 @@ export class AuthController {
 
     res.cookie('refresh_token', refreshToken, {
       ...COOKIE_OPTIONS,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 90 * 24 * 60 * 60 * 1000,
     });
 
     return { user, message: 'Login successful' };
@@ -65,7 +67,7 @@ export class AuthController {
 
     res.cookie('refresh_token', refreshToken, {
       ...COOKIE_OPTIONS,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      maxAge: 90 * 24 * 60 * 60 * 1000,
     });
 
     return { user, message: 'Registration successful' };
@@ -85,17 +87,12 @@ export class AuthController {
       return { message: 'No refresh token provided' };
     }
 
-    const { accessToken, refreshToken, user } =
+    const { accessToken, user } =
       await this.authService.refresh(refreshTokenValue);
 
     res.cookie('access_token', accessToken, {
       ...COOKIE_OPTIONS,
       maxAge: 15 * 60 * 1000, // 15 minutes
-    });
-
-    res.cookie('refresh_token', refreshToken, {
-      ...COOKIE_OPTIONS,
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     return { user, message: 'Token refreshed' };
@@ -116,6 +113,7 @@ export class AuthController {
     return { message: 'Logged out successfully' };
   }
 
+  @SkipThrottle()
   @Get('me')
   getMe(@CurrentUser() user: any) {
     return { user };

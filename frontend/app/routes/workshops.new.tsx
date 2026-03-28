@@ -1,11 +1,11 @@
 import { redirect } from 'react-router';
 import type { Route } from './+types/workshops.new';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import CreateWorkshopForm from '@/components/workshops/CreateWorkshopForm';
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const session = await getSession(request);
-  if (!session?.user) return redirect('/login?redirect=/workshops/new');
+export async function loader({ request, context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext);
+  if (!session) return redirect('/login?redirect=/workshops/new');
   if (session.user.role !== 'host' && session.user.role !== 'admin') {
     return redirect('/onboarding');
   }

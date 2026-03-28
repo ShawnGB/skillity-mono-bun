@@ -1,8 +1,10 @@
 import type { Workshop, Review } from '@skillity/shared';
 import { serverGet } from '@/lib/api-client.server';
 
+type RequestSource = Request | string;
+
 export async function getWorkshops(
-  request: Request,
+  source: RequestSource,
   category?: string,
   level?: string,
   search?: string,
@@ -12,48 +14,50 @@ export async function getWorkshops(
   if (level) params.set('level', level);
   if (search) params.set('search', search);
   const qs = params.toString();
-  return serverGet<Workshop[]>(qs ? `/workshops?${qs}` : '/workshops', request);
+  return serverGet<Workshop[]>(qs ? `/workshops?${qs}` : '/workshops', source);
 }
 
 export async function getWorkshop(
-  request: Request,
+  source: RequestSource,
   id: string,
 ): Promise<Workshop> {
-  return serverGet<Workshop>(`/workshops/${id}`, request);
+  return serverGet<Workshop>(`/workshops/${id}`, source);
 }
 
-export async function getMyWorkshops(request: Request): Promise<Workshop[]> {
-  return serverGet<Workshop[]>('/workshops/mine', request);
+export async function getMyWorkshops(
+  source: RequestSource,
+): Promise<Workshop[]> {
+  return serverGet<Workshop[]>('/workshops/mine', source);
 }
 
 export async function getWorkshopReviews(
-  request: Request,
+  source: RequestSource,
   workshopId: string,
 ): Promise<Review[]> {
-  return serverGet<Review[]>(`/workshops/${workshopId}/reviews`, request);
+  return serverGet<Review[]>(`/workshops/${workshopId}/reviews`, source);
 }
 
 export async function getHostWorkshops(
-  request: Request,
+  source: RequestSource,
   hostId: string,
 ): Promise<Workshop[]> {
-  return serverGet<Workshop[]>(`/workshops?hostId=${hostId}`, request);
+  return serverGet<Workshop[]>(`/workshops?hostId=${hostId}`, source);
 }
 
 export async function getSeriesWorkshops(
-  request: Request,
+  source: RequestSource,
   seriesId: string,
 ): Promise<Workshop[]> {
-  return serverGet<Workshop[]>(`/workshops/series/${seriesId}`, request);
+  return serverGet<Workshop[]>(`/workshops/series/${seriesId}`, source);
 }
 
 export async function getSeriesReviews(
-  request: Request,
+  source: RequestSource,
   seriesId: string,
 ): Promise<Review[]> {
-  return serverGet<Review[]>(`/workshops/series/${seriesId}/reviews`, request);
+  return serverGet<Review[]>(`/workshops/series/${seriesId}/reviews`, source);
 }
 
-export async function getMyReviews(request: Request): Promise<Review[]> {
-  return serverGet<Review[]>('/workshops/reviews/mine', request);
+export async function getMyReviews(source: RequestSource): Promise<Review[]> {
+  return serverGet<Review[]>('/workshops/reviews/mine', source);
 }

@@ -1,11 +1,11 @@
 import { redirect, Outlet } from 'react-router';
 import type { Route } from './+types/profile';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import ProfileNav from '@/components/profile/ProfileNav';
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const session = await getSession(request);
-  if (!session?.user) return redirect(`/login?redirect=/profile`);
+export async function loader({ context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext);
+  if (!session) return redirect(`/login?redirect=/profile`);
   return { user: session.user };
 }
 

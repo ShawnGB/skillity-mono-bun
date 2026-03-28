@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useFetcher, useNavigate, Link } from 'react-router';
+import { useFetcher, Link } from 'react-router';
 import { CheckCircle, CreditCard, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -10,7 +10,6 @@ const steps = [
 ];
 
 export default function OnboardingFlow() {
-  const navigate = useNavigate();
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [step, setStep] = useState(0);
 

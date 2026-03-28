@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { v4 as uuidv4 } from 'uuid';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 import { UsersService } from '../users/users.service';
 import { RefreshToken } from './entities/refresh-token.entity';
@@ -22,6 +23,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     @InjectRepository(RefreshToken)
     private readonly refreshTokenRepository: Repository<RefreshToken>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async validateUser(email: string, password: string): Promise<User | null> {
@@ -54,6 +56,8 @@ export class AuthService {
 
     await this.usersService.create(createUserDto);
     const user = await this.usersService.findByEmail(createUserDto.email);
+    if (!user) throw new ConflictException('User creation failed');
+    this.eventEmitter.emit('user.registered', { userId: user.id, email: user.email });
     return this.generateTokens(user);
   }
 
@@ -67,11 +71,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
-    // Revoke old token (rotation)
-    refreshToken.isRevoked = true;
-    await this.refreshTokenRepository.save(refreshToken);
-
-    return this.generateTokens(refreshToken.user);
+    return this.generateAccessToken(refreshToken.user);
   }
 
   async logout(refreshTokenValue: string) {
@@ -85,38 +85,43 @@ export class AuthService {
     }
   }
 
+  private userPayload(user: User) {
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      bio: user.bio,
+      tagline: user.tagline,
+      profession: user.profession,
+      city: user.city,
+      conductorType: user.conductorType,
+      companyName: user.companyName,
+      vatNumber: user.vatNumber,
+    };
+  }
+
+  private generateAccessToken(user: User) {
+    const accessToken = this.jwtService.sign(
+      { sub: user.id, email: user.email },
+      { expiresIn: '15m' },
+    );
+    return { accessToken, user: this.userPayload(user) };
+  }
+
   private async generateTokens(user: User) {
-    const payload = { sub: user.id, email: user.email };
-
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '15m',
-    });
-
     const refreshTokenValue = uuidv4();
     const refreshToken = this.refreshTokenRepository.create({
       token: refreshTokenValue,
       userId: user.id,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
     });
     await this.refreshTokenRepository.save(refreshToken);
 
     return {
-      accessToken,
+      ...this.generateAccessToken(user),
       refreshToken: refreshTokenValue,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        bio: user.bio,
-        tagline: user.tagline,
-        profession: user.profession,
-        city: user.city,
-        conductorType: user.conductorType,
-        companyName: user.companyName,
-        vatNumber: user.vatNumber,
-      },
     };
   }
 }

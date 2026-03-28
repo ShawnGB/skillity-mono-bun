@@ -1,4 +1,4 @@
-import { Form, useNavigation, useActionData } from 'react-router';
+import { Form, Link, useNavigation, useActionData } from 'react-router';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,28 +36,18 @@ export default function RegisterForm({ redirectTo }: RegisterFormProps) {
           <Label htmlFor="firstName">First Name</Label>
           <Input
             id="firstName"
-            {...register('firstName', { required: 'First name is required' })}
+            {...register('firstName')}
             placeholder="John"
           />
-          {errors.firstName && (
-            <p className="text-sm text-destructive">
-              {errors.firstName.message}
-            </p>
-          )}
         </div>
 
         <div className="space-y-2">
           <Label htmlFor="lastName">Last Name</Label>
           <Input
             id="lastName"
-            {...register('lastName', { required: 'Last name is required' })}
+            {...register('lastName')}
             placeholder="Doe"
           />
-          {errors.lastName && (
-            <p className="text-sm text-destructive">
-              {errors.lastName.message}
-            </p>
-          )}
         </div>
       </div>
 
@@ -102,6 +92,14 @@ export default function RegisterForm({ redirectTo }: RegisterFormProps) {
       <Button type="submit" className="w-full" disabled={isPending}>
         {isPending ? 'Registering...' : 'Register'}
       </Button>
+
+      <p className="text-center text-xs text-muted-foreground">
+        Mit der Registrierung stimmst du unserer{' '}
+        <Link to="/datenschutz" className="underline hover:text-foreground">
+          Datenschutzerklärung
+        </Link>{' '}
+        zu.
+      </p>
     </Form>
   );
 }

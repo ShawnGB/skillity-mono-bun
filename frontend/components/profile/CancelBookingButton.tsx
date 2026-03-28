@@ -21,7 +21,7 @@ export default function CancelBookingButton({
       title="Cancel booking?"
       description="This will cancel your booking for this workshop."
       confirmLabel="Yes, cancel booking"
-      onConfirm={(): Promise<void> => {
+      onConfirm={() => {
         fetcher.submit(
           {},
           {

@@ -1,15 +1,15 @@
 import { data, redirect } from 'react-router';
 import type { Route } from './+types/workshops.$id.edit';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import { getWorkshop } from '@/lib/workshops.server';
 import EditWorkshopForm, {
   ConductorsSection,
 } from '@/components/workshops/EditWorkshopForm';
 import { useNavigate } from 'react-router';
 
-export async function loader({ request, params }: Route.LoaderArgs) {
-  const session = await getSession(request);
-  if (!session?.user)
+export async function loader({ request, params, context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext);
+  if (!session)
     return redirect(`/login?redirect=/workshops/${params.id}/edit`);
 
   let workshop;

@@ -1,11 +1,11 @@
 import { redirect } from 'react-router';
 import type { Route } from './+types/api.workshops.$workshopId.conductors';
 import { serverPost, serverDelete } from '@/lib/api-client.server';
-import { getCurrentUser } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 
-export async function action({ request, params }: Route.ActionArgs) {
-  const user = await getCurrentUser(request);
-  if (!user) return redirect('/login');
+export async function action({ request, params, context }: Route.ActionArgs) {
+  const session = context.get(sessionContext);
+  if (!session) return redirect('/login');
 
   const { workshopId } = params;
   const formData = await request.formData();
@@ -16,7 +16,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       const userId = formData.get('userId') as string;
       await serverDelete(
         `/workshops/${workshopId}/conductors/${userId}`,
-        request,
+        session.cookie,
       );
       return { ok: true };
     }
@@ -26,7 +26,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     await serverPost(
       `/workshops/${workshopId}/conductors`,
       { userId, payoutShare },
-      request,
+      session.cookie,
     );
     return { ok: true };
   } catch (err) {

@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Booking } from './entities/booking.entity';
 import { Workshop } from 'src/workshops/entities/workshop.entity';
 import { BookingStatus, UserRole, WorkshopStatus } from 'src/types/enums';
@@ -17,6 +18,7 @@ export class BookingsService {
     private readonly bookingRepository: Repository<Booking>,
     @InjectRepository(Workshop)
     private readonly workshopRepository: Repository<Workshop>,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async createBooking(workshopId: string, userId: string) {
@@ -123,7 +125,9 @@ export class BookingsService {
     booking.status = BookingStatus.CONFIRMED;
     booking.paymentId = `mock_${Date.now()}`;
 
-    return this.bookingRepository.save(booking);
+    const saved = await this.bookingRepository.save(booking);
+    this.eventEmitter.emit('booking.confirmed', { bookingId: saved.id, userId, workshopId: saved.workshopId });
+    return saved;
   }
 
   async cancelBooking(id: string, userId: string) {

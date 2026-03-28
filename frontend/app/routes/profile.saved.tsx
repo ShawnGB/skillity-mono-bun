@@ -1,23 +1,26 @@
 import { redirect, Link } from 'react-router';
+import { ApiError } from '@/lib/api-client.server';
 import { format } from 'date-fns';
 import type { Route } from './+types/profile.saved';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import { getMyWishlist } from '@/lib/wishlist.server';
 import { WorkshopStatus, CATEGORY_LABELS } from '@skillity/shared';
 import type { WishlistItem } from '@skillity/shared';
 import { cn } from '@/lib/utils';
 import WishlistButton from '@/components/workshops/WishlistButton';
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const session = await getSession(request);
-  if (!session?.user) return redirect('/login?redirect=/profile/saved');
+export async function loader({ context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext);
+  if (!session) return redirect('/login?redirect=/profile/saved');
 
-  let items: WishlistItem[] = [];
   try {
-    items = await getMyWishlist(request);
-  } catch {}
-
-  return { items };
+    const items = await getMyWishlist(session.cookie);
+    return { items };
+  } catch (err) {
+    if (err instanceof ApiError && err.status === 401)
+      return redirect('/login?redirect=/profile/saved');
+    throw err;
+  }
 }
 
 export function meta() {

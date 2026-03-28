@@ -1,12 +1,11 @@
 import { redirect, Link } from 'react-router';
 import type { Route } from './+types/register';
 import { API_URL } from '@/lib/api-client.server';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import RegisterForm from '@/components/auth/RegisterForm';
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const session = await getSession(request);
-  if (session?.user) return redirect('/');
+export async function loader({ request, context }: Route.LoaderArgs) {
+  if (context.get(sessionContext)) return redirect('/');
   const url = new URL(request.url);
   return { redirectTo: url.searchParams.get('redirect') ?? undefined };
 }

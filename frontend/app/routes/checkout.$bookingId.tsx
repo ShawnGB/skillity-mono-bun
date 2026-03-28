@@ -1,20 +1,20 @@
 import { data, redirect } from 'react-router';
 import { format } from 'date-fns';
 import type { Route } from './+types/checkout.$bookingId';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import { getBooking } from '@/lib/bookings.server';
 import { BookingStatus } from '@skillity/shared';
 import CheckoutForm from '@/components/checkout/CheckoutForm';
 
-export async function loader({ request, params }: Route.LoaderArgs) {
-  const session = await getSession(request);
-  if (!session?.user) return redirect('/login?redirect=/workshops');
+export async function loader({ params, context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext);
+  if (!session) return redirect('/login?redirect=/workshops');
 
   const { bookingId } = params;
 
   let booking;
   try {
-    booking = await getBooking(request, bookingId);
+    booking = await getBooking(session.cookie, bookingId);
   } catch {
     throw data(null, { status: 404 });
   }

@@ -1,11 +1,11 @@
 import { redirect } from 'react-router';
 import type { Route } from './+types/api.profile';
 import { serverPatch } from '@/lib/api-client.server';
-import { getCurrentUser } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 
-export async function action({ request }: Route.ActionArgs) {
-  const user = await getCurrentUser(request);
-  if (!user) return redirect('/login');
+export async function action({ request, context }: Route.ActionArgs) {
+  const session = context.get(sessionContext);
+  if (!session) return redirect('/login');
 
   const formData = await request.formData();
   const payload = Object.fromEntries(
@@ -13,7 +13,7 @@ export async function action({ request }: Route.ActionArgs) {
   );
 
   try {
-    await serverPatch('/users/me', payload, request);
+    await serverPatch('/users/me', payload, session.cookie);
     return { ok: true };
   } catch (err) {
     return {

@@ -14,10 +14,14 @@ import {
 import type { Route } from './+types/root';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
-import { getSession } from '@/lib/session.server';
+import CookieBanner from '@/components/layout/CookieBanner';
+import { authMiddleware } from '@/lib/auth.middleware.server';
+import { sessionContext } from '@/app/context';
 
-export async function loader({ request }: Route.LoaderArgs) {
-  const session = await getSession(request);
+export const middleware: Route.MiddlewareFunction[] = [authMiddleware];
+
+export async function loader({ context }: Route.LoaderArgs) {
+  const session = context.get(sessionContext);
   return { user: session?.user ?? null };
 }
 
@@ -49,6 +53,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
         <Outlet />
       </main>
       <Footer />
+      <CookieBanner />
     </div>
   );
 }

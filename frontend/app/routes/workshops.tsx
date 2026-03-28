@@ -1,27 +1,25 @@
 import type { Route } from './+types/workshops';
-import { getSession } from '@/lib/session.server';
+import { sessionContext } from '@/app/context';
 import { getWorkshops } from '@/lib/workshops.server';
 import { getWishlistCheck } from '@/lib/wishlist.server';
 import WorkshopsHeader from '@/components/workshops/WorkshopsHeader';
 import WorkshopsListing from '@/components/workshops/WorkshopsListing';
 
-export async function loader({ request }: Route.LoaderArgs) {
+export async function loader({ request, context }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const category = url.searchParams.get('category') ?? undefined;
   const level = url.searchParams.get('level') ?? undefined;
   const search = url.searchParams.get('search') ?? undefined;
 
-  const [session, workshops] = await Promise.all([
-    getSession(request),
-    getWorkshops(request, category, level, search),
-  ]);
+  const session = context.get(sessionContext);
+  const workshops = await getWorkshops(request, category, level, search);
 
-  const isAuthenticated = !!session?.user;
+  const isAuthenticated = !!session;
   let wishlistMap: Record<string, boolean> = {};
-  if (isAuthenticated && workshops.length > 0) {
+  if (session && workshops.length > 0) {
     try {
       wishlistMap = await getWishlistCheck(
-        request,
+        session.cookie,
         workshops.map((w) => w.id),
       );
     } catch {

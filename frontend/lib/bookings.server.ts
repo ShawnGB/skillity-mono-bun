@@ -1,23 +1,27 @@
 import type { Booking, WorkshopBooking } from '@skillity/shared';
 import { serverGet } from '@/lib/api-client.server';
 
-export async function getMyBookings(request: Request): Promise<Booking[]> {
-  return serverGet<Booking[]>('/bookings/mine', request);
+type RequestSource = Request | string;
+
+export async function getMyBookings(
+  source: RequestSource,
+): Promise<Booking[]> {
+  return serverGet<Booking[]>('/bookings/mine', source);
 }
 
 export async function getBooking(
-  request: Request,
+  source: RequestSource,
   id: string,
 ): Promise<Booking> {
-  return serverGet<Booking>(`/bookings/${id}`, request);
+  return serverGet<Booking>(`/bookings/${id}`, source);
 }
 
 export async function getWorkshopBookings(
-  request: Request,
+  source: RequestSource,
   workshopId: string,
 ): Promise<WorkshopBooking[]> {
   return serverGet<WorkshopBooking[]>(
     `/workshops/${workshopId}/bookings`,
-    request,
+    source,
   );
 }

@@ -16,11 +16,11 @@ export class User extends BaseEntity {
   @Column()
   password: string;
 
-  @Column({ name: 'first_name', length: 150 })
-  firstName: string;
+  @Column({ name: 'first_name', length: 150, nullable: true })
+  firstName: string | null;
 
-  @Column({ name: 'last_name', length: 150 })
-  lastName: string;
+  @Column({ name: 'last_name', length: 150, nullable: true })
+  lastName: string | null;
 
   @Column({ type: 'text', nullable: true })
   bio: string | null;
