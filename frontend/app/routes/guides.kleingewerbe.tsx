@@ -19,24 +19,38 @@ export function meta() {
 
 const sections = [
   {
-    heading: 'Do you need to register at all?',
-    body: `If you run workshops and charge for them, you are operating a business (Gewerbe) in Germany. This applies even if it's a side activity alongside a regular job. The good news: registering a Kleingewerbe is simple, inexpensive, and takes about 15 minutes at your local Finanzamt or online via ELSTER.
+    heading: 'Can you start before registering?',
+    body: `Short answer: yes. You can run your first workshop and even take payment before your registration is complete — as long as you intend to register and do so soon after.
 
-You do not need to register before your first paid workshop — but you should register as soon as you plan to do it regularly or earn meaningful income from it.`,
+The Steuernummer (tax number) can take a few weeks to arrive by post. But the wait does not stop you. Once you have submitted the Fragebogen zur steuerlichen Erfassung (see below), you can start. On any invoice you issue before the number arrives, write: "Steuernummer beantragt" (tax number applied for). This is legally recognised.
+
+So: submit the form, run your workshop, and your number will follow.`,
   },
   {
     heading: 'What is a Kleingewerbe?',
-    body: `A Kleingewerbe (small trade) is the simplest form of self-employment in Germany. Unlike a GmbH or UG, there is no minimum capital, no notary required, and very little paperwork. You register as a sole trader (Einzelunternehmer or Einzelkaufmann/Einzelkauffrau depending on your revenue).
+    body: `A Kleingewerbe (small trade) is the simplest form of self-employment in Germany. No minimum capital, no notary, no accountant required to start. You register as a sole trader (Einzelunternehmer).
 
-It is distinct from a Freiberufler (freelancer). Workshop conductors are generally considered Gewerbetreibende, not Freiberufler, because the income comes from organising events rather than providing independent professional services like consulting or art.`,
+It is different from a Freiberufler (freelancer). Workshop conductors are generally considered Gewerbetreibende, not Freiberufler, because the income comes from organising events rather than providing a specific professional service like consulting, legal advice, or art. In practice this rarely matters — the paperwork is similar and the tax treatment is the same for small earners.`,
   },
   {
-    heading: 'How to register',
-    body: `1. Fill in the Fragebogen zur steuerlichen Erfassung (tax registration questionnaire) via ELSTER (elster.de) or in person at your Finanzamt.
-2. You will receive a Steuernummer (tax number) within a few weeks. Keep this — you need it for invoices.
-3. If your municipality requires it, you may also need to register at the Gewerbeamt (trade office). The fee is typically €20–€30. Many Fintanzamt registrations cover this automatically — check with your local office.
+    heading: 'How to register — two steps, one often enough',
+    body: `There are two separate registrations in Germany. Most people only need to do step one.
 
-For activities happening mainly in Berlin, your Finanzamt is determined by your home address. You can find yours at finanzamt.berlin.de.`,
+Step 1 — Finanzamt (tax office): Fill in the Fragebogen zur steuerlichen Erfassung. This is the main registration. You can do it online via ELSTER (elster.de) or in person. A few weeks later your Steuernummer arrives by post. This is what you put on invoices.
+
+Step 2 — Gewerbeamt (trade office): Some municipalities also require a formal Gewerbeanmeldung here. The fee is typically €20–€30 and it takes about 15 minutes. In Berlin, the Gewerbeamt notifies the Finanzamt automatically when you register — so in practice many people do step 2 first and skip step 1, since the Finanzamt then sends the Fragebogen to you.
+
+Either route works. For most workshop conductors, submitting via ELSTER is the quickest path.
+
+For Berlin: your Finanzamt is determined by your home address. Find yours at finanzamt.berlin.de.`,
+  },
+  {
+    heading: 'Already have a Steuernummer?',
+    body: `If you already have a Steuernummer from previous freelance work or employment, you do not need a new one. You use the same number.
+
+What you do need to do: inform your Finanzamt that you are now running a Gewerbebetrieb (business activity). You can do this via ELSTER by updating your tax situation, or by writing a short letter to your Finanzamt. If you are also registering at the Gewerbeamt, they notify the Finanzamt on your behalf.
+
+Your existing Steuernummer goes on your invoices. Nothing else changes.`,
   },
   {
     heading: 'Kleinunternehmerregelung — no VAT up to €25,000',
@@ -46,7 +60,7 @@ For activities happening mainly in Berlin, your Finanzamt is determined by your 
 - You do not file VAT returns (Umsatzsteuervoranmeldungen)
 - Your invoices must state: "Gemäß § 19 UStG wird keine Umsatzsteuer berechnet."
 
-This is the default for most new workshop conductors. If you expect to exceed €25,000 in year one, you may want to opt into standard VAT to reclaim input VAT on purchases — consult a Steuerberater (tax advisor) in that case.`,
+This is the default for most new workshop conductors and makes everything much simpler. If you expect to exceed €25,000 in year one, consult a Steuerberater (tax advisor) about opting into standard VAT to reclaim input VAT on purchases.`,
   },
   {
     heading: 'What counts as income',
@@ -62,11 +76,11 @@ Keep all receipts. You will declare your profit on your annual income tax return
   },
   {
     heading: 'Invoicing basics',
-    body: `You are not legally required to issue invoices for every workshop booking — Skillity provides payment receipts. However, for any direct payment or B2B transaction, an invoice (Rechnung) is required.
+    body: `You are not legally required to issue invoices for every workshop booking — Skillity provides payment receipts to attendees. However, for any direct payment or B2B transaction, an invoice (Rechnung) is required.
 
 A compliant German invoice must include:
 - Your full name and address
-- Your Steuernummer or USt-IdNr.
+- Your Steuernummer (or "Steuernummer beantragt" if still waiting)
 - The recipient's name and address
 - Invoice date and a sequential invoice number
 - Description of the service
@@ -103,12 +117,11 @@ export default function KleingewerbePage() {
           Guide
         </p>
         <h1 className="text-4xl mb-4">
-          Kleingewerbe for Workshop Conductors
+          Registering a Kleingewerbe
         </h1>
         <p className="text-lg text-muted-foreground leading-relaxed">
-          A practical guide to teaching workshops legally in Germany — without
-          a lawyer, without an accountant, and without much paperwork. Written
-          for people who want to share what they know and get paid for it.
+          The shortest path to teaching workshops legally in Germany. No
+          lawyer, no accountant, and less waiting than you think.
         </p>
         <p className="mt-3 text-sm text-muted-foreground">
           This guide is for informational purposes only and does not constitute
@@ -137,15 +150,15 @@ export default function KleingewerbePage() {
           {[
             ['ELSTER — online tax registration', 'https://www.elster.de'],
             [
-              'Existenzgründer — Kleingewerbe overview (DE)',
-              'https://www.existenzgruender.de/DE/Gruendung-vorbereiten/Gruendungswissen/Kleingewerbe/inhalt.html',
-            ],
-            [
               'Finanzamt Berlin — find your local office',
               'https://www.berlin.de/sen/finanzen/steuern/finanzaemter/',
             ],
             [
-              'IHK Berlin — Gewerbe registration',
+              'Berlin.de — Gewerbeanmeldung online',
+              'https://service.berlin.de/dienstleistung/305249/',
+            ],
+            [
+              'IHK Berlin — Gewerbe registration info',
               'https://www.ihk.de/berlin/fuer-unternehmen/recht-und-fair-play/gewerberecht/gewerbeanmeldung',
             ],
           ].map(([label, href]) => (

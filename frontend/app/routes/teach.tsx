@@ -278,6 +278,54 @@ export default function TeachPage() {
         </div>
       </section>
 
+      <section className="py-20">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-3xl text-center mb-4">Conductor Resources</h2>
+          <p className="text-center text-muted-foreground mb-12">
+            Practical guides for getting started — written for people, not
+            bureaucrats.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                title: 'Plan Your First Workshop',
+                description:
+                  'From choosing what to teach to what to do on the day.',
+                href: '/guides/plan-workshop',
+              },
+              {
+                title: 'Find a Venue in Berlin',
+                description:
+                  'Types of spaces, what to ask, and how much to budget.',
+                href: '/guides/find-location',
+              },
+              {
+                title: 'Registering a Kleingewerbe',
+                description:
+                  'The legal setup — simpler and faster than you think.',
+                href: '/guides/kleingewerbe',
+              },
+            ].map((guide) => (
+              <Link
+                key={guide.href}
+                to={guide.href}
+                className="group rounded-xl border bg-card p-6 hover:border-primary transition-colors"
+              >
+                <h3 className="font-semibold mb-2 group-hover:text-primary transition-colors">
+                  {guide.title}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {guide.description}
+                </p>
+                <p className="mt-4 text-sm text-primary font-medium">
+                  Read &rarr;
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       <section className="py-20 text-center">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl mb-4">Ready to Start?</h2>

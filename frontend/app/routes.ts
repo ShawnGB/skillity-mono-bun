@@ -57,6 +57,8 @@ export default [
 
   // Guides
   route('/guides/kleingewerbe', 'routes/guides.kleingewerbe.tsx'),
+  route('/guides/plan-workshop', 'routes/guides.plan-workshop.tsx'),
+  route('/guides/find-location', 'routes/guides.find-location.tsx'),
 
   // Content pages
   route('/about', 'routes/about.tsx'),
