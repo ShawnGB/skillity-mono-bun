@@ -1,64 +1,84 @@
 import { Link } from 'react-router';
 import {
   Heart,
-  Wallet,
   Users,
+  Star,
+  RefreshCw,
+  ExternalLink,
+  BadgeEuro,
   ListChecks,
   Handshake,
-  BadgeEuro,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function meta() {
   return [
-    { title: 'Become a Guide | Skillity' },
+    { title: 'Become a Conductor | Skillity' },
     {
       name: 'description',
       content:
-        'Share your passion and earn on your terms. Host workshops on uSkillity. No teaching degree required.',
+        'Share your passion and earn on your terms. Host workshops on Skillity — no teaching degree required.',
     },
   ];
 }
 
 const benefits = [
   {
-    icon: Heart,
-    title: 'Share Your Passion',
+    icon: BadgeEuro,
+    title: 'You Keep 95%',
     description:
-      'Turn what you love into an experience others will remember. No teaching degree required, just enthusiasm.',
-  },
-  {
-    icon: Wallet,
-    title: 'Earn on Your Terms',
-    description:
-      'Set your own price, schedule, and group size. Your workshop, your rules.',
+      'Set your price. Whatever people pay, 95% comes to you. No subscription, no hidden commission — just a straightforward 5% that keeps the lights on here.',
   },
   {
     icon: Users,
-    title: 'Build Community',
+    title: "You Don't Have to Do It Alone",
     description:
-      'Connect with like-minded people in your city. Every workshop creates bonds that last beyond the session.',
+      'Invite a co-conductor, set the revenue split with a slider, and both of you get paid. Some things are more fun — and better — when you teach them together.',
+  },
+  {
+    icon: RefreshCw,
+    title: 'Every Session Builds on the Last',
+    description:
+      'Run it once, learn from it, run it again. Reviews from each session carry forward. Your reputation compounds over time — you\'re building something, not just doing something once.',
+  },
+  {
+    icon: Star,
+    title: 'Reviews That Mean Something',
+    description:
+      'Only people who actually attended can review you. Not five-star inflation — real feedback from real learners that builds real credibility.',
+  },
+  {
+    icon: Heart,
+    title: 'No Credentials Required',
+    description:
+      'You don\'t need a teaching degree. You need something you care deeply about and a willingness to share it. Genuine enthusiasm is rarer and more valuable than a certificate.',
+  },
+  {
+    icon: ExternalLink,
+    title: 'Already Selling Elsewhere?',
+    description:
+      'If you sell tickets on another platform or your own site, you can still list here. Your audience on Skillity grows and collects reviews — even if the booking happens somewhere else.',
   },
 ];
 
 const howItWorks = [
   {
     icon: ListChecks,
-    title: 'Create a Listing',
+    title: 'Describe What You Do',
     description:
-      'Describe your workshop, set the price and capacity, and publish it in minutes.',
+      'Tell people what they\'ll make, learn, or experience. Set your price, your capacity, and when it happens.',
   },
   {
     icon: Handshake,
-    title: 'Welcome Learners',
+    title: 'Learners Show Up',
     description:
-      'Learners book their spot and show up. You focus on what you do best.',
+      'Bookings, payments, and confirmations are handled. You focus on what you actually want to do.',
   },
   {
     icon: BadgeEuro,
-    title: 'Get Paid',
+    title: 'You Get Paid',
     description:
-      'Receive your earnings within 24 hours. Simple, transparent, fair.',
+      '95% of ticket revenue goes directly to you via Mollie. Simple, fast, transparent.',
   },
 ];
 
@@ -68,7 +88,7 @@ export default function TeachPage() {
       <section className="py-24 md:py-32 text-center">
         <div className="container mx-auto px-4 max-w-3xl">
           <p className="text-sm font-medium text-primary uppercase tracking-widest mb-4">
-            Become a Guide
+            Become a Conductor
           </p>
           <h1 className="text-5xl md:text-7xl uppercase">
             Share What Moves You
@@ -83,17 +103,17 @@ export default function TeachPage() {
 
       <section className="bg-muted/50 py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl text-center mb-16">Why Guide?</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+          <h2 className="text-3xl text-center mb-16">Why Skillity</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
             {benefits.map((benefit) => (
               <div
                 key={benefit.title}
-                className="rounded-xl border bg-card p-8 text-center"
+                className="rounded-xl border bg-card p-8"
               >
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-primary/10">
                   <benefit.icon className="h-5 w-5 text-primary" />
                 </div>
-                <h3 className="text-xl font-serif font-bold mb-3">
+                <h3 className="text-lg font-serif font-bold mb-2">
                   {benefit.title}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -126,15 +146,61 @@ export default function TeachPage() {
         </div>
       </section>
 
-      <section className="bg-primary text-primary-foreground py-20">
-        <div className="container mx-auto px-4 text-center max-w-2xl">
-          <h2 className="text-4xl md:text-5xl text-primary-foreground">
-            You Keep Everything
+      <section className="bg-muted/50 py-20">
+        <div className="container mx-auto px-4 max-w-3xl">
+          <h2 className="text-3xl text-center mb-12">
+            How Skillity Compares
           </h2>
-          <p className="mt-6 text-lg text-primary-foreground/80">
-            You set your price and you get 100% of it. We add a small 5% service
-            fee for learners at checkout. No hidden fees, no subscriptions, no
-            commission taken from you.
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left py-3 pr-6 font-medium text-muted-foreground">
+                    &nbsp;
+                  </th>
+                  <th className="text-center py-3 px-4 font-semibold text-foreground">
+                    Skillity
+                  </th>
+                  <th className="text-center py-3 px-4 font-medium text-muted-foreground">
+                    Eventbrite
+                  </th>
+                  <th className="text-center py-3 px-4 font-medium text-muted-foreground">
+                    VHS
+                  </th>
+                  <th className="text-center py-3 px-4 font-medium text-muted-foreground">
+                    DIY
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y">
+                {[
+                  ['Your cut', '95%', '~92–94%', '~40–60%', '100%'],
+                  ['Anyone can teach', '✓', '✓', '✗', '✓'],
+                  ['Reviews', '✓', '✗', '✗', '✗'],
+                  ['Co-conductor split', '✓', '✗', '✗', '✗'],
+                  ['Workshop series', '✓', 'Manual', '✗', 'Manual'],
+                  ['Audience building', '✓', 'Partial', '✗', '✗'],
+                  ['Payments handled', '✓', '✓', '✓', '✗'],
+                ].map(([label, ...cols]) => (
+                  <tr key={label}>
+                    <td className="py-3 pr-6 text-muted-foreground">{label}</td>
+                    {cols.map((val, i) => (
+                      <td
+                        key={i}
+                        className={`py-3 px-4 text-center ${
+                          i === 0 ? 'font-medium text-foreground' : 'text-muted-foreground'
+                        }`}
+                      >
+                        {val}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="text-xs text-muted-foreground mt-4 text-center">
+            DIY = managing your own bookings, payments, and promotion directly.
           </p>
         </div>
       </section>
@@ -143,8 +209,8 @@ export default function TeachPage() {
         <div className="container mx-auto px-4">
           <h2 className="text-3xl mb-4">Ready to Start?</h2>
           <p className="text-muted-foreground mb-8 max-w-lg mx-auto">
-            Create your first workshop and share your passion with curious
-            learners in your city.
+            Create your first workshop. Share something you love with people
+            who are genuinely curious about it.
           </p>
           <Button asChild size="lg">
             <Link to="/onboarding">Get Started</Link>

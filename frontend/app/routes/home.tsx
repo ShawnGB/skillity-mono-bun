@@ -1,5 +1,5 @@
 import { Link } from 'react-router';
-import { Search, Ticket, Sparkles } from 'lucide-react';
+import { Search, Ticket, Sparkles, Monitor, GraduationCap, Star, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import WorkshopsListing from '@/components/workshops/WorkshopsListing';
 import type { Route } from './+types/home';
@@ -115,6 +115,65 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-3xl mb-6">Not a Course. A Room.</h2>
+              <p className="text-muted-foreground leading-relaxed mb-6">
+                Every workshop on Skillity is in person, in a small group, led
+                by someone who genuinely cares about what they&rsquo;re
+                sharing. Not a recorded lecture. Not a certification track. A
+                real experience with real people.
+              </p>
+              <p className="text-muted-foreground leading-relaxed">
+                You&rsquo;ll remember their faces.
+              </p>
+            </div>
+            <div className="space-y-5">
+              {[
+                {
+                  icon: GraduationCap,
+                  title: 'Taught by obsession, not credentials',
+                  description:
+                    'The people who lead these workshops aren\'t doing a job — they can\'t stop thinking about what they teach. That makes all the difference.',
+                },
+                {
+                  icon: Star,
+                  title: 'Reviews from people who actually showed up',
+                  description:
+                    'Only verified attendees can leave a review. No inflated ratings — just honest feedback from people who were in the room.',
+                },
+                {
+                  icon: MapPin,
+                  title: 'Your city, not the internet',
+                  description:
+                    'Berlin-rooted and expanding. The best learning happens near you, with the people around you.',
+                },
+                {
+                  icon: Monitor,
+                  title: 'Some things don\'t work through a screen',
+                  description:
+                    'The smell of clay. The weight of a chisel. The moment a chord finally sounds right. Skillity is for those things.',
+                },
+              ].map(({ icon: Icon, title, description }) => (
+                <div key={title} className="flex gap-4">
+                  <div className="shrink-0 flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+                    <Icon className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="font-medium mb-0.5">{title}</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {description}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
