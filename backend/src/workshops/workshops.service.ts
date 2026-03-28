@@ -320,6 +320,50 @@ export class WorkshopsService {
     await this.conductorRepository.remove(conductor);
   }
 
+  async updateSplit(
+    workshopId: string,
+    requesterId: string,
+    splits: { userId: string; payoutShare: number }[],
+  ) {
+    const workshop = await this.workshopRepository.findOne({
+      where: { id: workshopId },
+    });
+    if (!workshop) throw new NotFoundException('Workshop not found');
+    if (workshop.hostId !== requesterId) {
+      throw new ForbiddenException(
+        'Only the primary host can update the payout split',
+      );
+    }
+
+    const total =
+      Math.round(
+        splits.reduce((sum, s) => sum + s.payoutShare, 0) * 10000,
+      ) / 10000;
+    if (Math.abs(total - 1.0) > 0.001) {
+      throw new BadRequestException('Payout shares must sum to 1.0');
+    }
+
+    const existing = await this.conductorRepository.find({
+      where: { workshopId },
+    });
+
+    for (const split of splits) {
+      const row = existing.find((c) => c.userId === split.userId);
+      if (row) {
+        row.payoutShare = split.payoutShare;
+        await this.conductorRepository.save(row);
+      } else {
+        const conductor = this.conductorRepository.create({
+          workshopId,
+          userId: split.userId,
+          isPrimary: split.userId === workshop.hostId,
+          payoutShare: split.payoutShare,
+        });
+        await this.conductorRepository.save(conductor);
+      }
+    }
+  }
+
   async findSeriesSiblings(seriesId: string, excludeId?: string) {
     const where: Record<string, any> = {
       seriesId,

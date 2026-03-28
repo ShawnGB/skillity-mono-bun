@@ -1,25 +1,63 @@
 import { useState, useEffect } from 'react';
-import { useFetcher, Link } from 'react-router';
-import { CheckCircle, CreditCard, User } from 'lucide-react';
+import { useFetcher } from 'react-router';
+import { useForm } from 'react-hook-form';
+import { CreditCard, User } from 'lucide-react';
+import type { AuthUser } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 const steps = [
   { label: 'About You', icon: User },
   { label: 'Payment', icon: CreditCard },
-  { label: 'Done', icon: CheckCircle },
 ];
 
-export default function OnboardingFlow() {
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+interface ProfileFormValues {
+  tagline: string;
+  profession: string;
+  conductorType: 'individual' | 'company' | '';
+  companyName: string;
+}
+
+interface OnboardingFlowProps {
+  user: AuthUser;
+}
+
+export default function OnboardingFlow({ user }: OnboardingFlowProps) {
+  const becomeHostFetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const profileFetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [step, setStep] = useState(0);
 
-  const isPending = fetcher.state !== 'idle';
+  const isBecomeHostPending = becomeHostFetcher.state !== 'idle' || !!becomeHostFetcher.data;
+  const isProfilePending = profileFetcher.state !== 'idle';
+
+  const { register, handleSubmit, watch, setValue } = useForm<ProfileFormValues>({
+    defaultValues: {
+      tagline: user.tagline ?? '',
+      profession: user.profession ?? '',
+      conductorType: (user.conductorType ?? '') as 'individual' | 'company' | '',
+      companyName: user.companyName ?? '',
+    },
+  });
+
+  const conductorType = watch('conductorType');
 
   useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.data?.ok) {
-      setStep(2);
+    if (profileFetcher.state === 'idle' && profileFetcher.data?.ok) {
+      setStep(1);
     }
-  }, [fetcher.state, fetcher.data]);
+  }, [profileFetcher.state, profileFetcher.data]);
+
+  const onProfileSubmit = (data: ProfileFormValues) => {
+    const payload: Record<string, string> = {
+      tagline: data.tagline,
+      profession: data.profession,
+    };
+    if (data.conductorType) payload.conductorType = data.conductorType;
+    if (data.conductorType === 'company') payload.companyName = data.companyName;
+
+    profileFetcher.submit(payload, { method: 'post', action: '/api/profile' });
+  };
 
   return (
     <div>
@@ -45,26 +83,118 @@ export default function OnboardingFlow() {
       </div>
 
       {step === 0 && (
-        <div className="space-y-6">
+        <form onSubmit={handleSubmit(onProfileSubmit)} className="space-y-6">
           <div className="text-center">
             <h1 className="text-3xl mb-2">Tell Us About Yourself</h1>
             <p className="text-muted-foreground">
-              This is optional. You can always fill it in later.
+              This is optional — you can always update it later.
             </p>
           </div>
+
+          {profileFetcher.data?.error && (
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              {profileFetcher.data.error}
+            </div>
+          )}
+
+          <div className="space-y-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="profession">Profession</Label>
+              <Input
+                id="profession"
+                placeholder="e.g. Ceramic artist, Sound designer"
+                {...register('profession')}
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="tagline">Tagline</Label>
+              <Input
+                id="tagline"
+                placeholder="e.g. Teaching pottery for 10 years in Berlin"
+                maxLength={120}
+                {...register('tagline')}
+              />
+              <p className="text-xs text-muted-foreground">
+                Shown below your name on your host profile.
+              </p>
+            </div>
+
+            <div className="rounded-lg border p-4 space-y-3">
+              <Label className="text-sm font-medium">Conductor type</Label>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setValue('conductorType', 'individual')}
+                  className={`rounded-lg border p-3 text-left transition-colors ${
+                    conductorType === 'individual'
+                      ? 'border-primary bg-primary/5'
+                      : 'hover:bg-accent'
+                  }`}
+                >
+                  <p className="text-sm font-medium">Individual</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Freelancer or sole trader
+                  </p>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setValue('conductorType', 'company')}
+                  className={`rounded-lg border p-3 text-left transition-colors ${
+                    conductorType === 'company'
+                      ? 'border-primary bg-primary/5'
+                      : 'hover:bg-accent'
+                  }`}
+                >
+                  <p className="text-sm font-medium">Company</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    GmbH, UG, or other entity
+                  </p>
+                </button>
+              </div>
+              {conductorType === 'individual' && (
+                <p className="text-xs text-muted-foreground">
+                  In Germany, workshop conductors typically register a
+                  Kleingewerbe (free, ~15 min at your Finanzamt).{' '}
+                  <a
+                    href="https://www.existenzgruender.de/DE/Gruendung-vorbereiten/Gruendungswissen/Kleingewerbe/inhalt.html"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline hover:text-foreground"
+                  >
+                    Learn more
+                  </a>
+                </p>
+              )}
+              {conductorType === 'company' && (
+                <div className="space-y-1.5">
+                  <Label htmlFor="companyName">Company name</Label>
+                  <Input
+                    id="companyName"
+                    placeholder="e.g. Kreativ Studio GmbH"
+                    maxLength={200}
+                    {...register('companyName')}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
+
           <div className="flex gap-3">
             <Button
+              type="button"
               variant="outline"
               className="flex-1"
               onClick={() => setStep(1)}
+              disabled={isProfilePending}
             >
               Skip
             </Button>
-            <Button className="flex-1" onClick={() => setStep(1)}>
-              Next
+            <Button type="submit" className="flex-1" disabled={isProfilePending}>
+              {isProfilePending ? 'Saving...' : 'Next'}
             </Button>
           </div>
-        </div>
+        </form>
       )}
 
       {step === 1 && (
@@ -87,47 +217,34 @@ export default function OnboardingFlow() {
               to you.
             </p>
 
-            {fetcher.data?.error && (
+            {becomeHostFetcher.data?.error && (
               <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
-                {fetcher.data.error}
+                {becomeHostFetcher.data.error}
               </div>
             )}
 
-            <fetcher.Form method="post" action="/api/become-host">
+            <becomeHostFetcher.Form method="post" action="/api/become-host">
               <Button
                 size="lg"
                 className="w-full"
                 type="submit"
-                disabled={isPending}
+                disabled={isBecomeHostPending}
               >
-                {isPending ? 'Connecting...' : 'Connect with Mollie'}
+                {isBecomeHostPending ? 'Connecting...' : 'Connect with Mollie'}
               </Button>
-            </fetcher.Form>
+            </becomeHostFetcher.Form>
           </div>
 
-          <Button variant="ghost" className="w-full" onClick={() => setStep(0)}>
+          <Button
+            variant="ghost"
+            className="w-full"
+            onClick={() => setStep(0)}
+          >
             &larr; Back
           </Button>
         </div>
       )}
 
-      {step === 2 && (
-        <div className="space-y-6 text-center">
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
-            <CheckCircle className="h-10 w-10 text-primary" />
-          </div>
-          <div>
-            <h1 className="text-3xl mb-2">You&rsquo;re All Set!</h1>
-            <p className="text-muted-foreground">
-              Your account has been upgraded to Host. You can now create
-              workshops and start sharing what you know.
-            </p>
-          </div>
-          <Button size="lg" className="w-full" asChild>
-            <Link to="/workshops/new">Create Your First Workshop</Link>
-          </Button>
-        </div>
-      )}
     </div>
   );
 }

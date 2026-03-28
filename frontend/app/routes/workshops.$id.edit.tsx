@@ -55,6 +55,8 @@ export default function EditWorkshopPage({ loaderData }: Route.ComponentProps) {
             <ConductorsSection
               workshopId={workshop.id}
               conductors={workshop.conductors}
+              ticketPrice={workshop.ticketPrice}
+              maxParticipants={workshop.maxParticipants}
             />
           </div>
         )}

@@ -72,6 +72,8 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
               <ConductorsSection
                 workshopId={workshop.id}
                 conductors={workshop.conductors}
+                ticketPrice={workshop.ticketPrice}
+                maxParticipants={workshop.maxParticipants}
               />
             )}
           </div>

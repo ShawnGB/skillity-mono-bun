@@ -9,17 +9,17 @@ export async function loader({ context }: Route.LoaderArgs) {
   if (session.user.role === 'host' || session.user.role === 'admin') {
     return redirect('/workshops');
   }
-  return null;
+  return { user: session.user };
 }
 
 export function meta() {
   return [{ title: 'Become a Host | Skillity' }];
 }
 
-export default function OnboardingPage() {
+export default function OnboardingPage({ loaderData }: Route.ComponentProps) {
   return (
     <main className="container mx-auto px-4 py-16 max-w-lg">
-      <OnboardingFlow />
+      <OnboardingFlow user={loaderData.user} />
     </main>
   );
 }

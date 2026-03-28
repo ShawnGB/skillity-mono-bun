@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useFetcher } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { format, differenceInMinutes } from 'date-fns';
-import { CalendarIcon, Trash2 } from 'lucide-react';
+import { CalendarIcon, Trash2, Search } from 'lucide-react';
+import { Slider } from '@/components/ui/slider';
 import {
   WorkshopStatus,
   WorkshopCategory,
@@ -323,108 +324,293 @@ export default function EditWorkshopForm({
 interface ConductorsSectionProps {
   workshopId: string;
   conductors: ConductorProfile[];
+  ticketPrice: number;
+  maxParticipants: number;
+}
+
+type LookupResult = {
+  user: { id: string; firstName: string | null; lastName: string | null } | null;
+};
+
+function conductorLabel(c: { firstName: string; lastName: string }) {
+  return `${c.firstName ?? ''} ${c.lastName ?? ''}`.trim() || 'Unknown';
 }
 
 export function ConductorsSection({
   workshopId,
   conductors,
+  ticketPrice,
+  maxParticipants,
 }: ConductorsSectionProps) {
-  const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
-  const [newUserId, setNewUserId] = useState('');
-  const [newShare, setNewShare] = useState('');
-  const isPending = fetcher.state !== 'idle';
+  const splitFetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const removeFetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const lookupFetcher = useFetcher<LookupResult>();
 
-  const usedShare = conductors.reduce((sum, c) => sum + c.payoutShare, 0);
-  const remaining = Math.round((1 - usedShare) * 100);
+  const primary = conductors.find((c) => c.isPrimary);
+  const coConductor = conductors.find((c) => !c.isPrimary);
+  const maxRevenue = Number(ticketPrice) * Number(maxParticipants);
+
+  const [splitValue, setSplitValue] = useState(
+    primary ? Math.round(primary.payoutShare * 100) : 100,
+  );
+  const [emailInput, setEmailInput] = useState('');
+
+  const isPending =
+    splitFetcher.state !== 'idle' || removeFetcher.state !== 'idle';
+  const isLooking = lookupFetcher.state !== 'idle';
+  const lookedUpUser = lookupFetcher.data?.user ?? null;
+
+  const handleSaveSplit = (overrideCoId?: string) => {
+    const coId = overrideCoId ?? coConductor?.userId;
+    if (!primary || !coId) return;
+
+    const splits = [
+      { userId: primary.userId, payoutShare: splitValue / 100 },
+      { userId: coId, payoutShare: (100 - splitValue) / 100 },
+    ];
+
+    splitFetcher.submit(
+      { intent: 'split', splits: JSON.stringify(splits) },
+      { method: 'post', action: `/api/workshops/${workshopId}/conductors` },
+    );
+    setEmailInput('');
+  };
+
+  const handleLookup = () => {
+    if (!emailInput.trim()) return;
+    lookupFetcher.load(
+      `/api/users/lookup?email=${encodeURIComponent(emailInput.trim())}`,
+    );
+  };
+
+  const handleRemove = (userId: string) => {
+    removeFetcher.submit(
+      { intent: 'remove', userId },
+      { method: 'post', action: `/api/workshops/${workshopId}/conductors` },
+    );
+  };
+
+  const primaryShare = splitValue;
+  const coShare = 100 - splitValue;
+  const primaryEarnings = maxRevenue * (primaryShare / 100);
+  const coEarnings = maxRevenue * (coShare / 100);
 
   return (
-    <div className="space-y-3">
-      <h3 className="text-sm font-medium">Co-conductors</h3>
-
-      {fetcher.data?.error && (
-        <p className="text-sm text-destructive">{fetcher.data.error}</p>
-      )}
-
-      <div className="space-y-2">
-        {conductors.map((c) => (
-          <div
-            key={c.userId}
-            className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm"
-          >
-            <div>
-              <span className="font-medium">
-                {c.firstName} {c.lastName}
-              </span>
-              {c.isPrimary && (
-                <span className="ml-2 text-xs text-muted-foreground">
-                  primary
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground">
-                {Math.round(c.payoutShare * 100)}%
-              </span>
-              {!c.isPrimary && (
-                <fetcher.Form
-                  method="post"
-                  action={`/api/workshops/${workshopId}/conductors`}
-                >
-                  <input type="hidden" name="intent" value="remove" />
-                  <input type="hidden" name="userId" value={c.userId} />
-                  <button
-                    type="submit"
-                    disabled={isPending}
-                    className="text-muted-foreground hover:text-destructive"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </button>
-                </fetcher.Form>
-              )}
-            </div>
-          </div>
-        ))}
+    <div className="space-y-5">
+      <div>
+        <h3 className="font-medium mb-0.5">Co-conductors</h3>
+        <p className="text-sm text-muted-foreground">
+          Split revenue with a co-conductor. Shares must sum to 100%.
+        </p>
       </div>
 
-      <fetcher.Form
-        method="post"
-        action={`/api/workshops/${workshopId}/conductors`}
-        className="flex gap-2"
-        onSubmit={() => {
-          setNewUserId('');
-          setNewShare('');
-        }}
-      >
-        <Input
-          name="userId"
-          placeholder="User ID"
-          value={newUserId}
-          onChange={(e) => setNewUserId(e.target.value)}
-          className="flex-1 text-sm"
-        />
-        <Input
-          name="payoutShare"
-          type="number"
-          step="1"
-          min="1"
-          max={remaining}
-          placeholder={`% (max ${remaining})`}
-          value={newShare}
-          onChange={(e) => setNewShare(e.target.value)}
-          className="w-28 text-sm"
-        />
-        <Button
-          type="submit"
-          size="sm"
-          variant="outline"
-          disabled={isPending || !newUserId || !newShare}
-        >
-          Add
-        </Button>
-      </fetcher.Form>
-      <p className="text-xs text-muted-foreground">
-        Payout shares must sum to 100%. Remaining: {remaining}%.
-      </p>
+      {(splitFetcher.data?.error || removeFetcher.data?.error) && (
+        <p className="text-sm text-destructive">
+          {splitFetcher.data?.error ?? removeFetcher.data?.error}
+        </p>
+      )}
+
+      {coConductor && primary ? (
+        <div className="space-y-4">
+          {maxRevenue > 0 && (
+            <p className="text-xs text-muted-foreground">
+              Full house:{' '}
+              <span className="font-medium text-foreground">
+                {maxParticipants} × €{Number(ticketPrice).toFixed(2)} = €
+                {maxRevenue.toFixed(2)}
+              </span>{' '}
+              gross
+            </p>
+          )}
+
+          <div className="rounded-xl border bg-muted/30 p-5 space-y-4">
+            <div className="flex items-end justify-between">
+              <div className="space-y-0.5">
+                <p className="text-sm font-medium">{conductorLabel(primary)}</p>
+                <p className="text-2xl font-serif font-bold tabular-nums">
+                  {primaryShare}%
+                </p>
+                {maxRevenue > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    ≈ €{primaryEarnings.toFixed(2)} at full house
+                  </p>
+                )}
+              </div>
+              <div className="text-right space-y-0.5">
+                <p className="text-sm font-medium">
+                  {conductorLabel(coConductor)}
+                </p>
+                <p className="text-2xl font-serif font-bold tabular-nums">
+                  {coShare}%
+                </p>
+                {maxRevenue > 0 && (
+                  <p className="text-xs text-muted-foreground">
+                    ≈ €{coEarnings.toFixed(2)} at full house
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <Slider
+              value={[splitValue]}
+              onValueChange={([val]) => setSplitValue(val)}
+              min={5}
+              max={95}
+              step={5}
+            />
+
+            <p className="text-xs text-muted-foreground text-center">
+              Drag to adjust. Percentages are of gross ticket revenue before
+              the 5% platform fee.
+            </p>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => handleRemove(coConductor.userId)}
+              disabled={isPending}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-destructive transition-colors"
+            >
+              <Trash2 className="size-3" />
+              Remove {conductorLabel(coConductor)}
+            </button>
+            <Button
+              size="sm"
+              onClick={() => handleSaveSplit()}
+              disabled={isPending}
+            >
+              {isPending ? 'Saving...' : 'Save split'}
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="rounded-lg border px-4 py-3 flex items-center justify-between text-sm">
+            <span className="font-medium">
+              {primary ? conductorLabel(primary) : 'You'}
+            </span>
+            <span className="text-muted-foreground">100% — primary</span>
+          </div>
+
+          <div className="space-y-3">
+            <Label className="text-sm">Add a co-conductor by email</Label>
+            <div className="flex gap-2">
+              <Input
+                placeholder="colleague@example.com"
+                value={emailInput}
+                onChange={(e) => setEmailInput(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleLookup()}
+                className="flex-1 text-sm"
+              />
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={handleLookup}
+                disabled={isLooking || !emailInput.trim()}
+              >
+                <Search className="size-3.5" />
+              </Button>
+            </div>
+
+            {lookupFetcher.state === 'idle' &&
+              lookupFetcher.data !== undefined && (
+                <div>
+                  {lookedUpUser ? (
+                    <div className="space-y-4 rounded-xl border bg-muted/30 p-5">
+                      <p className="text-sm">
+                        Found:{' '}
+                        <span className="font-medium">
+                          {conductorLabel({
+                            firstName: lookedUpUser.firstName ?? '',
+                            lastName: lookedUpUser.lastName ?? '',
+                          })}
+                        </span>
+                      </p>
+
+                      {maxRevenue > 0 && (
+                        <p className="text-xs text-muted-foreground">
+                          Full house:{' '}
+                          <span className="font-medium text-foreground">
+                            {maxParticipants} × €
+                            {Number(ticketPrice).toFixed(2)} = €
+                            {maxRevenue.toFixed(2)}
+                          </span>{' '}
+                          gross
+                        </p>
+                      )}
+
+                      <div className="flex items-end justify-between">
+                        <div className="space-y-0.5">
+                          <p className="text-sm font-medium">
+                            {primary ? conductorLabel(primary) : 'You'}
+                          </p>
+                          <p className="text-2xl font-serif font-bold tabular-nums">
+                            {splitValue}%
+                          </p>
+                          {maxRevenue > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                              ≈ €{(maxRevenue * (splitValue / 100)).toFixed(2)}{' '}
+                              at full house
+                            </p>
+                          )}
+                        </div>
+                        <div className="text-right space-y-0.5">
+                          <p className="text-sm font-medium">
+                            {conductorLabel({
+                              firstName: lookedUpUser.firstName ?? '',
+                              lastName: lookedUpUser.lastName ?? '',
+                            })}
+                          </p>
+                          <p className="text-2xl font-serif font-bold tabular-nums">
+                            {100 - splitValue}%
+                          </p>
+                          {maxRevenue > 0 && (
+                            <p className="text-xs text-muted-foreground">
+                              ≈ €
+                              {(
+                                maxRevenue *
+                                ((100 - splitValue) / 100)
+                              ).toFixed(2)}{' '}
+                              at full house
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <Slider
+                        value={[splitValue]}
+                        onValueChange={([val]) => setSplitValue(val)}
+                        min={5}
+                        max={95}
+                        step={5}
+                      />
+
+                      <p className="text-xs text-muted-foreground text-center">
+                        Drag to adjust. Percentages are of gross ticket revenue
+                        before the 5% platform fee.
+                      </p>
+
+                      <Button
+                        size="sm"
+                        className="w-full"
+                        onClick={() => handleSaveSplit(lookedUpUser.id)}
+                        disabled={isPending}
+                      >
+                        {isPending ? 'Adding...' : 'Add co-conductor'}
+                      </Button>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No account found for that email.
+                    </p>
+                  )}
+                </div>
+              )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
