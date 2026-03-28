@@ -15,6 +15,7 @@ export default [
   route('/register', 'routes/register.tsx'),
   route('/logout', 'routes/logout.tsx'),
   route('/onboarding', 'routes/onboarding.tsx'),
+  route('/onboarding/success', 'routes/onboarding.success.tsx'),
   route('/checkout/:bookingId', 'routes/checkout.$bookingId.tsx'),
   route('/hosts/:id', 'routes/hosts.$id.tsx'),
 
@@ -37,6 +38,7 @@ export default [
     '/api/workshops/:workshopId/conductors',
     'routes/api.workshops.$workshopId.conductors.tsx',
   ),
+  route('/api/users/lookup', 'routes/api.users.lookup.tsx'),
   route('/api/profile', 'routes/api.profile.tsx'),
   route('/api/profile/delete', 'routes/api.profile.delete.tsx'),
   route('/api/profile/export', 'routes/api.profile.export.tsx'),

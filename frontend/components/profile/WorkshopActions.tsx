@@ -1,4 +1,4 @@
-import { useFetcher } from 'react-router';
+import { useFetcher, Link } from 'react-router';
 import { WorkshopStatus } from '@skillity/shared';
 import type { Workshop } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
@@ -7,7 +7,6 @@ import FormModal from '@/components/modals/FormModal';
 import EditWorkshopForm, {
   ConductorsSection,
 } from '@/components/workshops/EditWorkshopForm';
-import CreateWorkshopForm from '@/components/workshops/CreateWorkshopForm';
 
 interface WorkshopActionsProps {
   workshop: Workshop;
@@ -21,35 +20,22 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
     workshop.status === WorkshopStatus.COMPLETED ||
     workshop.status === WorkshopStatus.CANCELLED;
 
-  const seriesDefaults = {
+  const newWorkshopParams = new URLSearchParams({
     title: workshop.title,
     category: workshop.category,
     description: workshop.description,
-    maxParticipants: workshop.maxParticipants,
-    ticketPrice: workshop.ticketPrice,
+    maxParticipants: String(workshop.maxParticipants),
+    ticketPrice: String(workshop.ticketPrice),
     location: workshop.location,
-    seriesId: workshop.seriesId ?? undefined,
-  };
+    ...(workshop.seriesId ? { seriesId: workshop.seriesId } : {}),
+  });
 
   if (isPast) {
     return (
       <div className="flex items-center gap-2 shrink-0">
-        <FormModal
-          trigger={
-            <Button size="sm" variant="outline">
-              Recreate
-            </Button>
-          }
-          title="Recreate workshop"
-          description="Create a new workshop based on this one. Pick a new date."
-        >
-          {({ onSuccess }) => (
-            <CreateWorkshopForm
-              onSuccess={onSuccess}
-              defaultValues={seriesDefaults}
-            />
-          )}
-        </FormModal>
+        <Button size="sm" variant="outline" asChild>
+          <Link to={`/workshops/new?${newWorkshopParams}`}>Recreate</Link>
+        </Button>
       </div>
     );
   }
@@ -72,27 +58,16 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
               <ConductorsSection
                 workshopId={workshop.id}
                 conductors={workshop.conductors}
+                ticketPrice={workshop.ticketPrice}
+                maxParticipants={workshop.maxParticipants}
               />
             )}
           </div>
         )}
       </FormModal>
-      <FormModal
-        trigger={
-          <Button size="sm" variant="outline">
-            Add Date
-          </Button>
-        }
-        title="Add another date"
-        description="Create a new session for this workshop on a different date."
-      >
-        {({ onSuccess }) => (
-          <CreateWorkshopForm
-            onSuccess={onSuccess}
-            defaultValues={seriesDefaults}
-          />
-        )}
-      </FormModal>
+      <Button size="sm" variant="outline" asChild>
+        <Link to={`/workshops/new?${newWorkshopParams}`}>Add Date</Link>
+      </Button>
       {workshop.status === WorkshopStatus.DRAFT && (
         <fetcher.Form
           method="post"

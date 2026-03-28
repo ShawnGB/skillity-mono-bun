@@ -1,6 +1,6 @@
 import { redirect } from 'react-router';
 import type { Route } from './+types/api.workshops.$workshopId.conductors';
-import { serverPost, serverDelete } from '@/lib/api-client.server';
+import { serverPatch, serverDelete } from '@/lib/api-client.server';
 import { sessionContext } from '@/app/context';
 
 export async function action({ request, params, context }: Route.ActionArgs) {
@@ -21,14 +21,21 @@ export async function action({ request, params, context }: Route.ActionArgs) {
       return { ok: true };
     }
 
-    const userId = formData.get('userId') as string;
-    const payoutShare = Number(formData.get('payoutShare'));
-    await serverPost(
-      `/workshops/${workshopId}/conductors`,
-      { userId, payoutShare },
-      session.cookie,
-    );
-    return { ok: true };
+    if (intent === 'split') {
+      const splitsRaw = formData.get('splits') as string;
+      const splits = JSON.parse(splitsRaw) as {
+        userId: string;
+        payoutShare: number;
+      }[];
+      await serverPatch(
+        `/workshops/${workshopId}/conductors/split`,
+        { splits },
+        session.cookie,
+      );
+      return { ok: true };
+    }
+
+    return { error: 'Unknown intent' };
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : 'Failed to update conductors',

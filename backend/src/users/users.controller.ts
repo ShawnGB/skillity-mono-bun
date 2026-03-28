@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Delete, Param, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Delete, Param, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -17,6 +17,11 @@ export class UsersController {
   @Get()
   findAll() {
     return this.usersService.findAll();
+  }
+
+  @Get('lookup')
+  lookupByEmail(@Query('email') email: string) {
+    return this.usersService.lookupByEmail(email);
   }
 
   @Public()

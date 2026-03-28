@@ -77,14 +77,38 @@ export class WorkshopsService {
     return saved;
   }
 
-  async findByHost(hostId: string) {
-    const workshops = await this.workshopRepository.find({
-      where: { hostId },
+  async findByHost(userId: string) {
+    const conductorRows = await this.conductorRepository.find({
+      where: { userId },
+      select: ['workshopId'],
+    });
+    const conductedIds = conductorRows.map((c) => c.workshopId);
+
+    const hostedWorkshops = await this.workshopRepository.find({
+      where: { hostId: userId },
       order: { startsAt: 'DESC' },
       relations: ['host', 'bookings'],
     });
 
-    return workshops.map((w) =>
+    const coCondWorkshops =
+      conductedIds.length > 0
+        ? await this.workshopRepository
+            .createQueryBuilder('workshop')
+            .leftJoinAndSelect('workshop.host', 'host')
+            .leftJoinAndSelect('workshop.bookings', 'bookings')
+            .where('workshop.id IN (:...ids)', { ids: conductedIds })
+            .andWhere('workshop.hostId != :userId', { userId })
+            .orderBy('workshop.startsAt', 'DESC')
+            .getMany()
+        : [];
+
+    const all = [...hostedWorkshops, ...coCondWorkshops];
+    all.sort(
+      (a, b) =>
+        (b.startsAt?.getTime() ?? 0) - (a.startsAt?.getTime() ?? 0),
+    );
+
+    return all.map((w) =>
       this.withParticipantCount(this.withEffectiveStatus(w)),
     );
   }
@@ -294,6 +318,50 @@ export class WorkshopsService {
     }
 
     await this.conductorRepository.remove(conductor);
+  }
+
+  async updateSplit(
+    workshopId: string,
+    requesterId: string,
+    splits: { userId: string; payoutShare: number }[],
+  ) {
+    const workshop = await this.workshopRepository.findOne({
+      where: { id: workshopId },
+    });
+    if (!workshop) throw new NotFoundException('Workshop not found');
+    if (workshop.hostId !== requesterId) {
+      throw new ForbiddenException(
+        'Only the primary host can update the payout split',
+      );
+    }
+
+    const total =
+      Math.round(
+        splits.reduce((sum, s) => sum + s.payoutShare, 0) * 10000,
+      ) / 10000;
+    if (Math.abs(total - 1.0) > 0.001) {
+      throw new BadRequestException('Payout shares must sum to 1.0');
+    }
+
+    const existing = await this.conductorRepository.find({
+      where: { workshopId },
+    });
+
+    for (const split of splits) {
+      const row = existing.find((c) => c.userId === split.userId);
+      if (row) {
+        row.payoutShare = split.payoutShare;
+        await this.conductorRepository.save(row);
+      } else {
+        const conductor = this.conductorRepository.create({
+          workshopId,
+          userId: split.userId,
+          isPrimary: split.userId === workshop.hostId,
+          payoutShare: split.payoutShare,
+        });
+        await this.conductorRepository.save(conductor);
+      }
+    }
   }
 
   async findSeriesSiblings(seriesId: string, excludeId?: string) {

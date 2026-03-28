@@ -19,7 +19,7 @@ export async function action({ request, context }: Route.ActionArgs) {
 
   try {
     const workshop = await serverPost<Workshop>('/workshops', payload, session.cookie);
-    return redirect(`/workshops/${workshop.id}`);
+    return redirect(`/workshops/${workshop.id}/edit?created=1`);
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : 'Failed to create workshop',

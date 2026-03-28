@@ -87,4 +87,14 @@ export class WorkshopsController {
   ) {
     return this.workshopsService.removeConductor(id, user.id, userId);
   }
+
+  @Patch(':id/conductors/split')
+  @Roles(UserRole.HOST, UserRole.ADMIN)
+  updateSplit(
+    @Param('id') id: string,
+    @Body() body: { splits: { userId: string; payoutShare: number }[] },
+    @CurrentUser() user: { id: string },
+  ) {
+    return this.workshopsService.updateSplit(id, user.id, body.splits);
+  }
 }

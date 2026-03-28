@@ -9,7 +9,7 @@ export async function action({ context }: Route.ActionArgs) {
 
   try {
     await serverPatch('/users/become-host', {}, session.cookie);
-    return { ok: true };
+    return redirect('/onboarding/success');
   } catch (err) {
     return {
       error: err instanceof Error ? err.message : 'Failed to upgrade to host',
