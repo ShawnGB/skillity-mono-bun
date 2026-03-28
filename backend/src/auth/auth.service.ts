@@ -71,19 +71,7 @@ export class AuthService {
       throw new UnauthorizedException('Invalid or expired refresh token');
     }
 
-    // Revoke old token (rotation)
-    refreshToken.isRevoked = true;
-    await this.refreshTokenRepository.save(refreshToken);
-
-    const result = await this.generateTokens(refreshToken.user);
-
-    // Clean up all revoked tokens for this user so the table doesn't accumulate.
-    await this.refreshTokenRepository.delete({
-      userId: refreshToken.userId,
-      isRevoked: true,
-    });
-
-    return result;
+    return this.generateAccessToken(refreshToken.user);
   }
 
   async logout(refreshTokenValue: string) {
@@ -97,13 +85,32 @@ export class AuthService {
     }
   }
 
+  private userPayload(user: User) {
+    return {
+      id: user.id,
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+      bio: user.bio,
+      tagline: user.tagline,
+      profession: user.profession,
+      city: user.city,
+      conductorType: user.conductorType,
+      companyName: user.companyName,
+      vatNumber: user.vatNumber,
+    };
+  }
+
+  private generateAccessToken(user: User) {
+    const accessToken = this.jwtService.sign(
+      { sub: user.id, email: user.email },
+      { expiresIn: '15m' },
+    );
+    return { accessToken, user: this.userPayload(user) };
+  }
+
   private async generateTokens(user: User) {
-    const payload = { sub: user.id, email: user.email };
-
-    const accessToken = this.jwtService.sign(payload, {
-      expiresIn: '15m',
-    });
-
     const refreshTokenValue = uuidv4();
     const refreshToken = this.refreshTokenRepository.create({
       token: refreshTokenValue,
@@ -113,22 +120,8 @@ export class AuthService {
     await this.refreshTokenRepository.save(refreshToken);
 
     return {
-      accessToken,
+      ...this.generateAccessToken(user),
       refreshToken: refreshTokenValue,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-        bio: user.bio,
-        tagline: user.tagline,
-        profession: user.profession,
-        city: user.city,
-        conductorType: user.conductorType,
-        companyName: user.companyName,
-        vatNumber: user.vatNumber,
-      },
     };
   }
 }

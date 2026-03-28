@@ -87,17 +87,12 @@ export class AuthController {
       return { message: 'No refresh token provided' };
     }
 
-    const { accessToken, refreshToken, user } =
+    const { accessToken, user } =
       await this.authService.refresh(refreshTokenValue);
 
     res.cookie('access_token', accessToken, {
       ...COOKIE_OPTIONS,
       maxAge: 15 * 60 * 1000, // 15 minutes
-    });
-
-    res.cookie('refresh_token', refreshToken, {
-      ...COOKIE_OPTIONS,
-      maxAge: 90 * 24 * 60 * 60 * 1000,
     });
 
     return { user, message: 'Token refreshed' };

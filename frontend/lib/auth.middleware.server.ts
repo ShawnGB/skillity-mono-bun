@@ -27,17 +27,10 @@ interface RefreshResult {
   effectiveCookie: string;
 }
 
-// Two-level cache for refresh results:
-//   refreshInFlight  — in-progress promises (deduplicates concurrent requests)
-//   refreshDone      — recently-completed results kept for REFRESH_CACHE_TTL_MS
-//
-// The TTL covers the window between a refresh completing on the server and the
-// browser actually storing the new cookies, so rapid-but-not-concurrent
-// navigations (e.g. clicking 3 tabs in quick succession) don't each spin up
-// a separate rotation with the same now-revoked token.
-const REFRESH_CACHE_TTL_MS = 10_000;
+// Deduplicates concurrent refresh calls for the same token.
+// Without rotation, concurrent refreshes are idempotent (same token stays
+// valid), but deduplication avoids redundant round-trips.
 const refreshInFlight = new Map<string, Promise<RefreshResult>>();
-const refreshDone = new Map<string, { result: RefreshResult; until: number }>();
 
 async function doRefresh(
   refreshToken: string,
@@ -57,41 +50,19 @@ async function doRefresh(
     }
 
     const newSetCookies = refreshRes.headers.getSetCookie();
-    const effectiveCookie = newSetCookies.map((c) => c.split(';')[0]).join('; ');
-    const json = (await refreshRes.json()) as { user?: AuthUser };
+    // Only access_token is refreshed; refresh_token cookie stays unchanged.
+    const newAccessToken = newSetCookies.find((c) =>
+      c.startsWith('access_token='),
+    );
+    const effectiveCookie = newAccessToken
+      ? `${newAccessToken.split(';')[0]}; ${originalCookie.replace(/access_token=[^;]*(;\s*)?/, '').trim().replace(/^;/, '').trim()}`
+      : originalCookie;
 
+    const json = (await refreshRes.json()) as { user?: AuthUser };
     return { user: json.user ?? null, newSetCookies, effectiveCookie };
   } catch {
     return { user: null, newSetCookies: [], effectiveCookie: originalCookie };
   }
-}
-
-async function getRefreshResult(
-  refreshToken: string,
-  originalCookie: string,
-): Promise<RefreshResult> {
-  // 1. Use a recently-completed result if still within TTL.
-  const cached = refreshDone.get(refreshToken);
-  if (cached && cached.until > Date.now()) {
-    return cached.result;
-  }
-  refreshDone.delete(refreshToken);
-
-  // 2. Join an in-flight refresh if one is already running.
-  const inflight = refreshInFlight.get(refreshToken);
-  if (inflight) return inflight;
-
-  // 3. Start a new refresh, cache the result, and clean up.
-  const promise = doRefresh(refreshToken, originalCookie).then((result) => {
-    refreshInFlight.delete(refreshToken);
-    if (result.user) {
-      refreshDone.set(refreshToken, { result, until: Date.now() + REFRESH_CACHE_TTL_MS });
-    }
-    return result;
-  });
-
-  refreshInFlight.set(refreshToken, promise);
-  return promise;
 }
 
 export const authMiddleware: MiddlewareFunction<Response> = async (
@@ -115,7 +86,15 @@ export const authMiddleware: MiddlewareFunction<Response> = async (
   if (!user) {
     const refreshToken = getCookieValue(originalCookie, 'refresh_token');
     if (refreshToken) {
-      const result = await getRefreshResult(refreshToken, originalCookie);
+      let pending = refreshInFlight.get(refreshToken);
+      if (!pending) {
+        pending = doRefresh(refreshToken, originalCookie).finally(() => {
+          refreshInFlight.delete(refreshToken);
+        });
+        refreshInFlight.set(refreshToken, pending);
+      }
+
+      const result = await pending;
       user = result.user;
       newSetCookies = result.newSetCookies;
       effectiveCookie = result.effectiveCookie;
