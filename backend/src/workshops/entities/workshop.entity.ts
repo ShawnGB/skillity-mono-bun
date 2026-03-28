@@ -29,6 +29,12 @@ export class Workshop extends BaseEntity {
   @Column()
   location: string;
 
+  @Column({ name: 'location_lat', type: 'decimal', precision: 9, scale: 6, nullable: true })
+  locationLat: number | null;
+
+  @Column({ name: 'location_lng', type: 'decimal', precision: 9, scale: 6, nullable: true })
+  locationLng: number | null;
+
   @Column({ name: 'starts_at', type: 'timestamp', nullable: true })
   startsAt: Date;
 

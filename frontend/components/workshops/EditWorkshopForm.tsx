@@ -13,6 +13,7 @@ import type { Workshop, ConductorProfile } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import LocationAutocomplete from '@/components/ui/location-autocomplete';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
@@ -41,6 +42,8 @@ interface FormValues {
   maxParticipants: number;
   ticketPrice: number;
   location: string;
+  locationLat?: number;
+  locationLng?: number;
   date: Date;
   startTime: string;
   duration: number;
@@ -67,6 +70,7 @@ export default function EditWorkshopForm({
     register,
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({
     defaultValues: {
@@ -108,6 +112,8 @@ export default function EditWorkshopForm({
         maxParticipants: String(data.maxParticipants),
         ...(!isPublished && { ticketPrice: String(data.ticketPrice) }),
         location: data.location,
+        ...(data.locationLat !== undefined && { locationLat: String(data.locationLat) }),
+        ...(data.locationLng !== undefined && { locationLng: String(data.locationLng) }),
         startsAt: startsAt.toISOString(),
         duration: String(data.duration),
       },
@@ -309,10 +315,22 @@ export default function EditWorkshopForm({
 
       <div className="space-y-2">
         <Label htmlFor="location">Location</Label>
-        <Input
-          id="location"
-          {...register('location', { required: 'Required' })}
-          placeholder="Berlin, Germany"
+        <Controller
+          name="location"
+          control={control}
+          rules={{ required: 'Required' }}
+          render={({ field }) => (
+            <LocationAutocomplete
+              id="location"
+              placeholder="Berlin, Germany"
+              value={field.value ?? ''}
+              onChange={field.onChange}
+              onCoordinatesChange={(lat, lng) => {
+                setValue('locationLat', lat);
+                setValue('locationLng', lng);
+              }}
+            />
+          )}
         />
         {errors.location && (
           <p className="text-sm text-destructive">{errors.location.message}</p>
