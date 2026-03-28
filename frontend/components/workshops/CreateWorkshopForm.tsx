@@ -445,6 +445,13 @@ export default function CreateWorkshopForm({
               </div>
             )}
 
+            <div className="rounded-lg border border-dashed px-4 py-3 text-sm text-muted-foreground">
+              Running this workshop with someone? You can add a co-conductor and
+              set the payout split after creating — look for the{' '}
+              <span className="font-medium text-foreground">Co-conductors</span>{' '}
+              section on the next page.
+            </div>
+
             <div className="rounded-lg border p-4 space-y-3">
               <label className="flex items-center gap-3 cursor-pointer">
                 <input

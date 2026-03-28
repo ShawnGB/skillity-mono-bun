@@ -23,7 +23,10 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
     return redirect('/profile/workshops');
   }
 
-  return { workshop };
+  const url = new URL(request.url);
+  const justCreated = url.searchParams.get('created') === '1';
+
+  return { workshop, justCreated };
 }
 
 export function meta({ data: loaderData }: Route.MetaArgs) {
@@ -37,12 +40,20 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
 }
 
 export default function EditWorkshopPage({ loaderData }: Route.ComponentProps) {
-  const { workshop } = loaderData;
+  const { workshop, justCreated } = loaderData;
   const navigate = useNavigate();
 
   return (
     <main className="container mx-auto px-4 py-12 max-w-2xl">
-      <h1 className="text-3xl mb-8">Edit Workshop</h1>
+      <h1 className="text-3xl mb-2">
+        {justCreated ? 'Workshop Created' : 'Edit Workshop'}
+      </h1>
+      {justCreated && (
+        <p className="text-muted-foreground mb-8">
+          Saved as draft. Add a co-conductor below, then publish when ready.
+        </p>
+      )}
+      {!justCreated && <div className="mb-8" />}
       <div className="space-y-6">
         <div className="rounded-xl border bg-card p-6">
           <EditWorkshopForm
