@@ -17,8 +17,11 @@ export class Booking extends BaseEntity {
   @Column({ name: 'workshop_id' })
   workshopId: string;
 
-  @Column({ name: 'payment_id', nullable: true })
-  paymentId: string | null;
+  @Column({ name: 'mollie_payment_id', nullable: true })
+  molliePaymentId: string | null;
+
+  @Column({ name: 'paid_at', type: 'timestamp', nullable: true })
+  paidAt: Date | null;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;

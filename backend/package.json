@@ -9,10 +9,10 @@
     "start:dev": "bun --watch src/main.ts",
     "build": "bun build ./src/main.ts --outdir ./dist",
     "test": "bun test",
-    "migration:generate": "bunx typeorm migration:generate -d data-source.ts",
-    "migration:run": "bunx typeorm migration:run -d data-source.ts",
-    "migration:revert": "bunx typeorm migration:revert -d data-source.ts",
-    "migration:create": "bunx typeorm migration:create",
+    "migration:generate": "bun ./node_modules/typeorm/cli.js migration:generate -d data-source.ts",
+    "migration:run": "bun ./node_modules/typeorm/cli.js migration:run -d data-source.ts",
+    "migration:revert": "bun ./node_modules/typeorm/cli.js migration:revert -d data-source.ts",
+    "migration:create": "bun ./node_modules/typeorm/cli.js migration:create",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
