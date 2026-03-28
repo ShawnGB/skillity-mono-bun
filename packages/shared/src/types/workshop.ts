@@ -70,6 +70,8 @@ export interface Workshop {
   ticketPrice: number;
   currency: string;
   location: string;
+  locationLat: number | null;
+  locationLng: number | null;
   startsAt: string;
   endsAt: string;
   level: WorkshopLevel | null;
@@ -95,6 +97,8 @@ export interface CreateWorkshopInput {
   ticketPrice: number;
   currency: string;
   location: string;
+  locationLat?: number;
+  locationLng?: number;
   startsAt: string;
   duration: number;
   level?: WorkshopLevel;
@@ -111,6 +115,8 @@ export interface UpdateWorkshopInput {
   ticketPrice?: number;
   currency?: string;
   location?: string;
+  locationLat?: number;
+  locationLng?: number;
   startsAt?: string;
   duration?: number;
   level?: WorkshopLevel;
