@@ -9,7 +9,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import type { Response, Request } from 'express';
-import { Throttle } from '@nestjs/throttler';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { CreateUserDto } from '../users/dto/create-user.dto';
@@ -118,6 +118,7 @@ export class AuthController {
     return { message: 'Logged out successfully' };
   }
 
+  @SkipThrottle()
   @Get('me')
   getMe(@CurrentUser() user: any) {
     return { user };
