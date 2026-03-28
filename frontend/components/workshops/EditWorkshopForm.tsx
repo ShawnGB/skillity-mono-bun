@@ -82,11 +82,11 @@ export default function EditWorkshopForm({
     },
   });
 
+  const savedOk = fetcher.state === 'idle' && fetcher.data?.ok === true;
+
   useEffect(() => {
-    if (fetcher.state === 'idle' && fetcher.data?.ok) {
-      onSuccess?.();
-    }
-  }, [fetcher.state, fetcher.data, onSuccess]);
+    if (savedOk) onSuccess?.();
+  }, [savedOk, onSuccess]);
 
   const onSubmit = (data: FormValues) => {
     setLocalError(null);
@@ -122,6 +122,11 @@ export default function EditWorkshopForm({
       {error && (
         <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
           {error}
+        </div>
+      )}
+      {savedOk && !onSuccess && (
+        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-700 dark:text-green-400">
+          Changes saved.
         </div>
       )}
 
@@ -408,6 +413,11 @@ export function ConductorsSection({
         <p className="text-sm text-destructive">
           {splitFetcher.data?.error ?? removeFetcher.data?.error}
         </p>
+      )}
+      {splitFetcher.state === 'idle' && splitFetcher.data?.ok && (
+        <div className="rounded-md bg-green-500/10 p-3 text-sm text-green-700 dark:text-green-400">
+          Split saved.
+        </div>
       )}
 
       {coConductor && primary ? (

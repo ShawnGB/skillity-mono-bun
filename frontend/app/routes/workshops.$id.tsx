@@ -316,31 +316,69 @@ export default function WorkshopDetailPage({
             </div>
 
             <div>
-              <h2 className="text-2xl mb-4">Host</h2>
-              <Link
-                to={`/hosts/${workshop.hostId}`}
-                className="flex items-center gap-3 rounded-xl border bg-card p-4 hover:bg-accent transition-colors"
-              >
-                <img
-                  src={getAvatarUrl(
-                    workshop.host.firstName,
-                    workshop.host.lastName,
-                  )}
-                  alt={`${workshop.host.firstName} ${workshop.host.lastName}`}
-                  className="size-10 rounded-full"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium">
-                    {workshop.host.firstName} {workshop.host.lastName}
-                  </p>
-                  {workshop.host.tagline && (
-                    <p className="text-xs text-muted-foreground truncate">
-                      {workshop.host.tagline}
-                    </p>
-                  )}
-                </div>
-                <ArrowRight className="size-4 text-muted-foreground shrink-0" />
-              </Link>
+              <h2 className="text-2xl mb-4">
+                {workshop.conductors && workshop.conductors.length > 1
+                  ? 'Conductors'
+                  : 'Host'}
+              </h2>
+              <div className="space-y-2">
+                {workshop.conductors && workshop.conductors.length > 0 ? (
+                  workshop.conductors.map((conductor) => (
+                    <Link
+                      key={conductor.userId}
+                      to={`/hosts/${conductor.userId}`}
+                      className="flex items-center gap-3 rounded-xl border bg-card p-4 hover:bg-accent transition-colors"
+                    >
+                      <img
+                        src={getAvatarUrl(conductor.firstName, conductor.lastName)}
+                        alt={`${conductor.firstName} ${conductor.lastName}`}
+                        className="size-10 rounded-full"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium">
+                          {conductor.firstName} {conductor.lastName}
+                          {!conductor.isPrimary && (
+                            <span className="ml-2 text-xs text-muted-foreground font-normal">
+                              Co-conductor
+                            </span>
+                          )}
+                        </p>
+                        {conductor.tagline && (
+                          <p className="text-xs text-muted-foreground truncate">
+                            {conductor.tagline}
+                          </p>
+                        )}
+                      </div>
+                      <ArrowRight className="size-4 text-muted-foreground shrink-0" />
+                    </Link>
+                  ))
+                ) : (
+                  <Link
+                    to={`/hosts/${workshop.hostId}`}
+                    className="flex items-center gap-3 rounded-xl border bg-card p-4 hover:bg-accent transition-colors"
+                  >
+                    <img
+                      src={getAvatarUrl(
+                        workshop.host.firstName,
+                        workshop.host.lastName,
+                      )}
+                      alt={`${workshop.host.firstName} ${workshop.host.lastName}`}
+                      className="size-10 rounded-full"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium">
+                        {workshop.host.firstName} {workshop.host.lastName}
+                      </p>
+                      {workshop.host.tagline && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          {workshop.host.tagline}
+                        </p>
+                      )}
+                    </div>
+                    <ArrowRight className="size-4 text-muted-foreground shrink-0" />
+                  </Link>
+                )}
+              </div>
             </div>
 
             <Suspense>
