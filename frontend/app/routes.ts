@@ -9,6 +9,7 @@ export default [
   index('routes/home.tsx'),
   route('/workshops', 'routes/workshops.tsx'),
   route('/workshops/:id', 'routes/workshops.$id.tsx'),
+  route('/workshops/:id/og-image.png', 'routes/workshops.$id.og-image[.]png.tsx'),
   route('/workshops/new', 'routes/workshops.new.tsx'),
   route('/workshops/:id/edit', 'routes/workshops.$id.edit.tsx'),
   route('/login', 'routes/login.tsx'),
