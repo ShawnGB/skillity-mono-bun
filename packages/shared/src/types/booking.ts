@@ -13,7 +13,8 @@ export interface Booking {
   userId: string;
   workshopId: string;
   workshop: Workshop;
-  paymentId: string | null;
+  molliePaymentId: string | null;
+  paidAt: string | null;
   amount: number;
   currency: string;
   createdAt: string;

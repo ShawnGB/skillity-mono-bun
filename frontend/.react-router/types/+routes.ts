@@ -128,6 +128,21 @@ type Pages = {
       "bookingId": string;
     };
   };
+  "/sitemap.xml": {
+    params: {};
+  };
+  "/robots.txt": {
+    params: {};
+  };
+  "/guides/kleingewerbe": {
+    params: {};
+  };
+  "/guides/plan-workshop": {
+    params: {};
+  };
+  "/guides/find-location": {
+    params: {};
+  };
   "/about": {
     params: {};
   };
@@ -157,7 +172,7 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/workshops" | "/workshops/:id" | "/workshops/new" | "/workshops/:id/edit" | "/login" | "/register" | "/logout" | "/onboarding" | "/onboarding/success" | "/checkout/:bookingId" | "/hosts/:id" | "/profile" | "/profile/bookings" | "/profile/saved" | "/profile/workshops" | "/profile/settings" | "/api/wishlist/:workshopId" | "/api/reviews/:workshopId" | "/api/book/:workshopId" | "/api/become-host" | "/api/workshops" | "/api/workshops/:workshopId" | "/api/workshops/:workshopId/conductors" | "/api/users/lookup" | "/api/profile" | "/api/profile/delete" | "/api/profile/export" | "/api/workshops/:workshopId/status" | "/api/bookings/:bookingId/cancel" | "/api/bookings/:bookingId/confirm" | "/about" | "/teach" | "/faq" | "/agb" | "/datenschutz" | "/impressum" | "/widerruf" | "/guidelines";
+    page: "/" | "/workshops" | "/workshops/:id" | "/workshops/new" | "/workshops/:id/edit" | "/login" | "/register" | "/logout" | "/onboarding" | "/onboarding/success" | "/checkout/:bookingId" | "/hosts/:id" | "/profile" | "/profile/bookings" | "/profile/saved" | "/profile/workshops" | "/profile/settings" | "/api/wishlist/:workshopId" | "/api/reviews/:workshopId" | "/api/book/:workshopId" | "/api/become-host" | "/api/workshops" | "/api/workshops/:workshopId" | "/api/workshops/:workshopId/conductors" | "/api/users/lookup" | "/api/profile" | "/api/profile/delete" | "/api/profile/export" | "/api/workshops/:workshopId/status" | "/api/bookings/:bookingId/cancel" | "/api/bookings/:bookingId/confirm" | "/sitemap.xml" | "/robots.txt" | "/guides/kleingewerbe" | "/guides/plan-workshop" | "/guides/find-location" | "/about" | "/teach" | "/faq" | "/agb" | "/datenschutz" | "/impressum" | "/widerruf" | "/guidelines";
   };
   "routes/home.tsx": {
     id: "routes/home";
@@ -287,6 +302,26 @@ type RouteFiles = {
     id: "routes/api.bookings.$bookingId.confirm";
     page: "/api/bookings/:bookingId/confirm";
   };
+  "routes/sitemap[.]xml.tsx": {
+    id: "routes/sitemap[.]xml";
+    page: "/sitemap.xml";
+  };
+  "routes/robots[.]txt.tsx": {
+    id: "routes/robots[.]txt";
+    page: "/robots.txt";
+  };
+  "routes/guides.kleingewerbe.tsx": {
+    id: "routes/guides.kleingewerbe";
+    page: "/guides/kleingewerbe";
+  };
+  "routes/guides.plan-workshop.tsx": {
+    id: "routes/guides.plan-workshop";
+    page: "/guides/plan-workshop";
+  };
+  "routes/guides.find-location.tsx": {
+    id: "routes/guides.find-location";
+    page: "/guides/find-location";
+  };
   "routes/about.tsx": {
     id: "routes/about";
     page: "/about";
@@ -355,6 +390,11 @@ type RouteModules = {
   "routes/api.workshops.$workshopId.status": typeof import("./app/routes/api.workshops.$workshopId.status.tsx");
   "routes/api.bookings.$bookingId.cancel": typeof import("./app/routes/api.bookings.$bookingId.cancel.tsx");
   "routes/api.bookings.$bookingId.confirm": typeof import("./app/routes/api.bookings.$bookingId.confirm.tsx");
+  "routes/sitemap[.]xml": typeof import("./app/routes/sitemap[.]xml.tsx");
+  "routes/robots[.]txt": typeof import("./app/routes/robots[.]txt.tsx");
+  "routes/guides.kleingewerbe": typeof import("./app/routes/guides.kleingewerbe.tsx");
+  "routes/guides.plan-workshop": typeof import("./app/routes/guides.plan-workshop.tsx");
+  "routes/guides.find-location": typeof import("./app/routes/guides.find-location.tsx");
   "routes/about": typeof import("./app/routes/about.tsx");
   "routes/teach": typeof import("./app/routes/teach.tsx");
   "routes/faq": typeof import("./app/routes/faq.tsx");

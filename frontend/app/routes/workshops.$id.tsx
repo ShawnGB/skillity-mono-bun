@@ -86,8 +86,11 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
     { property: 'og:description', content: description },
     {
       property: 'og:image',
-      content: `https://picsum.photos/seed/${workshop.id}/1200/630`,
+      content: `https://skillity.de/workshops/${workshop.id}/og-image.png`,
     },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { property: 'og:image:type', content: 'image/png' },
     {
       tagName: 'link',
       rel: 'canonical',
@@ -251,7 +254,7 @@ export default function WorkshopDetailPage({
       [WorkshopStatus.COMPLETED]: 'https://schema.org/EventMovedOnline',
       [WorkshopStatus.DRAFT]: 'https://schema.org/EventScheduled',
     }[workshop.status],
-    image: `https://picsum.photos/seed/${workshop.id}/1200/630`,
+    image: `https://skillity.de/workshops/${workshop.id}/og-image.png`,
   };
 
   return (
