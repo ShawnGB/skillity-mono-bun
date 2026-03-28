@@ -128,7 +128,6 @@ export class BookingsService {
       }
 
       booking.status = BookingStatus.CONFIRMED;
-      booking.paymentId = `mock_${Date.now()}`;
 
       return manager.save(booking);
     });
