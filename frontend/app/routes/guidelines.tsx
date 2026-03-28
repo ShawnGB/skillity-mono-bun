@@ -4,7 +4,7 @@ export function meta() {
     {
       name: 'description',
       content:
-        'Our guidelines for creating a respectful, safe, and welcoming community on uSkillity.',
+        'Our guidelines for creating a respectful, safe, and welcoming community on u/skillity.',
     },
   ];
 }
@@ -14,7 +14,7 @@ export default function GuidelinesPage() {
     <main className="container mx-auto px-4 py-12 max-w-3xl">
       <h1 className="text-4xl mb-4">Community Guidelines</h1>
       <p className="text-muted-foreground mb-8">
-        uSkillity is built on trust between hosts and learners. These guidelines
+        u/skillity is built on trust between hosts and learners. These guidelines
         help keep our community safe and welcoming for everyone.
       </p>
       <div className="prose prose-neutral dark:prose-invert max-w-none space-y-8">

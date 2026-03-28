@@ -33,7 +33,7 @@ export function meta() {
     {
       name: 'description',
       content:
-        'Workshops led by passionate people. Learn pottery, cooking, music, languages and more. Book your spot on uSkillity.',
+        'Workshops led by passionate people. Learn pottery, cooking, music, languages and more. Book your spot on u/skillity.',
     },
     { property: 'og:type', content: 'website' },
   ];
@@ -80,8 +80,9 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
             Share What You Know.
           </h1>
           <p className="mt-6 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Workshops led by people who care deeply about something, for people
-            who want to learn. Small groups, in person, in your city.
+            Work is getting automated. Scrolling is getting easier. The things
+            that make you feel like yourself are still here — they just need
+            you to show up.
           </p>
           <Button asChild size="lg" className="mt-8">
             <Link to="/workshops">Explore All Workshops</Link>
@@ -123,15 +124,16 @@ export default function HomePage({ loaderData }: Route.ComponentProps) {
         <div className="container mx-auto px-4 max-w-5xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl mb-6">Not a Course. A Room.</h2>
+              <h2 className="text-3xl mb-6">Not Content. An Experience.</h2>
               <p className="text-muted-foreground leading-relaxed mb-6">
-                Every workshop on Skillity is in person, in a small group, led
-                by someone who genuinely cares about what they&rsquo;re
-                sharing. Not a recorded lecture. Not a certification track. A
-                real experience with real people.
+                Most of what passes for learning today is passive — you watch,
+                you skim, you scroll. Skillity is different. You show up, you
+                make something, you talk to people who chose to be in the same
+                room. The kind of afternoon you still think about the next day.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                You&rsquo;ll remember their faces.
+                Not a certification track. Not a recorded lecture. A real
+                person teaching something they genuinely love.
               </p>
             </div>
             <div className="space-y-5">

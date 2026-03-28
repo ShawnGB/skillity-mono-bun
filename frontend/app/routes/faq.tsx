@@ -4,7 +4,7 @@ export function meta() {
     {
       name: 'description',
       content:
-        'Frequently asked questions about hosting and attending workshops on uSkillity.',
+        'Frequently asked questions about hosting and attending workshops on u/skillity.',
     },
   ];
 }
@@ -13,7 +13,7 @@ const hostFaq = [
   {
     question: 'What qualifications do I need to host a workshop?',
     answer:
-      'No degree or certification required. If you have passion for a topic and are willing to share it, you can host a workshop on uSkillity.',
+      'No degree or certification required. If you have passion for a topic and are willing to share it, you can host a workshop on u/skillity.',
   },
   {
     question: 'How do I cancel a workshop?',
@@ -71,7 +71,7 @@ export default function FAQPage() {
       <h1 className="text-4xl mb-4">Frequently Asked Questions</h1>
       <p className="text-muted-foreground mb-12">
         Everything you need to know about hosting and attending workshops on
-        uSkillity.
+        u/skillity.
       </p>
 
       <section className="mb-12">

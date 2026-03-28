@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 import { Instagram, Github, Mail } from 'lucide-react';
+import { BrandName } from '@/components/ui/brand-name';
 
 const explore = [
   { label: 'Home', href: '/' },
@@ -9,8 +10,8 @@ const explore = [
 ];
 
 const create = [
-  { label: 'Become a Guide', href: '/teach' },
-  { label: 'Create Workshop', href: '/workshops' },
+  { label: 'Become a Conductor', href: '/teach' },
+  { label: 'Create Workshop', href: '/workshops/new' },
 ];
 
 const legal = [
@@ -35,13 +36,13 @@ export default function Footer() {
           <div>
             <img
               src="/logo.svg"
-              alt="uSkillity"
+              alt="u/skillity"
               width={108}
               height={30}
               className="mb-3"
             />
             <p className="text-sm text-muted-foreground">
-              Share &middot; Connect &middot; Purpose
+              Share &middot; Connect &middot; Embrace
             </p>
           </div>
 
@@ -112,7 +113,7 @@ export default function Footer() {
 
         <div className="border-t pt-6 text-center">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} uSkillity. All rights reserved.
+            &copy; {new Date().getFullYear()} <BrandName />. All rights reserved.
           </p>
         </div>
       </div>

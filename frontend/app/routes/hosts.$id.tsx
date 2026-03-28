@@ -33,7 +33,7 @@ export function meta({ data: loaderData }: Route.MetaArgs) {
   const { host } = loaderData;
   const name = [host.firstName, host.lastName].filter(Boolean).join(' ');
   const description =
-    host.tagline || host.bio?.slice(0, 160) || `${name} on uSkillity`;
+    host.tagline || host.bio?.slice(0, 160) || `${name} on u/skillity`;
   return [
     { title: `${name} | Host | Skillity` },
     { name: 'description', content: description },

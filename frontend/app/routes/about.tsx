@@ -1,14 +1,15 @@
 import { Link } from 'react-router';
 import { Heart, Users, Flame, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { BrandName } from '@/components/ui/brand-name';
 
 export function meta() {
   return [
-    { title: 'About | Skillity' },
+    { title: 'About | u/skillity' },
     {
       name: 'description',
       content:
-        'Born in Berlin in 2016, uSkillity connects passionate people with curious learners through hands-on workshops.',
+        'Born in Berlin in 2016, u/skillity connects passionate people with curious learners through hands-on workshops.',
     },
   ];
 }
@@ -43,9 +44,11 @@ export default function AboutPage() {
             Rediscover What Makes You Feel Alive
           </h1>
           <p className="mt-6 text-lg text-muted-foreground">
-            uSkillity is a place where people who care deeply about something
-            share it with people who want to learn. Small workshops, real
-            connection, in person.
+            Something is shifting. Work is being automated. Free time fills
+            itself with content. People feel purposeful in fewer ways than
+            before. <BrandName /> exists for what&rsquo;s on the other side of
+            that — making something, learning something, being genuinely
+            present with other people.
           </p>
         </div>
       </section>
@@ -55,7 +58,7 @@ export default function AboutPage() {
           <h2 className="text-3xl mb-8">The Story</h2>
           <div className="space-y-6 text-muted-foreground leading-relaxed">
             <p>
-              I started uSkillity in 2016 in Berlin. The idea was simple:
+              I started <BrandName /> in 2016 in Berlin. The idea was simple:
               everyone has something worth teaching. Learning had become too
               institutional, too transactional. But people have always learned
               best from other people. Someone who cares about what they know,
@@ -81,8 +84,8 @@ export default function AboutPage() {
               replaceable, meaning erodes. And suddenly the idea of passionate
               people sharing what they know with small groups of learners feels
               more relevant than ever. Not as a career tool. As something that
-              gives life texture. We rebuilt uSkillity because the world needs
-              more of this now, not less.
+              gives life texture. We rebuilt <BrandName /> because the world
+              needs more of this now, not less.
             </p>
             <p className="text-foreground font-medium">
               Because learning isn&rsquo;t a path to a career. It&rsquo;s a path
@@ -126,10 +129,10 @@ export default function AboutPage() {
           </div>
           <h2 className="text-3xl mb-6">Local Roots</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Berlin has always been a city of makers, dreamers, and misfits.
-            uSkillity was born here, and our community still starts here. We
-            believe the best learning happens in person, in your neighborhood,
-            with the people around you.
+            Berlin has always been a city of makers, dreamers, and misfits.{' '}
+            <BrandName /> was born here, and our community still starts here.
+            We believe the best learning happens in person, in your
+            neighborhood, with the people around you.
           </p>
         </div>
       </section>

@@ -13,7 +13,7 @@ export default function Header({ user }: HeaderProps) {
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center">
-            <img src="/logo.svg" alt="uSkillity" width={108} height={30} />
+            <img src="/logo.svg" alt="u/skillity" width={108} height={30} />
           </Link>
           <nav className="flex items-center gap-4">
             <Link

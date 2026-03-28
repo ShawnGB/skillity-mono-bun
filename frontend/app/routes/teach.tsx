@@ -94,9 +94,10 @@ export default function TeachPage() {
             Share What Moves You
           </h1>
           <p className="mt-6 text-lg text-muted-foreground">
-            You don&rsquo;t need to be an expert. You just need something
-            you&rsquo;re passionate about and a willingness to share it with
-            others.
+            You don&rsquo;t need to be an expert. You just need something you
+            love and the willingness to pass it on. That act — in a room,
+            person to person — is one of the few things that can&rsquo;t be
+            automated.
           </p>
         </div>
       </section>

@@ -11,11 +11,11 @@ export default function AGBPage() {
           <h2 className="text-2xl mb-4">1. Geltungsbereich</h2>
           <p className="text-muted-foreground">
             Diese Allgemeinen Gesch&auml;ftsbedingungen (AGB) gelten f&uuml;r
-            die Nutzung der Plattform uSkillity, betrieben von Shawn G. Becker,
-            Baseler Str 38, 12205 Berlin. uSkillity ist eine technische
+            die Nutzung der Plattform u/skillity, betrieben von Shawn G. Becker,
+            Baseler Str 38, 12205 Berlin. u/skillity ist eine technische
             Plattform, die Gastgebern (Hosts) und Teilnehmern (Lernenden) die
             M&ouml;glichkeit bietet, Workshops zu organisieren und zu buchen.
-            uSkillity tritt nicht als Vermittler oder Vertragspartner der
+            u/skillity tritt nicht als Vermittler oder Vertragspartner der
             zwischen Hosts und Teilnehmern geschlossenen Vertr&auml;ge auf.
           </p>
         </section>
@@ -23,7 +23,7 @@ export default function AGBPage() {
         <section>
           <h2 className="text-2xl mb-4">2. Leistungsgegenstand</h2>
           <p className="text-muted-foreground">
-            uSkillity stellt eine Online-Plattform zur Verf&uuml;gung, &uuml;ber
+            u/skillity stellt eine Online-Plattform zur Verf&uuml;gung, &uuml;ber
             die Nutzer Pr&auml;senz-Workshops anbieten und buchen k&ouml;nnen.
             Die Plattform erm&ouml;glicht es Hosts, Workshops zu erstellen und
             zu ver&ouml;ffentlichen, und Lernenden, diese Workshops zu finden
@@ -49,7 +49,7 @@ export default function AGBPage() {
             verantwortlich. Hosts sind f&uuml;r die inhaltliche Richtigkeit
             ihrer Workshop-Beschreibungen sowie f&uuml;r die
             ordnungsgem&auml;&szlig;e Durchf&uuml;hrung ihrer Workshops
-            verantwortlich. uSkillity &uuml;bernimmt keine Haftung f&uuml;r
+            verantwortlich. u/skillity &uuml;bernimmt keine Haftung f&uuml;r
             nutzergenerierte Inhalte.
           </p>
         </section>
@@ -60,7 +60,7 @@ export default function AGBPage() {
             Die Ver&ouml;ffentlichung eines Workshops durch einen Host stellt
             ein verbindliches Angebot dar. Mit der Buchung durch einen
             Teilnehmer kommt ein Vertrag zwischen dem Host und dem Teilnehmer
-            zustande. uSkillity ist nicht Vertragspartei dieses Vertrages.
+            zustande. u/skillity ist nicht Vertragspartei dieses Vertrages.
           </p>
         </section>
 
@@ -93,7 +93,7 @@ export default function AGBPage() {
           <p className="text-muted-foreground">
             Bewertungen m&uuml;ssen auf pers&ouml;nlichen Erfahrungen beruhen
             und sachlich formuliert sein. Bezahlte oder gef&auml;lschte
-            Bewertungen sind untersagt. uSkillity beh&auml;lt sich das Recht
+            Bewertungen sind untersagt. u/skillity beh&auml;lt sich das Recht
             vor, Bewertungen zu entfernen, die gegen diese Grunds&auml;tze
             versto&szlig;en.
           </p>
@@ -102,9 +102,9 @@ export default function AGBPage() {
         <section>
           <h2 className="text-2xl mb-4">9. Haftung</h2>
           <p className="text-muted-foreground">
-            uSkillity haftet nur f&uuml;r Sch&auml;den, die auf
+            u/skillity haftet nur f&uuml;r Sch&auml;den, die auf
             vors&auml;tzlichem oder grob fahrl&auml;ssigem Verhalten beruhen.
-            Als technische Plattform &uuml;bernimmt uSkillity keine Haftung
+            Als technische Plattform &uuml;bernimmt u/skillity keine Haftung
             f&uuml;r die Qualit&auml;t, Sicherheit oder
             Rechtm&auml;&szlig;igkeit der angebotenen Workshops. Die Haftung
             f&uuml;r leichte Fahrl&auml;ssigkeit ist ausgeschlossen, soweit
@@ -115,7 +115,7 @@ export default function AGBPage() {
         <section>
           <h2 className="text-2xl mb-4">10. Beendigung</h2>
           <p className="text-muted-foreground">
-            Nutzer k&ouml;nnen ihr Konto jederzeit l&ouml;schen. uSkillity kann
+            Nutzer k&ouml;nnen ihr Konto jederzeit l&ouml;schen. u/skillity kann
             Nutzerkonten mit einer Frist von 14 Tagen k&uuml;ndigen. Bei
             schwerwiegenden Verst&ouml;&szlig;en gegen diese AGB kann eine
             sofortige Sperrung erfolgen. Bestehende Buchungen bleiben von einer

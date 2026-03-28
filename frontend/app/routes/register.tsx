@@ -40,7 +40,7 @@ export default function RegisterPage({ loaderData }: Route.ComponentProps) {
       <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-3xl">Create an account</h1>
-          <p className="text-muted-foreground">Get started with uSkillity.</p>
+          <p className="text-muted-foreground">Get started with u/skillity.</p>
         </div>
         <div className="rounded-xl border bg-card p-6">
           <RegisterForm redirectTo={redirectTo} />
