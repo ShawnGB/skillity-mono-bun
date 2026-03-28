@@ -12,6 +12,8 @@ import {
   IsUrl,
   IsEnum,
   IsUUID,
+  IsLatitude,
+  IsLongitude,
 } from 'class-validator';
 import {
   WorkshopCategory,
@@ -49,6 +51,14 @@ export class CreateWorkshopDto {
   @IsString()
   @IsNotEmpty()
   location: string;
+
+  @IsOptional()
+  @IsLatitude()
+  locationLat?: number;
+
+  @IsOptional()
+  @IsLongitude()
+  locationLng?: number;
 
   @IsDateString()
   @IsNotEmpty()

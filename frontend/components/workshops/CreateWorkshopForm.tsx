@@ -6,6 +6,7 @@ import { CalendarIcon, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import LocationAutocomplete from '@/components/ui/location-autocomplete';
 import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -38,6 +39,8 @@ interface FormValues {
   maxParticipants: number;
   ticketPrice: number;
   location: string;
+  locationLat?: number;
+  locationLng?: number;
   date: Date;
   startTime: string;
   duration: number;
@@ -127,6 +130,7 @@ export default function CreateWorkshopForm({
     control,
     trigger,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<FormValues>({ defaultValues });
 
@@ -160,6 +164,8 @@ export default function CreateWorkshopForm({
         ticketPrice: String(data.ticketPrice),
         currency: 'EUR',
         location: data.location,
+        ...(data.locationLat !== undefined && { locationLat: String(data.locationLat) }),
+        ...(data.locationLng !== undefined && { locationLng: String(data.locationLng) }),
         startsAt: startsAt.toISOString(),
         duration: String(data.duration),
         ...(data.level && { level: data.level }),
@@ -374,10 +380,22 @@ export default function CreateWorkshopForm({
 
             <div className="space-y-2">
               <Label htmlFor="location">Location</Label>
-              <Input
-                id="location"
-                placeholder="e.g. Studio Mitte, Berlin"
-                {...register('location', { required: 'Required' })}
+              <Controller
+                name="location"
+                control={control}
+                rules={{ required: 'Required' }}
+                render={({ field }) => (
+                  <LocationAutocomplete
+                    id="location"
+                    placeholder="e.g. Studio Mitte, Berlin"
+                    value={field.value ?? ''}
+                    onChange={field.onChange}
+                    onCoordinatesChange={(lat, lng) => {
+                      setValue('locationLat', lat);
+                      setValue('locationLng', lng);
+                    }}
+                  />
+                )}
               />
               {errors.location && (
                 <p className="text-sm text-destructive">
