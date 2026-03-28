@@ -11,15 +11,37 @@ const steps = [
 
 export default function OnboardingFlow() {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const profileFetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [step, setStep] = useState(0);
+  const [conductorType, setConductorType] = useState<
+    'individual' | 'company' | null
+  >(null);
 
   const isPending = fetcher.state !== 'idle';
+  const isProfilePending = profileFetcher.state !== 'idle';
 
   useEffect(() => {
     if (fetcher.state === 'idle' && fetcher.data?.ok) {
       setStep(2);
     }
   }, [fetcher.state, fetcher.data]);
+
+  useEffect(() => {
+    if (profileFetcher.state === 'idle' && profileFetcher.data?.ok) {
+      setStep(1);
+    }
+  }, [profileFetcher.state, profileFetcher.data]);
+
+  const handleAboutYouNext = () => {
+    if (conductorType) {
+      profileFetcher.submit(
+        { conductorType },
+        { method: 'post', action: '/api/profile' },
+      );
+    } else {
+      setStep(1);
+    }
+  };
 
   return (
     <div>
@@ -49,19 +71,77 @@ export default function OnboardingFlow() {
           <div className="text-center">
             <h1 className="text-3xl mb-2">Tell Us About Yourself</h1>
             <p className="text-muted-foreground">
-              This is optional. You can always fill it in later.
+              Are you conducting workshops as an individual or through a company?
             </p>
           </div>
+
+          <div className="rounded-xl border bg-card p-6 space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => setConductorType('individual')}
+                className={`rounded-lg border p-4 text-left transition-colors ${
+                  conductorType === 'individual'
+                    ? 'border-primary bg-primary/5'
+                    : 'hover:bg-accent'
+                }`}
+              >
+                <p className="font-medium text-sm">Individual</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Freelancer or sole trader
+                </p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setConductorType('company')}
+                className={`rounded-lg border p-4 text-left transition-colors ${
+                  conductorType === 'company'
+                    ? 'border-primary bg-primary/5'
+                    : 'hover:bg-accent'
+                }`}
+              >
+                <p className="font-medium text-sm">Company</p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  GmbH, UG, or other entity
+                </p>
+              </button>
+            </div>
+            {conductorType === 'individual' && (
+              <p className="text-xs text-muted-foreground">
+                In Germany, workshop conductors typically register a
+                Kleingewerbe (free, ~15 min at your Finanzamt).{' '}
+                <a
+                  href="https://www.existenzgruender.de/DE/Gruendung-vorbereiten/Gruendungswissen/Kleingewerbe/inhalt.html"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-foreground"
+                >
+                  Learn more
+                </a>
+              </p>
+            )}
+            {profileFetcher.data?.error && (
+              <p className="text-xs text-destructive">
+                {profileFetcher.data.error}
+              </p>
+            )}
+          </div>
+
           <div className="flex gap-3">
             <Button
               variant="outline"
               className="flex-1"
               onClick={() => setStep(1)}
+              disabled={isProfilePending}
             >
               Skip
             </Button>
-            <Button className="flex-1" onClick={() => setStep(1)}>
-              Next
+            <Button
+              className="flex-1"
+              onClick={handleAboutYouNext}
+              disabled={isProfilePending}
+            >
+              {isProfilePending ? 'Saving...' : 'Next'}
             </Button>
           </div>
         </div>
