@@ -66,6 +66,7 @@ services:
       STORAGE_ACCESS_KEY: "dev_user"
       STORAGE_SECRET_KEY: "dev_pass"
       STORAGE_PUBLIC_URL: "http://localhost:9000"
+      JWT_SECRET: "${JWT_SECRET:-dev-secret-change-in-production}"
       PEXELS_API_KEY: "${PEXELS_API_KEY:-}"
     volumes:
       - ./backend/src:/app/backend/src
@@ -80,6 +81,7 @@ services:
     environment:
       NODE_ENV: development
       API_URL: http://api:3000
+      JWT_SECRET: "${JWT_SECRET:-dev-secret-change-in-production}"
     command: ["bun", "run", "dev"]
     volumes:
       - ./frontend/app:/app/frontend/app

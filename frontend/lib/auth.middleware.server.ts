@@ -1,3 +1,4 @@
+import { jwtVerify } from 'jose';
 import type { MiddlewareFunction } from 'react-router';
 import type { AuthUser } from '@skillity/shared';
 import { API_URL } from '@/lib/api-client.server';
@@ -8,17 +9,30 @@ function getCookieValue(cookieHeader: string, name: string): string | null {
   return match ? match[1] : null;
 }
 
-const THROTTLED = Symbol('throttled');
+const jwtSecret = new TextEncoder().encode(
+  process.env.JWT_SECRET ?? 'dev-secret-change-in-production',
+);
 
-async function fetchMe(cookie: string): Promise<AuthUser | null | typeof THROTTLED> {
+async function verifyAccessToken(cookie: string): Promise<AuthUser | null> {
+  const token = getCookieValue(cookie, 'access_token');
+  if (!token) return null;
   try {
-    const res = await fetch(`${API_URL}/auth/me`, {
-      headers: { 'Content-Type': 'application/json', Cookie: cookie },
-    });
-    if (res.status === 429) return THROTTLED;
-    if (!res.ok) return null;
-    const json = (await res.json()) as { user?: AuthUser };
-    return json.user ?? null;
+    const { payload } = await jwtVerify(token, jwtSecret);
+    return {
+      id: payload.sub as string,
+      email: payload['email'] as string,
+      firstName: (payload['firstName'] as string | null) ?? null,
+      lastName: (payload['lastName'] as string | null) ?? null,
+      role: payload['role'] as AuthUser['role'],
+      bio: payload['bio'] as string | null ?? undefined,
+      tagline: payload['tagline'] as string | null ?? undefined,
+      profession: payload['profession'] as string | null ?? undefined,
+      city: payload['city'] as string | null ?? undefined,
+      conductorType: payload['conductorType'] as AuthUser['conductorType'],
+      companyName: payload['companyName'] as string | null ?? undefined,
+      vatNumber: payload['vatNumber'] as string | null ?? undefined,
+      avatarUrl: payload['avatarUrl'] as string | null ?? undefined,
+    };
   } catch {
     return null;
   }
@@ -46,6 +60,7 @@ async function doRefresh(
         'Content-Type': 'application/json',
         Cookie: `refresh_token=${refreshToken}`,
       },
+      signal: AbortSignal.timeout(8000),
     });
 
     if (!refreshRes.ok) {
@@ -84,11 +99,7 @@ export const authMiddleware: MiddlewareFunction<Response> = async (
 
   let effectiveCookie = originalCookie;
   let newSetCookies: string[] = [];
-  const meResult = await fetchMe(originalCookie);
-
-  // Treat 429 the same as a null response so we fall through to the refresh
-  // path below. The user is still logged in — they just hit a rate limit.
-  let user = meResult === THROTTLED ? null : meResult;
+  let user = await verifyAccessToken(originalCookie);
 
   if (!user) {
     const refreshToken = getCookieValue(originalCookie, 'refresh_token');

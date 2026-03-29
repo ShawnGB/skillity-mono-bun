@@ -13,6 +13,7 @@ export interface AuthUser {
   conductorType?: 'individual' | 'company' | null;
   companyName?: string | null;
   vatNumber?: string | null;
+  avatarUrl?: string | null;
 }
 
 export interface LoginInput {

@@ -27,8 +27,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
       logging: process.env.NODE_ENV !== 'production',
     }),
     ThrottlerModule.forRoot([
-      { name: 'global', ttl: 60000, limit: 600 },
-      { name: 'auth', ttl: 60000, limit: 30 },
+      { name: 'default', ttl: 60000, limit: 300 },
     ]),
     EventEmitterModule.forRoot(),
     ScheduleModule.forRoot(),

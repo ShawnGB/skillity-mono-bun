@@ -104,11 +104,13 @@ export class AuthService {
   }
 
   private generateAccessToken(user: User) {
+    const payload = this.userPayload(user);
+    const { id: _id, ...jwtClaims } = payload;
     const accessToken = this.jwtService.sign(
-      { sub: user.id, email: user.email },
+      { sub: user.id, ...jwtClaims },
       { expiresIn: '15m' },
     );
-    return { accessToken, user: this.userPayload(user) };
+    return { accessToken, user: payload };
   }
 
   private async generateTokens(user: User) {
