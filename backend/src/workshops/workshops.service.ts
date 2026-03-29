@@ -8,6 +8,7 @@ import {
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { CreateWorkshopDto } from './dto/create-workshop.dto';
 import { UpdateWorkshopDto } from './dto/update-workshop.dto';
+import { PexelsPhoto } from './dto/pexels-photo.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Workshop } from './entities/workshop.entity';
 import { WorkshopConductor } from './entities/workshop-conductor.entity';
@@ -32,12 +33,6 @@ const PEXELS_CATEGORY_KEYWORDS: Record<string, string> = {
   business_and_entrepreneurship: 'business workshop entrepreneurship',
 };
 
-export interface PexelsPhoto {
-  id: number;
-  url: string;
-  photographer: string;
-  pexelsUrl: string;
-}
 
 const VALID_TRANSITIONS: Record<WorkshopStatus, WorkshopStatus[]> = {
   [WorkshopStatus.DRAFT]: [WorkshopStatus.PUBLISHED, WorkshopStatus.CANCELLED],
