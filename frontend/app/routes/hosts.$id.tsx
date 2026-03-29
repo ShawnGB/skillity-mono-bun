@@ -88,7 +88,7 @@ export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
           <div className="sticky top-8 space-y-6">
             <div className="flex flex-col items-center text-center space-y-4">
               <img
-                src={getAvatarUrl(host.firstName, host.lastName)}
+                src={getAvatarUrl(host.firstName, host.lastName, host.avatarUrl)}
                 alt={name}
                 className="size-28 rounded-full"
               />
