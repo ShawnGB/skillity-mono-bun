@@ -99,6 +99,7 @@ export class AuthService {
       conductorType: user.conductorType,
       companyName: user.companyName,
       vatNumber: user.vatNumber,
+      avatarUrl: user.avatarUrl,
     };
   }
 

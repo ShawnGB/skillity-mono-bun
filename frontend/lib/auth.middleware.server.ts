@@ -8,11 +8,14 @@ function getCookieValue(cookieHeader: string, name: string): string | null {
   return match ? match[1] : null;
 }
 
-async function fetchMe(cookie: string): Promise<AuthUser | null> {
+const THROTTLED = Symbol('throttled');
+
+async function fetchMe(cookie: string): Promise<AuthUser | null | typeof THROTTLED> {
   try {
     const res = await fetch(`${API_URL}/auth/me`, {
       headers: { 'Content-Type': 'application/json', Cookie: cookie },
     });
+    if (res.status === 429) return THROTTLED;
     if (!res.ok) return null;
     const json = (await res.json()) as { user?: AuthUser };
     return json.user ?? null;
@@ -81,7 +84,11 @@ export const authMiddleware: MiddlewareFunction<Response> = async (
 
   let effectiveCookie = originalCookie;
   let newSetCookies: string[] = [];
-  let user = await fetchMe(originalCookie);
+  const meResult = await fetchMe(originalCookie);
+
+  // Treat 429 the same as a null response so we fall through to the refresh
+  // path below. The user is still logged in — they just hit a rate limit.
+  let user = meResult === THROTTLED ? null : meResult;
 
   if (!user) {
     const refreshToken = getCookieValue(originalCookie, 'refresh_token');

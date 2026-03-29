@@ -75,6 +75,7 @@ export class AuthController {
 
   @Public()
   @Post('refresh')
+  @SkipThrottle()
   @HttpCode(HttpStatus.OK)
   async refresh(
     @Req() req: Request,
