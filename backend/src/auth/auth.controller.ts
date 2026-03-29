@@ -23,7 +23,7 @@ const COOKIE_OPTIONS = {
   path: '/',
 };
 
-@Throttle({ auth: { ttl: 60000, limit: 10 } })
+@Throttle({ default: { ttl: 60000, limit: 10 } })
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -75,6 +75,7 @@ export class AuthController {
 
   @Public()
   @Post('refresh')
+  @SkipThrottle()
   @HttpCode(HttpStatus.OK)
   async refresh(
     @Req() req: Request,
@@ -113,7 +114,6 @@ export class AuthController {
     return { message: 'Logged out successfully' };
   }
 
-  @SkipThrottle()
   @Get('me')
   getMe(@CurrentUser() user: any) {
     return { user };

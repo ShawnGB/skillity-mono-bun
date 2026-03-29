@@ -1,15 +1,97 @@
 import { useFetcher, Link } from 'react-router';
+import { useState } from 'react';
 import { WorkshopStatus } from '@skillity/shared';
 import type { Workshop } from '@skillity/shared';
+import { Check, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ConfirmDialog from '@/components/ui/confirm-dialog';
 import FormModal from '@/components/modals/FormModal';
 import EditWorkshopForm, {
   ConductorsSection,
 } from '@/components/workshops/EditWorkshopForm';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface WorkshopActionsProps {
   workshop: Workshop;
+}
+
+function readinessItems(workshop: Workshop) {
+  return [
+    { label: 'Title', ok: !!workshop.title },
+    { label: 'Description', ok: !!workshop.description },
+    { label: 'Date & time', ok: !!workshop.startsAt },
+    { label: 'Location', ok: !!workshop.location },
+    { label: 'Pricing set', ok: workshop.ticketPrice !== undefined && workshop.ticketPrice !== null },
+    { label: 'Cover photo', ok: !!workshop.coverImageUrl },
+  ];
+}
+
+function PublishGate({ workshop }: { workshop: Workshop }) {
+  const fetcher = useFetcher();
+  const [open, setOpen] = useState(false);
+  const isPending = fetcher.state !== 'idle';
+  const items = readinessItems(workshop);
+  const allReady = items.every((i) => i.ok);
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button size="sm">Publish</Button>
+      </DialogTrigger>
+      <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Ready to publish?</DialogTitle>
+            <DialogDescription>
+              Check that your workshop has everything attendees need before it goes live.
+            </DialogDescription>
+          </DialogHeader>
+
+          <ul className="space-y-2 py-2">
+            {items.map(({ label, ok }) => (
+              <li key={label} className="flex items-center gap-3 text-sm">
+                <span
+                  className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full ${
+                    ok ? 'bg-green-500/15 text-green-600' : 'bg-destructive/10 text-destructive'
+                  }`}
+                >
+                  {ok ? <Check className="size-3" /> : <X className="size-3" />}
+                </span>
+                <span className={ok ? '' : 'text-destructive font-medium'}>{label}</span>
+                {!ok && label === 'Cover photo' && (
+                  <span className="text-xs text-muted-foreground ml-auto">
+                    Use Edit to add one
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+
+          {!allReady && (
+            <p className="text-xs text-muted-foreground rounded-lg bg-muted px-3 py-2">
+              Fix the items above before publishing so attendees have all the information they need.
+            </p>
+          )}
+
+          <fetcher.Form
+            method="post"
+            action={`/api/workshops/${workshop.id}/status`}
+            onSubmit={() => setOpen(false)}
+          >
+            <input type="hidden" name="status" value={WorkshopStatus.PUBLISHED} />
+            <Button type="submit" className="w-full" disabled={!allReady || isPending}>
+              {isPending ? 'Publishing…' : 'Publish workshop'}
+            </Button>
+          </fetcher.Form>
+        </DialogContent>
+    </Dialog>
+  );
 }
 
 export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
@@ -69,15 +151,7 @@ export default function WorkshopActions({ workshop }: WorkshopActionsProps) {
         <Link to={`/workshops/new?${newWorkshopParams}`}>Add Date</Link>
       </Button>
       {workshop.status === WorkshopStatus.DRAFT && (
-        <fetcher.Form
-          method="post"
-          action={`/api/workshops/${workshop.id}/status`}
-        >
-          <input type="hidden" name="status" value={WorkshopStatus.PUBLISHED} />
-          <Button size="sm" type="submit" disabled={isPending}>
-            {isPending ? 'Publishing...' : 'Publish'}
-          </Button>
-        </fetcher.Form>
+        <PublishGate workshop={workshop} />
       )}
       <ConfirmDialog
         trigger={

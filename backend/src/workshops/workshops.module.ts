@@ -4,10 +4,11 @@ import { WorkshopsService } from './workshops.service';
 import { WorkshopsController } from './workshops.controller';
 import { Workshop } from './entities/workshop.entity';
 import { WorkshopConductor } from './entities/workshop-conductor.entity';
+import { WorkshopPhoto } from './entities/workshop-photo.entity';
 import { Booking } from 'src/bookings/entities/booking.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Workshop, WorkshopConductor, Booking])],
+  imports: [TypeOrmModule.forFeature([Workshop, WorkshopConductor, WorkshopPhoto, Booking])],
   controllers: [WorkshopsController],
   providers: [WorkshopsService],
 })

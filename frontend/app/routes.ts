@@ -39,7 +39,13 @@ export default [
     '/api/workshops/:workshopId/conductors',
     'routes/api.workshops.$workshopId.conductors.tsx',
   ),
+  route(
+    '/api/workshops/:workshopId/photos',
+    'routes/api.workshops.$workshopId.photos.tsx',
+  ),
   route('/api/users/lookup', 'routes/api.users.lookup.tsx'),
+  route('/api/uploads', 'routes/api.uploads.tsx'),
+  route('/api/pexels-suggestions', 'routes/api.pexels-suggestions.tsx'),
   route('/api/profile', 'routes/api.profile.tsx'),
   route('/api/profile/delete', 'routes/api.profile.delete.tsx'),
   route('/api/profile/export', 'routes/api.profile.export.tsx'),

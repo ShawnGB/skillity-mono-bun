@@ -7,6 +7,7 @@ export interface ConductorProfile {
   firstName: string;
   lastName: string;
   tagline: string | null;
+  avatarUrl?: string | null;
 }
 
 export enum WorkshopLevel {
@@ -61,6 +62,23 @@ export const CATEGORY_LABELS: Record<WorkshopCategory, string> = {
     'Business & Entrepreneurship',
 };
 
+export interface PexelsPhoto {
+  id: number;
+  url: string;
+  photographer: string;
+  pexelsUrl: string;
+}
+
+export interface WorkshopPhoto {
+  id: string;
+  workshopId: string;
+  uploaderId: string;
+  url: string;
+  status: 'pending' | 'approved' | 'rejected';
+  caption: string | null;
+  createdAt: string;
+}
+
 export interface Workshop {
   id: string;
   title: string;
@@ -84,7 +102,11 @@ export interface Workshop {
   estimatedRevenue?: number;
   externalUrl: string | null;
   source: WorkshopSource;
+  coverImageUrl: string | null;
+  coverImageKey: string | null;
+  coverImageAttribution: string | null;
   conductors?: ConductorProfile[];
+  photos?: WorkshopPhoto[];
   createdAt: string;
   updatedAt: string;
 }
@@ -123,4 +145,7 @@ export interface UpdateWorkshopInput {
   status?: WorkshopStatus;
   externalUrl?: string;
   source?: WorkshopSource;
+  coverImageUrl?: string | null;
+  coverImageKey?: string | null;
+  coverImageAttribution?: string | null;
 }

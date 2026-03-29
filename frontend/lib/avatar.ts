@@ -1,4 +1,9 @@
-export function getAvatarUrl(firstName: string | null, lastName: string | null) {
+export function getAvatarUrl(
+  firstName: string | null,
+  lastName: string | null,
+  avatarUrl?: string | null,
+): string {
+  if (avatarUrl) return avatarUrl;
   const name = encodeURIComponent(`${firstName ?? ''} ${lastName ?? ''}`.trim() || 'U');
   return `https://ui-avatars.com/api/?name=${name}&background=random&color=fff&size=128`;
 }

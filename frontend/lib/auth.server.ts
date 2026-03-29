@@ -1,5 +1,15 @@
 import { API_URL } from './api-client.server';
 
+export async function refreshSession(cookie: string): Promise<string[]> {
+  const res = await fetch(`${API_URL}/auth/refresh`, {
+    method: 'POST',
+    headers: { Cookie: cookie },
+    signal: AbortSignal.timeout(8000),
+  }).catch(() => null);
+  return res?.ok ? res.headers.getSetCookie() : [];
+}
+
+
 type AuthResult =
   | { ok: true; setCookies: string[] }
   | { ok: false; error: string };

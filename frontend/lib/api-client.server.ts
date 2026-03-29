@@ -80,6 +80,25 @@ export async function serverPatch<T>(
   return handleResponse<T>(res);
 }
 
+export async function serverUpload<T>(
+  endpoint: string,
+  body: FormData,
+  source?: RequestSource,
+): Promise<T> {
+  const headers: HeadersInit = {};
+  if (source) {
+    const cookie =
+      typeof source === 'string' ? source : source.headers.get('cookie');
+    if (cookie) headers['cookie'] = cookie;
+  }
+  const res = await fetch(`${API_URL}${endpoint}`, {
+    method: 'POST',
+    headers,
+    body,
+  });
+  return handleResponse<T>(res);
+}
+
 export async function serverDelete<T>(
   endpoint: string,
   source?: RequestSource,

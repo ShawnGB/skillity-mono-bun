@@ -43,6 +43,12 @@ export class User extends BaseEntity {
   @Column({ name: 'vat_number', length: 50, nullable: true })
   vatNumber: string | null;
 
+  @Column({ name: 'avatar_url', nullable: true })
+  avatarUrl: string | null;
+
+  @Column({ name: 'avatar_key', nullable: true })
+  avatarKey: string | null;
+
   @Column({ name: 'deleted_at', type: 'timestamptz', nullable: true })
   deletedAt: Date | null;
 

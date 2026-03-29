@@ -11,6 +11,7 @@ import {
 import type { Workshop } from '@skillity/shared';
 import { cn } from '@/lib/utils';
 import WishlistButton from '@/components/workshops/WishlistButton';
+import { WorkshopCoverImage } from '@/components/workshops/WorkshopCoverImage';
 
 function StatusBadge({ status }: { status: WorkshopStatus }) {
   if (status === WorkshopStatus.PUBLISHED) return null;
@@ -156,10 +157,12 @@ export default function WorkshopsListing({
                   isPast && 'opacity-60',
                 )}
               >
-                <img
-                  src={`https://picsum.photos/seed/${workshop.id}/400/300`}
-                  alt={workshop.title}
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                <WorkshopCoverImage
+                  coverImageUrl={workshop.coverImageUrl}
+                  coverImageAttribution={workshop.coverImageAttribution}
+                  category={workshop.category}
+                  className="absolute inset-0"
+                  imageClassName="transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
                 <StatusBadge status={workshop.status} />
