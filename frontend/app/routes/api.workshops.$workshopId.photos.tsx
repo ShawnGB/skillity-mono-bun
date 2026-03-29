@@ -11,7 +11,7 @@ export async function action({ request, params, context }: Route.ActionArgs) {
 
   try {
     return await serverUpload(`/workshops/${params.workshopId}/photos`, formData, session.cookie);
-  } catch {
-    return { error: 'Upload failed' };
+  } catch (err) {
+    return { error: err instanceof Error ? err.message : 'Upload failed' };
   }
 }

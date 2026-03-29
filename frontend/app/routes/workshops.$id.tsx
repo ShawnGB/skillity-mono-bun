@@ -27,7 +27,7 @@ import ReviewsList from '@/components/workshops/ReviewsList';
 import ReviewButton from '@/components/workshops/ReviewButton';
 import WishlistButton from '@/components/workshops/WishlistButton';
 import { getAvatarUrl } from '@/lib/avatar';
-import { getCategoryStyle } from '@/lib/category-fallback';
+import { WorkshopCoverImage } from '@/components/workshops/WorkshopCoverImage';
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
   const { id } = params;
@@ -366,18 +366,12 @@ export default function WorkshopDetailPage({
       )}
 
       <section className="relative h-[50vh] min-h-[400px] overflow-hidden">
-        {workshop.coverImageUrl ? (
-          <img
-            src={workshop.coverImageUrl}
-            alt={workshop.title}
-            className="absolute inset-0 w-full h-full object-cover"
-            title={workshop.coverImageAttribution ?? undefined}
-          />
-        ) : (
-          <div
-            className={`absolute inset-0 bg-gradient-to-br ${getCategoryStyle(workshop.category).gradient}`}
-          />
-        )}
+        <WorkshopCoverImage
+          coverImageUrl={workshop.coverImageUrl}
+          coverImageAttribution={workshop.coverImageAttribution}
+          category={workshop.category}
+          className="absolute inset-0"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent" />
         <div className="absolute inset-0 flex flex-col justify-end">
           <div className="container mx-auto px-4 pb-12">
