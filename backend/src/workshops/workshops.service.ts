@@ -32,7 +32,7 @@ const PEXELS_CATEGORY_KEYWORDS: Record<string, string> = {
   business_and_entrepreneurship: 'business workshop entrepreneurship',
 };
 
-interface PexelsPhoto {
+export interface PexelsPhoto {
   id: number;
   url: string;
   photographer: string;
