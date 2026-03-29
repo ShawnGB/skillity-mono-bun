@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useFetcher } from 'react-router';
 import { useForm, Controller } from 'react-hook-form';
 import { format } from 'date-fns';
-import { CalendarIcon, Check } from 'lucide-react';
+import { CalendarIcon, Check, Upload, X, Images } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,6 +28,7 @@ import {
   CATEGORY_LABELS,
   LEVEL_LABELS,
 } from '@skillity/shared';
+import type { PexelsPhoto } from '@skillity/shared';
 import { cn } from '@/lib/utils';
 import { DURATION_OPTIONS } from '@/lib/constants';
 
@@ -119,9 +120,17 @@ export default function CreateWorkshopForm({
   defaultValues,
 }: CreateWorkshopFormProps) {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const uploadFetcher = useFetcher<{ url?: string; key?: string; error?: string }>();
+  const pexelsFetcher = useFetcher<PexelsPhoto[]>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const pexelsFetchedCategoryRef = useRef<string | null>(null);
   const [step, setStep] = useState(0);
   const [localError, setLocalError] = useState<string | null>(null);
   const [externalTickets, setExternalTickets] = useState(false);
+  const [coverImageTab, setCoverImageTab] = useState<'upload' | 'pexels'>('upload');
+  const [coverImageUrl, setCoverImageUrl] = useState<string | null>(null);
+  const [coverImageKey, setCoverImageKey] = useState<string | null>(null);
+  const [coverImageAttribution, setCoverImageAttribution] = useState<string | null>(null);
   const isPending = fetcher.state !== 'idle';
 
   const {
@@ -137,10 +146,38 @@ export default function CreateWorkshopForm({
   const ticketPrice = watch('ticketPrice') ?? 0;
   const maxParticipants = watch('maxParticipants') ?? 0;
   const maxRevenue = Number(ticketPrice) * Number(maxParticipants);
+  const watchedCategory = watch('category');
+
+  if (uploadFetcher.state === 'idle' && uploadFetcher.data?.url && !coverImageUrl) {
+    setCoverImageUrl(uploadFetcher.data.url);
+    setCoverImageKey(uploadFetcher.data.key ?? null);
+    setCoverImageAttribution(null);
+  }
 
   const handleNext = async () => {
     const valid = await trigger(STEP_FIELDS[step] as (keyof FormValues)[]);
     if (valid) setStep((s) => s + 1);
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('file', file);
+    uploadFetcher.submit(fd, { method: 'post', action: '/api/uploads', encType: 'multipart/form-data' });
+  };
+
+  const clearCoverImage = () => {
+    setCoverImageUrl(null);
+    setCoverImageKey(null);
+    setCoverImageAttribution(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const selectPexelsPhoto = (photo: PexelsPhoto) => {
+    setCoverImageUrl(photo.url);
+    setCoverImageKey(null);
+    setCoverImageAttribution(`Photo by ${photo.photographer} on Pexels`);
   };
 
   const onSubmit = (data: FormValues) => {
@@ -173,6 +210,9 @@ export default function CreateWorkshopForm({
         ...(externalTickets && data.externalUrl
           ? { externalUrl: data.externalUrl, source: WorkshopSource.EXTERNAL }
           : {}),
+      ...(coverImageUrl ? { coverImageUrl } : {}),
+      ...(coverImageKey ? { coverImageKey } : {}),
+      ...(coverImageAttribution ? { coverImageAttribution } : {}),
       },
       { method: 'post', action: '/api/workshops' },
     );
@@ -221,7 +261,7 @@ export default function CreateWorkshopForm({
                   control={control}
                   rules={{ required: 'Category is required' }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value ?? ''}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
@@ -282,6 +322,102 @@ export default function CreateWorkshopForm({
                 <p className="text-sm text-destructive">
                   {errors.description.message}
                 </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Cover Photo <span className="text-muted-foreground font-normal">(optional)</span></Label>
+
+              {coverImageUrl ? (
+                <div className="relative rounded-xl overflow-hidden aspect-[3/1]">
+                  <img src={coverImageUrl} alt="Cover preview" className="w-full h-full object-cover" />
+                  {coverImageAttribution && (
+                    <span className="absolute bottom-2 right-2 text-[10px] text-white/70 bg-black/40 px-1.5 py-0.5 rounded">
+                      {coverImageAttribution}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={clearCoverImage}
+                    className="absolute top-2 right-2 rounded-full bg-black/50 p-1 text-white hover:bg-black/70"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                </div>
+              ) : (
+                <div className="rounded-xl border overflow-hidden">
+                  <div className="flex border-b text-sm">
+                    <button
+                      type="button"
+                      onClick={() => setCoverImageTab('upload')}
+                      className={cn('flex-1 px-4 py-2 flex items-center justify-center gap-2 transition-colors', coverImageTab === 'upload' ? 'bg-muted font-medium' : 'hover:bg-muted/50')}
+                    >
+                      <Upload className="size-3.5" /> Upload your own
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCoverImageTab('pexels');
+                        if (watchedCategory && pexelsFetcher.state === 'idle' && pexelsFetchedCategoryRef.current !== watchedCategory) {
+                          pexelsFetcher.load(`/api/pexels-suggestions?category=${watchedCategory}`);
+                          pexelsFetchedCategoryRef.current = watchedCategory;
+                        }
+                      }}
+                      className={cn('flex-1 px-4 py-2 flex items-center justify-center gap-2 transition-colors', coverImageTab === 'pexels' ? 'bg-muted font-medium' : 'hover:bg-muted/50')}
+                    >
+                      <Images className="size-3.5" /> Choose a photo
+                    </button>
+                  </div>
+
+                  {coverImageTab === 'upload' && (
+                    <div className="p-4">
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        className="hidden"
+                        onChange={handleFileSelect}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploadFetcher.state !== 'idle'}
+                        className="w-full rounded-lg border-2 border-dashed border-muted-foreground/30 py-6 text-sm text-muted-foreground hover:border-primary/50 hover:text-foreground transition-colors disabled:opacity-50"
+                      >
+                        {uploadFetcher.state !== 'idle' ? 'Uploading...' : 'Click to upload (JPEG, PNG, WebP · max 5MB)'}
+                      </button>
+                      {uploadFetcher.data?.error && (
+                        <p className="text-xs text-destructive mt-2">{uploadFetcher.data.error}</p>
+                      )}
+                    </div>
+                  )}
+
+                  {coverImageTab === 'pexels' && (
+                    <div className="p-4">
+                      {!watchedCategory ? (
+                        <p className="text-sm text-muted-foreground text-center py-4">Select a category first to see suggestions.</p>
+                      ) : pexelsFetcher.state !== 'idle' ? (
+                        <p className="text-sm text-muted-foreground text-center py-4">Loading suggestions...</p>
+                      ) : pexelsFetcher.data && pexelsFetcher.data.length > 0 ? (
+                        <div className="grid grid-cols-3 gap-2">
+                          {pexelsFetcher.data.map((photo) => (
+                            <button
+                              key={photo.id}
+                              type="button"
+                              onClick={() => selectPexelsPhoto(photo)}
+                              className="relative aspect-[3/2] rounded-lg overflow-hidden hover:ring-2 hover:ring-primary transition-all"
+                            >
+                              <img src={photo.url} alt={`Photo by ${photo.photographer}`} className="w-full h-full object-cover" />
+                            </button>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-muted-foreground text-center py-4">No suggestions available.</p>
+                      )}
+                      {pexelsFetcher.data && <p className="text-[10px] text-muted-foreground mt-2">Photos provided by Pexels</p>}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -355,7 +491,7 @@ export default function CreateWorkshopForm({
                   render={({ field }) => (
                     <Select
                       onValueChange={field.onChange}
-                      value={field.value?.toString()}
+                      value={field.value?.toString() ?? ''}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select" />
