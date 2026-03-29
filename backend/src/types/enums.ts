@@ -42,3 +42,9 @@ export enum WorkshopSource {
   EXTERNAL = 'external',
   DISCOVERED = 'discovered',
 }
+
+export enum PhotoStatus {
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  REJECTED = 'rejected',
+}

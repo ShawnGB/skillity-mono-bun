@@ -14,7 +14,8 @@ import { UpdateWorkshopDto } from './dto/update-workshop.dto';
 import { Public } from '../auth/decorators/public.decorator';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import { UserRole, WorkshopCategory } from '../types/enums';
+import { UserRole, WorkshopCategory, PhotoStatus } from '../types/enums';
+import type { User } from '../users/entities/user.entity';
 
 @Controller('workshops')
 export class WorkshopsController {
@@ -50,6 +51,12 @@ export class WorkshopsController {
   @Get('series/:seriesId')
   findBySeries(@Param('seriesId') seriesId: string) {
     return this.workshopsService.findSeriesSiblings(seriesId);
+  }
+
+  @Get('pexels-suggestions')
+  @Roles(UserRole.HOST, UserRole.ADMIN)
+  getPexelsSuggestions(@Query('category') category: string) {
+    return this.workshopsService.getPexelsSuggestions(category);
   }
 
   @Public()
@@ -96,5 +103,69 @@ export class WorkshopsController {
     @CurrentUser() user: { id: string },
   ) {
     return this.workshopsService.updateSplit(id, user.id, body.splits);
+  }
+
+  @Delete(':id')
+  @Roles(UserRole.HOST, UserRole.ADMIN)
+  remove(
+    @Param('id') id: string,
+    @CurrentUser() user: { id: string; role: UserRole },
+  ) {
+    return this.workshopsService.remove(id, user.id, user.role);
+  }
+
+  @Public()
+  @Get(':id/photos')
+  getPhotos(
+    @Param('id') id: string,
+    @CurrentUser() user?: User,
+  ) {
+    return this.workshopsService.getPhotos(id, user?.id, user?.role);
+  }
+
+  @Post(':id/photos')
+  addPhoto(
+    @Param('id') id: string,
+    @Body() body: { url: string; storageKey: string; caption?: string },
+    @CurrentUser() user: User,
+  ) {
+    return this.workshopsService.addPhoto(
+      id,
+      user.id,
+      user.role,
+      body.url,
+      body.storageKey,
+      body.caption,
+    );
+  }
+
+  @Patch(':id/photos/:photoId/approve')
+  @Roles(UserRole.HOST, UserRole.ADMIN)
+  approvePhoto(
+    @Param('id') id: string,
+    @Param('photoId') photoId: string,
+    @CurrentUser() user: { id: string; role: UserRole },
+  ) {
+    return this.workshopsService.updatePhotoStatus(id, photoId, PhotoStatus.APPROVED, user.id, user.role);
+  }
+
+  @Patch(':id/photos/:photoId/reject')
+  @Roles(UserRole.HOST, UserRole.ADMIN)
+  rejectPhoto(
+    @Param('id') id: string,
+    @Param('photoId') photoId: string,
+    @CurrentUser() user: { id: string; role: UserRole },
+  ) {
+    return this.workshopsService.updatePhotoStatus(id, photoId, PhotoStatus.REJECTED, user.id, user.role);
+  }
+
+  @Patch(':id/photos/:photoId/promote')
+  @Roles(UserRole.HOST, UserRole.ADMIN)
+  promotePhoto(
+    @Param('id') id: string,
+    @Param('photoId') photoId: string,
+    @CurrentUser() user: { id: string; role: UserRole },
+  ) {
+    return this.workshopsService.promotePhoto(id, photoId, user.id, user.role);
   }
 }
