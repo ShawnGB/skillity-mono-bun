@@ -16,6 +16,37 @@ services:
       timeout: 5s
       retries: 5
 
+  minio:
+    image: minio/minio
+    container_name: skillity_minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: dev_user
+      MINIO_ROOT_PASSWORD: dev_pass
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio_init:
+    image: minio/mc
+    container_name: skillity_minio_init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 dev_user dev_pass;
+      mc mb --ignore-existing local/skillity;
+      mc anonymous set public local/skillity;
+      "
+
   api:
     build:
       context: .
@@ -24,10 +55,18 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      minio:
+        condition: service_healthy
     ports:
       - "3000:3000"
     environment:
       DATABASE_URL: "postgresql://dev_user:dev_pass@db:5432/app_db"
+      STORAGE_ENDPOINT: "http://minio:9000"
+      STORAGE_BUCKET: "skillity"
+      STORAGE_ACCESS_KEY: "dev_user"
+      STORAGE_SECRET_KEY: "dev_pass"
+      STORAGE_PUBLIC_URL: "http://localhost:9000"
+      PEXELS_API_KEY: "${PEXELS_API_KEY:-}"
     volumes:
       - ./backend/src:/app/backend/src
 
@@ -59,3 +98,4 @@ services:
 
 volumes:
   pg_data:
+  minio_data:
