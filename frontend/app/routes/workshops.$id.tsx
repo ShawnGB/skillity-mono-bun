@@ -1,5 +1,6 @@
-import { data, Link, isRouteErrorResponse, useRouteError } from 'react-router';
-import { use, Suspense } from 'react';
+import { data, Link, isRouteErrorResponse, useRouteError, useFetcher } from 'react-router';
+import { use, Suspense, useRef } from 'react';
+import { Upload, Camera } from 'lucide-react';
 import { format } from 'date-fns';
 import { ArrowRight } from 'lucide-react';
 import type { Route } from './+types/workshops.$id';
@@ -9,6 +10,7 @@ import {
   getWorkshopReviews,
   getSeriesReviews,
   getSeriesWorkshops,
+  getWorkshopPhotos,
 } from '@/lib/workshops.server';
 import { getMyBookings } from '@/lib/bookings.server';
 import { getWishlistCheck } from '@/lib/wishlist.server';
@@ -18,13 +20,14 @@ import {
   BookingStatus,
   CATEGORY_LABELS,
 } from '@skillity/shared';
-import type { Review, Workshop } from '@skillity/shared';
+import type { Review, Workshop, WorkshopPhoto } from '@skillity/shared';
 import { Button } from '@/components/ui/button';
 import RegisterButton from '@/components/workshops/RegisterButton';
 import ReviewsList from '@/components/workshops/ReviewsList';
 import ReviewButton from '@/components/workshops/ReviewButton';
 import WishlistButton from '@/components/workshops/WishlistButton';
 import { getAvatarUrl } from '@/lib/avatar';
+import { getCategoryStyle } from '@/lib/category-fallback';
 
 export async function loader({ request, params, context }: Route.LoaderArgs) {
   const { id } = params;
@@ -62,11 +65,13 @@ export async function loader({ request, params, context }: Route.LoaderArgs) {
         ws.filter((w) => w.id !== id),
       )
     : Promise.resolve<typeof workshop[]>([]);
+  const photosPromise = getWorkshopPhotos(request, id).catch(() => [] as WorkshopPhoto[]);
 
   return {
     workshop,
     reviewsPromise,
     siblingsPromise,
+    photosPromise,
     isSaved,
     isAuthenticated,
     hasConfirmedBooking,
@@ -189,6 +194,91 @@ function SeriesSiblings({ promise }: { promise: Promise<Workshop[]> }) {
   );
 }
 
+function PhotoUploadPrompt({ workshopId }: { workshopId: string }) {
+  const uploadFetcher = useFetcher<{ error?: string }>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isUploading = uploadFetcher.state !== 'idle';
+  const submitted = uploadFetcher.state === 'idle' && uploadFetcher.data && !uploadFetcher.data.error;
+
+  const handleSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('file', file);
+    uploadFetcher.submit(fd, {
+      method: 'post',
+      action: `/api/workshops/${workshopId}/photos`,
+      encType: 'multipart/form-data',
+    });
+  };
+
+  if (submitted) {
+    return (
+      <div className="rounded-xl border bg-muted/30 p-4 text-sm text-muted-foreground text-center">
+        Photo submitted — the host will review it shortly.
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border bg-muted/30 p-4 space-y-3">
+      <div className="flex items-center gap-2">
+        <Camera className="size-4 text-muted-foreground" />
+        <p className="text-sm font-medium">You attended this workshop</p>
+      </div>
+      <p className="text-sm text-muted-foreground">Share your photos — the host can add them to the gallery.</p>
+      <button
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        disabled={isUploading}
+        className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm hover:bg-accent transition-colors disabled:opacity-50"
+      >
+        <Upload className="size-4" />
+        {isUploading ? 'Uploading…' : 'Upload a photo'}
+      </button>
+      {uploadFetcher.data?.error && (
+        <p className="text-xs text-destructive">{uploadFetcher.data.error}</p>
+      )}
+      <input ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleSelect} />
+    </div>
+  );
+}
+
+function WorkshopPhotoGallery({
+  promise,
+  workshopId,
+  hasConfirmedBooking,
+  isCompleted,
+}: {
+  promise: Promise<WorkshopPhoto[]>;
+  workshopId: string;
+  hasConfirmedBooking: boolean;
+  isCompleted: boolean;
+}) {
+  const photos = use(promise);
+  const approved = photos.filter((p) => p.status === 'approved');
+
+  return (
+    <div className="space-y-4">
+      {isCompleted && hasConfirmedBooking && (
+        <PhotoUploadPrompt workshopId={workshopId} />
+      )}
+      {approved.length > 0 && (
+        <>
+          <h2 className="text-2xl">Workshop Photos</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {approved.map((photo) => (
+              <div key={photo.id} className="aspect-square rounded-lg overflow-hidden bg-muted">
+                <img src={photo.url} alt={photo.caption ?? 'Workshop photo'} className="w-full h-full object-cover" />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export function ErrorBoundary() {
   const error = useRouteError();
   if (isRouteErrorResponse(error) && error.status === 404) {
@@ -213,6 +303,7 @@ export default function WorkshopDetailPage({
     workshop,
     reviewsPromise,
     siblingsPromise,
+    photosPromise,
     isSaved,
     isAuthenticated,
     hasConfirmedBooking,
@@ -275,11 +366,18 @@ export default function WorkshopDetailPage({
       )}
 
       <section className="relative h-[50vh] min-h-[400px] overflow-hidden">
-        <img
-          src={`https://picsum.photos/seed/${workshop.id}/1200/600`}
-          alt={workshop.title}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
+        {workshop.coverImageUrl ? (
+          <img
+            src={workshop.coverImageUrl}
+            alt={workshop.title}
+            className="absolute inset-0 w-full h-full object-cover"
+            title={workshop.coverImageAttribution ?? undefined}
+          />
+        ) : (
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getCategoryStyle(workshop.category).gradient}`}
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/25 to-transparent" />
         <div className="absolute inset-0 flex flex-col justify-end">
           <div className="container mx-auto px-4 pb-12">
@@ -338,7 +436,7 @@ export default function WorkshopDetailPage({
                       className="flex items-center gap-3 rounded-xl border bg-card p-4 hover:bg-accent transition-colors"
                     >
                       <img
-                        src={getAvatarUrl(conductor.firstName, conductor.lastName)}
+                        src={getAvatarUrl(conductor.firstName, conductor.lastName, conductor.avatarUrl)}
                         alt={`${conductor.firstName} ${conductor.lastName}`}
                         className="size-10 rounded-full"
                       />
@@ -369,6 +467,7 @@ export default function WorkshopDetailPage({
                       src={getAvatarUrl(
                         workshop.host.firstName,
                         workshop.host.lastName,
+                        workshop.host.avatarUrl,
                       )}
                       alt={`${workshop.host.firstName} ${workshop.host.lastName}`}
                       className="size-10 rounded-full"
@@ -405,6 +504,15 @@ export default function WorkshopDetailPage({
                 />
               </Suspense>
             </div>
+
+            <Suspense>
+              <WorkshopPhotoGallery
+                promise={photosPromise}
+                workshopId={workshop.id}
+                hasConfirmedBooking={hasConfirmedBooking}
+                isCompleted={isCompleted}
+              />
+            </Suspense>
           </div>
 
           <div className="lg:col-span-1">
