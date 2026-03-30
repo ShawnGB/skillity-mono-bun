@@ -26,6 +26,9 @@ export class Booking extends BaseEntity {
   @Column({ type: 'decimal', precision: 10, scale: 2 })
   amount: number;
 
+  @Column({ name: 'service_fee', type: 'decimal', precision: 10, scale: 2, nullable: true })
+  serviceFee: number | null;
+
   @Column({ length: 3 })
   currency: string;
 

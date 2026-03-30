@@ -48,3 +48,9 @@ export enum PhotoStatus {
   APPROVED = 'approved',
   REJECTED = 'rejected',
 }
+
+export enum PayoutStatus {
+  PENDING = 'pending',
+  PAID = 'paid',
+  CANCELLED = 'cancelled',
+}
