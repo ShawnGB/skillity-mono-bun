@@ -142,6 +142,8 @@ export class BookingsService {
 
     if (booking.status === BookingStatus.CONFIRMED) return;
 
+    let refundReason: 'cancelled' | 'oversold' | null = null;
+
     await this.bookingRepository.manager.transaction(async (manager) => {
       const workshop = await manager.findOne(Workshop, {
         where: { id: booking.workshopId },
@@ -151,9 +153,8 @@ export class BookingsService {
       if (!workshop) throw new NotFoundException('Workshop not found');
 
       if (workshop.status === WorkshopStatus.CANCELLED) {
-        await this.paymentsService.createRefund(molliePaymentId);
-        booking.status = BookingStatus.REFUNDED;
-        await manager.save(booking);
+        this.logger.warn(`Workshop ${booking.workshopId} cancelled — will refund ${molliePaymentId}`);
+        refundReason = 'cancelled';
         return;
       }
 
@@ -161,14 +162,11 @@ export class BookingsService {
         where: { workshopId: booking.workshopId, status: BookingStatus.CONFIRMED },
       });
 
+      this.logger.log(`Capacity check: ${confirmedCount}/${workshop.maxParticipants} for workshop ${booking.workshopId}`);
+
       if (confirmedCount >= workshop.maxParticipants) {
-        await this.paymentsService.createRefund(molliePaymentId);
-        booking.status = BookingStatus.REFUNDED;
-        await manager.save(booking);
-        this.eventEmitter.emit('booking.payment.refunded_oversold', {
-          bookingId: booking.id,
-          userId: booking.userId,
-        });
+        this.logger.warn(`Workshop ${booking.workshopId} oversold — will refund ${molliePaymentId}`);
+        refundReason = 'oversold';
         return;
       }
 
@@ -176,7 +174,7 @@ export class BookingsService {
       booking.paidAt = new Date();
       await manager.save(booking);
 
-      const conductors = await this.conductorRepository.find({
+      const conductors = await manager.find(WorkshopConductor, {
         where: { workshopId: booking.workshopId },
       });
 
@@ -193,8 +191,23 @@ export class BookingsService {
         }),
       );
 
-      await manager.save(HostPayout, payouts);
+      if (payouts.length > 0) {
+        await manager.save(HostPayout, payouts);
+      }
     });
+
+    if (refundReason) {
+      await this.paymentsService.createRefund(molliePaymentId);
+      booking.status = BookingStatus.REFUNDED;
+      await this.bookingRepository.save(booking);
+      if (refundReason === 'oversold') {
+        this.eventEmitter.emit('booking.payment.refunded_oversold', {
+          bookingId: booking.id,
+          userId: booking.userId,
+        });
+      }
+      return;
+    }
 
     this.eventEmitter.emit('booking.confirmed', {
       bookingId: booking.id,
