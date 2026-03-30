@@ -21,8 +21,6 @@ export class PaymentsController {
 
       if (payment.status === 'paid') {
         await this.bookingsService.handlePaymentConfirmed(body.id);
-      } else if (payment.status === 'chargeback') {
-        await this.bookingsService.handleChargeback(body.id);
       }
     } catch (err) {
       this.logger.error(`Webhook error for payment ${body.id}: ${err}`);

@@ -107,7 +107,8 @@ export class BookingsService {
     if (booking.molliePaymentId) {
       const existing = await this.paymentsService.getPayment(booking.molliePaymentId);
       if (existing.status === 'open') {
-        return { checkoutUrl: existing.getCheckoutUrl()! };
+        const checkoutUrl = existing.links?.checkout?.href;
+        if (checkoutUrl) return { checkoutUrl };
       }
     }
 
