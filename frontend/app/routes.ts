@@ -61,6 +61,10 @@ export default [
     '/api/bookings/:bookingId/confirm',
     'routes/api.bookings.$bookingId.confirm.tsx',
   ),
+  route(
+    '/api/bookings/:bookingId/pay',
+    'routes/api.bookings.$bookingId.pay.tsx',
+  ),
 
   // SEO
   route('/sitemap.xml', 'routes/sitemap[.]xml.tsx'),
