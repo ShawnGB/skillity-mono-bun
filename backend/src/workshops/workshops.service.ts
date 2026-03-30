@@ -2,6 +2,8 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  forwardRef,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -19,6 +21,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserRole, WorkshopStatus, BookingStatus, PhotoStatus } from 'src/types/enums';
 import { Booking } from 'src/bookings/entities/booking.entity';
 import { StorageService } from 'src/storage/storage.service';
+import { BookingsService } from 'src/bookings/bookings.service';
 
 const PEXELS_CATEGORY_KEYWORDS: Record<string, string> = {
   crafts_and_making: 'pottery ceramics craft workshop',
@@ -54,6 +57,8 @@ export class WorkshopsService {
     private readonly bookingRepository: Repository<Booking>,
     private readonly eventEmitter: EventEmitter2,
     private readonly storage: StorageService,
+    @Inject(forwardRef(() => BookingsService))
+    private readonly bookingsService: BookingsService,
   ) {}
 
   private readonly pexelsCache = new Map<string, { photos: PexelsPhoto[]; ts: number }>();
@@ -239,13 +244,7 @@ export class WorkshopsService {
           );
         }
 
-        await this.bookingRepository.update(
-          {
-            workshopId: id,
-            status: In([BookingStatus.PENDING, BookingStatus.CONFIRMED]),
-          },
-          { status: BookingStatus.REFUNDED },
-        );
+        await this.bookingsService.cancelWorkshopBookings(id);
       }
     }
 
