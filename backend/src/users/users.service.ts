@@ -12,6 +12,7 @@ import { In, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookingStatus, UserRole, WorkshopStatus } from '../types/enums';
 import { ReviewsService } from '../reviews/reviews.service';
+import { StorageService } from '../storage/storage.service';
 import { randomUUID } from 'crypto';
 
 import * as bcrypt from 'bcrypt';
@@ -26,6 +27,7 @@ export class UsersService {
     @InjectRepository(Workshop)
     private readonly workshopsRepository: Repository<Workshop>,
     private readonly reviewsService: ReviewsService,
+    private readonly storage: StorageService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<UserResponseDTO> {
@@ -94,6 +96,15 @@ export class UsersService {
     if (dto.companyName !== undefined) user.companyName = dto.companyName;
     if (dto.vatNumber !== undefined) user.vatNumber = dto.vatNumber;
 
+    if (dto.avatarUrl !== undefined) {
+      const oldKey = user.avatarKey;
+      user.avatarUrl = dto.avatarUrl ?? null;
+      user.avatarKey = dto.avatarKey ?? null;
+      if (oldKey && oldKey !== dto.avatarKey) {
+        await this.storage.delete(oldKey).catch(() => null);
+      }
+    }
+
     await this.UsersRepository.save(user);
 
     return {
@@ -109,6 +120,7 @@ export class UsersService {
       conductorType: user.conductorType,
       companyName: user.companyName,
       vatNumber: user.vatNumber,
+      avatarUrl: user.avatarUrl,
     };
   }
 
@@ -141,6 +153,7 @@ export class UsersService {
       city: user.city,
       conductorType: user.conductorType,
       companyName: user.companyName,
+      avatarUrl: user.avatarUrl,
       averageRating,
       reviewCount,
       workshopCount,

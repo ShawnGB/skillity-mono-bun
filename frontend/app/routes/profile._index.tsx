@@ -1,4 +1,6 @@
-import { redirect, Link } from 'react-router';
+import { redirect, Link, useFetcher } from 'react-router';
+import { useEffect, useRef } from 'react';
+import { Upload } from 'lucide-react';
 import type { Route } from './+types/profile._index';
 import { sessionContext } from '@/app/context';
 import { getAvatarUrl } from '@/lib/avatar';
@@ -21,14 +23,81 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
   const { user } = loaderData;
   const isHost = user.role === 'host' || user.role === 'admin';
 
+  const uploadFetcher = useFetcher<{ url?: string; key?: string; error?: string }>();
+  const profileFetcher = useFetcher<{ ok?: boolean; error?: string }>();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const isUploading = uploadFetcher.state !== 'idle';
+
+  useEffect(() => {
+    if (uploadFetcher.state === 'idle' && uploadFetcher.data?.url) {
+      profileFetcher.submit(
+        { avatarUrl: uploadFetcher.data.url, avatarKey: uploadFetcher.data.key ?? '' },
+        { method: 'post', action: '/api/profile' },
+      );
+    }
+  }, [uploadFetcher.state, uploadFetcher.data]);
+
+  const handleAvatarSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const fd = new FormData();
+    fd.append('file', file);
+    uploadFetcher.submit(fd, { method: 'post', action: '/api/uploads', encType: 'multipart/form-data' });
+  };
+
+  const currentAvatarUrl = uploadFetcher.data?.url ?? user.avatarUrl ?? null;
+
   return (
     <div className="max-w-2xl space-y-8">
       <ProfileCompleteness user={user} />
 
-      <section className="rounded-xl border bg-card p-6">
-        <h2 className="text-xl font-sans font-semibold mb-6">
+      <section className="rounded-xl border bg-card p-6 space-y-6">
+        <h2 className="text-xl font-sans font-semibold">
           Personal Information
         </h2>
+
+        {/* Avatar */}
+        <div className="flex items-center gap-4">
+          <div className="relative group">
+            <img
+              src={getAvatarUrl(user.firstName, user.lastName, currentAvatarUrl ?? undefined)}
+              alt={`${user.firstName} ${user.lastName}`}
+              className="size-16 rounded-full object-cover"
+            />
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+            >
+              <Upload className="size-5 text-white" />
+            </button>
+          </div>
+          <div>
+            <p className="text-sm font-medium">{user.firstName} {user.lastName}</p>
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading}
+              className="text-xs text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+            >
+              {isUploading ? 'Uploading…' : 'Change photo'}
+            </button>
+            {(uploadFetcher.data?.error || profileFetcher.data?.error) && (
+              <p className="text-xs text-destructive mt-0.5">
+                {uploadFetcher.data?.error ?? profileFetcher.data?.error}
+              </p>
+            )}
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            onChange={handleAvatarSelect}
+          />
+        </div>
+
         <ProfileForm user={user} />
       </section>
 
@@ -67,9 +136,9 @@ export default function ProfilePage({ loaderData }: Route.ComponentProps) {
             </div>
             <div className="flex items-center gap-3 rounded-lg border p-3">
               <img
-                src={getAvatarUrl(user.firstName, user.lastName)}
+                src={getAvatarUrl(user.firstName, user.lastName, currentAvatarUrl ?? undefined)}
                 alt={`${user.firstName} ${user.lastName}`}
-                className="size-10 rounded-full"
+                className="size-10 rounded-full object-cover"
               />
               <div>
                 <p className="text-sm font-medium">

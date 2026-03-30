@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
@@ -11,6 +12,8 @@ import { AuthModule } from './auth/auth.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { WishlistsModule } from './wishlists/wishlists.module';
+import { StorageModule } from './storage/storage.module';
+import { UploadsModule } from './uploads/uploads.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 
@@ -24,10 +27,12 @@ import { RolesGuard } from './auth/guards/roles.guard';
       logging: process.env.NODE_ENV !== 'production',
     }),
     ThrottlerModule.forRoot([
-      { name: 'global', ttl: 60000, limit: 100 },
-      { name: 'auth', ttl: 60000, limit: 10 },
+      { name: 'default', ttl: 60000, limit: 300 },
     ]),
     EventEmitterModule.forRoot(),
+    ScheduleModule.forRoot(),
+    StorageModule,
+    UploadsModule,
     UsersModule,
     WorkshopsModule,
     AuthModule,

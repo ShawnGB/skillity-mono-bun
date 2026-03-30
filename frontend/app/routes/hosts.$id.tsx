@@ -7,6 +7,7 @@ import { getHostWorkshops } from '@/lib/workshops.server';
 import { WorkshopStatus, CATEGORY_LABELS } from '@skillity/shared';
 import StarRating from '@/components/ui/star-rating';
 import { getAvatarUrl } from '@/lib/avatar';
+import { WorkshopCoverImage } from '@/components/workshops/WorkshopCoverImage';
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const { id } = params;
@@ -87,7 +88,7 @@ export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
           <div className="sticky top-8 space-y-6">
             <div className="flex flex-col items-center text-center space-y-4">
               <img
-                src={getAvatarUrl(host.firstName, host.lastName)}
+                src={getAvatarUrl(host.firstName, host.lastName, host.avatarUrl)}
                 alt={name}
                 className="size-28 rounded-full"
               />
@@ -162,10 +163,12 @@ export default function HostProfilePage({ loaderData }: Route.ComponentProps) {
                   className="group rounded-xl border bg-card overflow-hidden hover:shadow-md transition-shadow"
                 >
                   <div className="relative h-40 overflow-hidden">
-                    <img
-                      src={`https://picsum.photos/seed/${workshop.id}/600/300`}
-                      alt={workshop.title}
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    <WorkshopCoverImage
+                      coverImageUrl={workshop.coverImageUrl}
+                      coverImageAttribution={workshop.coverImageAttribution}
+                      category={workshop.category}
+                      className="absolute inset-0"
+                      imageClassName="transition-transform duration-300 group-hover:scale-105"
                     />
                     <div className="absolute top-2 left-2">
                       <span className="rounded-full bg-black/50 px-2.5 py-0.5 text-xs font-medium text-white backdrop-blur-sm">

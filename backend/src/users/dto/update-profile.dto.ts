@@ -54,4 +54,12 @@ export class UpdateProfileDto {
   @IsString()
   @MaxLength(50)
   vatNumber?: string;
+
+  @IsOptional()
+  @IsString()
+  avatarUrl?: string | null;
+
+  @IsOptional()
+  @IsString()
+  avatarKey?: string | null;
 }

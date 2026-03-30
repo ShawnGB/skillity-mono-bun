@@ -1,4 +1,4 @@
-import type { Workshop, Review } from '@skillity/shared';
+import type { Workshop, Review, WorkshopPhoto } from '@skillity/shared';
 import { serverGet } from '@/lib/api-client.server';
 
 type RequestSource = Request | string;
@@ -60,4 +60,11 @@ export async function getSeriesReviews(
 
 export async function getMyReviews(source: RequestSource): Promise<Review[]> {
   return serverGet<Review[]>('/workshops/reviews/mine', source);
+}
+
+export async function getWorkshopPhotos(
+  source: RequestSource,
+  workshopId: string,
+): Promise<WorkshopPhoto[]> {
+  return serverGet<WorkshopPhoto[]>(`/workshops/${workshopId}/photos`, source);
 }

@@ -1,6 +1,9 @@
 import { Column, Entity, ManyToOne, OneToMany, JoinColumn } from 'typeorm';
 import type { User } from 'src/users/entities/user.entity';
 import type { Booking } from 'src/bookings/entities/booking.entity';
+import type { Review } from 'src/reviews/entities/review.entity';
+import type { WorkshopConductor } from './workshop-conductor.entity';
+import type { WorkshopPhoto } from './workshop-photo.entity';
 import { BaseEntity } from 'src/common/entities/base.entity';
 import {
   WorkshopStatus,
@@ -67,6 +70,15 @@ export class Workshop extends BaseEntity {
   })
   source: WorkshopSource;
 
+  @Column({ name: 'cover_image_url', nullable: true })
+  coverImageUrl: string | null;
+
+  @Column({ name: 'cover_image_key', nullable: true })
+  coverImageKey: string | null;
+
+  @Column({ name: 'cover_image_attribution', nullable: true })
+  coverImageAttribution: string | null;
+
   @Column({ name: 'host_id' })
   hostId: string;
 
@@ -78,8 +90,11 @@ export class Workshop extends BaseEntity {
   bookings: Booking[];
 
   @OneToMany('Review', 'workshop')
-  reviews: any[];
+  reviews: Review[];
 
   @OneToMany('WorkshopConductor', 'workshop')
-  conductors: any[];
+  conductors: WorkshopConductor[];
+
+  @OneToMany('WorkshopPhoto', 'workshop')
+  photos: WorkshopPhoto[];
 }

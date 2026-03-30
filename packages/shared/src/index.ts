@@ -25,6 +25,8 @@ export {
 } from './types/workshop';
 export type {
   Workshop,
+  WorkshopPhoto,
+  PexelsPhoto,
   ConductorProfile,
   CreateWorkshopInput,
   UpdateWorkshopInput,

@@ -29,6 +29,8 @@ import {
   LEVEL_LABELS,
 } from '@skillity/shared';
 import { cn } from '@/lib/utils';
+import { CoverImagePicker } from '@/components/workshops/CoverImagePicker';
+import type { CoverImageValue } from '@/components/workshops/CoverImagePicker';
 import { DURATION_OPTIONS } from '@/lib/constants';
 
 interface FormValues {
@@ -122,6 +124,7 @@ export default function CreateWorkshopForm({
   const [step, setStep] = useState(0);
   const [localError, setLocalError] = useState<string | null>(null);
   const [externalTickets, setExternalTickets] = useState(false);
+  const [coverImage, setCoverImage] = useState<CoverImageValue>({ url: null, key: null, attribution: null });
   const isPending = fetcher.state !== 'idle';
 
   const {
@@ -137,6 +140,7 @@ export default function CreateWorkshopForm({
   const ticketPrice = watch('ticketPrice') ?? 0;
   const maxParticipants = watch('maxParticipants') ?? 0;
   const maxRevenue = Number(ticketPrice) * Number(maxParticipants);
+  const watchedCategory = watch('category');
 
   const handleNext = async () => {
     const valid = await trigger(STEP_FIELDS[step] as (keyof FormValues)[]);
@@ -173,6 +177,9 @@ export default function CreateWorkshopForm({
         ...(externalTickets && data.externalUrl
           ? { externalUrl: data.externalUrl, source: WorkshopSource.EXTERNAL }
           : {}),
+        ...(coverImage.url ? { coverImageUrl: coverImage.url } : {}),
+        ...(coverImage.key ? { coverImageKey: coverImage.key } : {}),
+        ...(coverImage.attribution ? { coverImageAttribution: coverImage.attribution } : {}),
       },
       { method: 'post', action: '/api/workshops' },
     );
@@ -221,7 +228,7 @@ export default function CreateWorkshopForm({
                   control={control}
                   rules={{ required: 'Category is required' }}
                   render={({ field }) => (
-                    <Select onValueChange={field.onChange} value={field.value}>
+                    <Select onValueChange={field.onChange} value={field.value ?? ''}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select" />
                       </SelectTrigger>
@@ -283,6 +290,15 @@ export default function CreateWorkshopForm({
                   {errors.description.message}
                 </p>
               )}
+            </div>
+
+            <div className="space-y-2">
+              <Label>Cover Photo <span className="text-muted-foreground font-normal">(optional)</span></Label>
+              <CoverImagePicker
+                value={coverImage}
+                onChange={setCoverImage}
+                category={watchedCategory}
+              />
             </div>
           </div>
         )}
@@ -355,7 +371,7 @@ export default function CreateWorkshopForm({
                   render={({ field }) => (
                     <Select
                       onValueChange={field.onChange}
-                      value={field.value?.toString()}
+                      value={field.value?.toString() ?? ''}
                     >
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select" />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useFetcher } from 'react-router';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useWatch } from 'react-hook-form';
 import { format, differenceInMinutes } from 'date-fns';
 import { CalendarIcon, Trash2, Search } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
@@ -10,6 +10,8 @@ import {
   CATEGORY_LABELS,
 } from '@skillity/shared';
 import type { Workshop, ConductorProfile } from '@skillity/shared';
+import { CoverImagePicker } from '@/components/workshops/CoverImagePicker';
+import type { CoverImageValue } from '@/components/workshops/CoverImagePicker';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -62,6 +64,11 @@ export default function EditWorkshopForm({
 }: EditWorkshopFormProps) {
   const fetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [localError, setLocalError] = useState<string | null>(null);
+  const [coverImage, setCoverImage] = useState<CoverImageValue>({
+    url: workshop.coverImageUrl ?? null,
+    key: workshop.coverImageKey ?? null,
+    attribution: workshop.coverImageAttribution ?? null,
+  });
   const isPending = fetcher.state !== 'idle';
   const isPublished = workshop.status === WorkshopStatus.PUBLISHED;
   const startsAtDate = new Date(workshop.startsAt);
@@ -85,6 +92,8 @@ export default function EditWorkshopForm({
       duration: deriveDuration(workshop.startsAt, workshop.endsAt),
     },
   });
+
+  const watchedCategory = useWatch({ control, name: 'category' });
 
   const savedOk = fetcher.state === 'idle' && fetcher.data?.ok === true;
 
@@ -116,6 +125,9 @@ export default function EditWorkshopForm({
         ...(data.locationLng !== undefined && { locationLng: String(data.locationLng) }),
         startsAt: startsAt.toISOString(),
         duration: String(data.duration),
+        coverImageUrl: coverImage.url ?? '',
+        coverImageKey: coverImage.key ?? '',
+        coverImageAttribution: coverImage.attribution ?? '',
       },
       { method: 'post', action: `/api/workshops/${workshop.id}` },
     );
@@ -188,6 +200,20 @@ export default function EditWorkshopForm({
         {errors.description && (
           <p className="text-sm text-destructive">
             {errors.description.message}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <Label>Cover Photo</Label>
+        <CoverImagePicker
+          value={coverImage}
+          onChange={setCoverImage}
+          category={watchedCategory}
+        />
+        {!coverImage.url && (
+          <p className="text-xs text-muted-foreground">
+            No image? A category-based gradient will be shown instead.
           </p>
         )}
       </div>

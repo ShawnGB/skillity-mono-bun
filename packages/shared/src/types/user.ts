@@ -5,6 +5,7 @@ export interface User {
   lastName: string;
   bio?: string | null;
   tagline?: string | null;
+  avatarUrl?: string | null;
 }
 
 export interface CreateUserInput {
@@ -25,6 +26,8 @@ export interface UpdateProfileInput {
   conductorType?: 'individual' | 'company';
   companyName?: string;
   vatNumber?: string;
+  avatarUrl?: string | null;
+  avatarKey?: string | null;
 }
 
 export interface HostProfile {
@@ -37,6 +40,7 @@ export interface HostProfile {
   city: string | null;
   conductorType: 'individual' | 'company' | null;
   companyName: string | null;
+  avatarUrl: string | null;
   averageRating: number | null;
   reviewCount: number;
   workshopCount: number;
