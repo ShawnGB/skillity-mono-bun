@@ -67,13 +67,13 @@ export default function AGBPage() {
         <section>
           <h2 className="text-2xl mb-4">6. Preise und Zahlung</h2>
           <p className="text-muted-foreground">
-            Hosts legen die Preise f&uuml;r ihre Workshops selbst fest. Auf den
-            vom Host festgelegten Preis wird eine Servicepauschale von 5%
-            aufgeschlagen, die vom Teilnehmer getragen wird. Der Host
-            erh&auml;lt 100% des von ihm festgelegten Preises. Die Zahlung
-            erfolgt &uuml;ber den Zahlungsdienstleister Mollie. Eine
-            Vorauszahlung bei Buchung ist erforderlich. Alle Preise verstehen
-            sich in Euro.
+            Hosts legen die Preise f&uuml;r ihre Workshops selbst fest.
+            Teilnehmer zahlen den vom Host angegebenen Preis. Skillity erhebt
+            eine Servicegebühr von 5 %, die von der Auszahlung des Hosts
+            abgezogen wird. Die Zahlung erfolgt &uuml;ber den
+            Zahlungsdienstleister Mollie. Eine Vorauszahlung bei Buchung ist
+            erforderlich. Alle Preise verstehen sich in Euro, inkl. MwSt. wo
+            zutreffend.
           </p>
         </section>
 
@@ -84,7 +84,13 @@ export default function AGBPage() {
             Workshops kostenfrei stornieren. Bei sp&auml;terer Stornierung
             erfolgt keine R&uuml;ckerstattung. Hosts k&ouml;nnen einen Workshop
             bis 72 Stunden vor Beginn absagen. Bei Absage durch den Host
-            erhalten alle Teilnehmer eine vollst&auml;ndige R&uuml;ckerstattung.
+            erhalten alle Teilnehmer eine vollst&auml;ndige R&uuml;ckerstattung,
+            unabh&auml;ngig vom Zeitpunkt der Absage.
+          </p>
+          <p className="text-muted-foreground mt-3">
+            Hosts d&uuml;rfen keine Workshops einstellen, die nicht stattfinden
+            werden. Fiktive Angebote oder koordinierte Buchungen sind untersagt
+            und f&uuml;hren zur sofortigen Kontosperrung.
           </p>
         </section>
 

@@ -68,6 +68,9 @@ services:
       STORAGE_PUBLIC_URL: "http://localhost:9000"
       JWT_SECRET: "${JWT_SECRET:-dev-secret-change-in-production}"
       PEXELS_API_KEY: "${PEXELS_API_KEY:-}"
+      MOLLIE_API_KEY: "${MOLLIE_API_KEY:-}"
+      WEBHOOK_BASE_URL: "${WEBHOOK_BASE_URL:-http://localhost:3000}"
+      FRONTEND_URL: "${FRONTEND_URL:-http://localhost:3001}"
     volumes:
       - ./backend/src:/app/backend/src
 

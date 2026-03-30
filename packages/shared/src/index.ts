@@ -32,9 +32,10 @@ export type {
   UpdateWorkshopInput,
 } from './types/workshop';
 
-export { BookingStatus } from './types/booking';
+export { BookingStatus, PayoutStatus } from './types/booking';
 export type {
   Booking,
+  HostPayout,
   CreateBookingInput,
   WorkshopBooking,
   WorkshopBookingParticipant,
