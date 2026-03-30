@@ -47,6 +47,18 @@ services:
       mc anonymous set public local/skillity;
       "
 
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: skillity_ngrok
+    command: http api:3000 --log=stdout
+    ports:
+      - "4040:4040"
+    environment:
+      NGROK_AUTHTOKEN: "${NGROK_AUTHTOKEN}"
+    depends_on:
+      - api
+    restart: unless-stopped
+
   api:
     build:
       context: .
@@ -69,7 +81,6 @@ services:
       JWT_SECRET: "${JWT_SECRET:-dev-secret-change-in-production}"
       PEXELS_API_KEY: "${PEXELS_API_KEY:-}"
       MOLLIE_API_KEY: "${MOLLIE_API_KEY:-}"
-      WEBHOOK_BASE_URL: "${WEBHOOK_BASE_URL:-http://localhost:3000}"
       FRONTEND_URL: "${FRONTEND_URL:-http://localhost:3001}"
     volumes:
       - ./backend/src:/app/backend/src

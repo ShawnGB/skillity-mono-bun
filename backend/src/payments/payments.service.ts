@@ -1,14 +1,15 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { Client } from 'mollie-api-typescript';
 
 @Injectable()
 export class PaymentsService {
+  private readonly logger = new Logger(PaymentsService.name);
   private readonly client: Client;
 
   constructor() {
-    this.client = new Client({
-      security: { apiKey: process.env.MOLLIE_API_KEY! },
-    });
+    const apiKey = process.env.MOLLIE_API_KEY;
+    if (!apiKey) throw new Error('MOLLIE_API_KEY is not set');
+    this.client = new Client({ security: { apiKey } });
   }
 
   async createPayment(params: {
@@ -18,13 +19,15 @@ export class PaymentsService {
     amount: number;
     currency: string;
   }): Promise<{ id: string; checkoutUrl: string }> {
+    const webhookUrl = await this.resolveWebhookUrl();
+
     const payment = await this.client.payments.create({
       idempotencyKey: params.bookingId,
       paymentRequest: {
         amount: { value: params.amount.toFixed(2), currency: params.currency },
         description: `Workshop: ${params.workshopTitle}`,
         redirectUrl: `${process.env.FRONTEND_URL}/checkout/${params.bookingId}/success`,
-        webhookUrl: `${process.env.WEBHOOK_BASE_URL}/payments/webhook`,
+        webhookUrl,
         metadata: { bookingId: params.bookingId, workshopId: params.workshopId },
       },
     });
@@ -51,5 +54,26 @@ export class PaymentsService {
           : payment.amount,
       },
     });
+  }
+
+  private async resolveWebhookUrl(): Promise<string> {
+    const override = process.env.WEBHOOK_BASE_URL;
+    if (override) return `${override}/payments/webhook`;
+
+    try {
+      const res = await fetch('http://ngrok:4040/api/tunnels');
+      const data = await res.json() as { tunnels: { proto: string; public_url: string }[] };
+      const tunnel = data.tunnels.find((t) => t.proto === 'https');
+      if (tunnel) {
+        this.logger.log(`Using ngrok tunnel: ${tunnel.public_url}`);
+        return `${tunnel.public_url}/payments/webhook`;
+      }
+    } catch {
+      this.logger.warn('Could not reach ngrok API — webhook will be omitted');
+    }
+
+    throw new InternalServerErrorException(
+      'No webhook URL available. Set WEBHOOK_BASE_URL or start ngrok.',
+    );
   }
 }
