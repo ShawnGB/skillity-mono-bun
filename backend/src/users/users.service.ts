@@ -52,7 +52,10 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return await this.UsersRepository.findOne({ where: { email } });
+    return await this.UsersRepository.createQueryBuilder('user')
+      .addSelect('user.password')
+      .where('user.email = :email', { email })
+      .getOne();
   }
 
   async lookupByEmail(email: string) {
