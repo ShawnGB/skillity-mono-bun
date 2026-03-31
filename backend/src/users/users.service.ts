@@ -8,7 +8,7 @@ import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User } from './entities/user.entity';
 import { Booking } from '../bookings/entities/booking.entity';
 import { Workshop } from '../workshops/entities/workshop.entity';
-import { In, Not, Repository } from 'typeorm';
+import { In, IsNull, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookingStatus, UserRole, WorkshopStatus } from '../types/enums';
 import { ReviewsService } from '../reviews/reviews.service';
@@ -171,7 +171,7 @@ export class UsersService {
   }
 
   async deleteAccount(userId: string) {
-    const user = await this.UsersRepository.findOne({ where: { id: userId } });
+    const user = await this.UsersRepository.findOne({ where: { id: userId, deletedAt: IsNull() } });
     if (!user) throw new NotFoundException('User not found');
 
     await this.bookingsRepository.update(
