@@ -42,7 +42,9 @@ export class UsersService {
   }
 
   async findAll() {
-    return await this.UsersRepository.find();
+    return await this.UsersRepository.find({
+      select: ['id', 'email', 'firstName', 'lastName', 'role', 'createdAt'],
+    });
   }
 
   async findById(id: string): Promise<User | null> {
