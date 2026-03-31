@@ -52,6 +52,10 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
+    return await this.UsersRepository.findOne({ where: { email } });
+  }
+
+  async findByEmailWithPassword(email: string): Promise<User | null> {
     return await this.UsersRepository.createQueryBuilder('user')
       .addSelect('user.password')
       .where('user.email = :email', { email })
@@ -181,6 +185,8 @@ export class UsersService {
     user.email = `deleted_${randomUUID()}@deleted.local`;
     user.firstName = 'Deleted';
     user.lastName = 'User';
+    // assign new password before save — select:false means the loaded entity has no password field,
+    // but assigning here ensures the column is written (not skipped) on save
     user.password = await bcrypt.hash(randomUUID(), 10);
     user.deletedAt = new Date();
 
