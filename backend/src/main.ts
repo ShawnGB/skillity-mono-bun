@@ -12,7 +12,13 @@ async function bootstrap() {
     origin: process.env.FRONTEND_URL || 'http://localhost:3001',
     credentials: true,
   });
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      // forbidNonWhitelisted intentionally omitted — silent strip, not 400, for MVP
+      transform: true,
+    }),
+  );
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
