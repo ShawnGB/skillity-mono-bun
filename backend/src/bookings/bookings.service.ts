@@ -219,6 +219,7 @@ export class BookingsService {
   async handleChargeback(molliePaymentId: string): Promise<void> {
     const booking = await this.bookingRepository.findOne({
       where: { molliePaymentId },
+      relations: ['workshop'],
     });
 
     if (!booking) return;

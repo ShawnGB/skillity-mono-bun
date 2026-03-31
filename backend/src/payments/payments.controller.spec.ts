@@ -44,11 +44,11 @@ describe('PaymentsController.handleWebhook', () => {
 
   it('does nothing for failed/expired/cancelled payments', async () => {
     for (const status of ['failed', 'expired', 'canceled']) {
+      jest.clearAllMocks();
       paymentsService.getPayment.mockResolvedValue({ status });
       await controller.handleWebhook({ id: 'tr_abc' });
       expect(bookingsService.handlePaymentConfirmed).not.toHaveBeenCalled();
       expect(bookingsService.handleChargeback).not.toHaveBeenCalled();
-      jest.clearAllMocks();
     }
   });
 
