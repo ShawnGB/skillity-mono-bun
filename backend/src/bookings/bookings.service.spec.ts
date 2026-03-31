@@ -51,7 +51,7 @@ describe('BookingsService.confirmBooking', () => {
     bookingRepo.findOne.mockResolvedValue(paidBooking);
 
     await expect(service.confirmBooking('booking-1', 'user-1')).rejects.toThrow(
-      BadRequestException,
+      'This is a paid workshop. Use the payment flow to confirm your booking.',
     );
   });
 
