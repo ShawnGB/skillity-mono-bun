@@ -182,15 +182,16 @@ export class UsersService {
       { status: BookingStatus.CANCELLED },
     );
 
-    user.email = `deleted_${randomUUID()}@deleted.local`;
-    user.firstName = 'Deleted';
-    user.lastName = 'User';
-    // assign new password before save — select:false means the loaded entity has no password field,
-    // but assigning here ensures the column is written (not skipped) on save
-    user.password = await bcrypt.hash(randomUUID(), 10);
-    user.deletedAt = new Date();
-
-    await this.UsersRepository.save(user);
+    await this.UsersRepository.update(
+      { id: userId },
+      {
+        email: `deleted_${randomUUID()}@deleted.local`,
+        firstName: 'Deleted',
+        lastName: 'User',
+        password: await bcrypt.hash(randomUUID(), 10),
+        deletedAt: new Date(),
+      },
+    );
   }
 
   async exportData(userId: string) {
