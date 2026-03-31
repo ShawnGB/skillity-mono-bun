@@ -103,6 +103,12 @@ export class BookingsService {
     if (!booking) throw new NotFoundException('Booking not found');
     if (booking.userId !== userId) throw new ForbiddenException();
 
+    if (Number(booking.workshop.ticketPrice) > 0) {
+      throw new BadRequestException(
+        'This is a paid workshop. Use the payment flow to confirm your booking.',
+      );
+    }
+
     if (booking.status !== BookingStatus.PENDING) {
       throw new BadRequestException('Only pending bookings can be confirmed');
     }
