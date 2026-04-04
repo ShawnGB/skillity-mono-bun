@@ -4,6 +4,7 @@ import { PassportModule } from '@nestjs/passport';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AuthController } from './auth.controller';
+import { MollieOAuthController } from './mollie-oauth.controller';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshToken } from './entities/refresh-token.entity';
@@ -19,7 +20,7 @@ import { UsersModule } from '../users/users.module';
       signOptions: { expiresIn: '15m' },
     }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, MollieOAuthController],
   providers: [AuthService, JwtStrategy],
   exports: [AuthService],
 })
