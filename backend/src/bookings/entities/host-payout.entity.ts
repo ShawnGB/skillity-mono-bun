@@ -31,6 +31,12 @@ export class HostPayout extends BaseEntity {
   })
   status: PayoutStatus;
 
+  @Column({ name: 'ready_at', type: 'timestamptz', nullable: true })
+  readyAt: Date | null;
+
+  @Column({ name: 'mollie_transfer_id', nullable: true })
+  mollieTransferId: string | null;
+
   @ManyToOne('Booking')
   @JoinColumn({ name: 'booking_id' })
   booking: any;
