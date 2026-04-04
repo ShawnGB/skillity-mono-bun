@@ -39,7 +39,7 @@ export default function CheckoutSuccessPage({ loaderData }: Route.ComponentProps
         if (data.status === BookingStatus.CONFIRMED) {
           window.location.reload();
         }
-      } catch (_) {
+      } catch {
         // poll failure — retry on next tick
       }
       if (attempts >= 10) {
