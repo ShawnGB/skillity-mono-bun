@@ -179,15 +179,27 @@ export class BookingsService {
       });
 
       const netAmount = Number(booking.amount) - Number(booking.serviceFee ?? 0);
-      const payouts = conductors.map((conductor) =>
-        manager.create(HostPayout, {
-          bookingId: booking.id,
-          hostUserId: conductor.userId,
-          workshopId: booking.workshopId,
-          grossAmount: Number((netAmount * Number(conductor.payoutShare)).toFixed(2)),
-          payoutShare: Number(conductor.payoutShare),
-          currency: booking.currency,
-          status: PayoutStatus.PENDING,
+
+      const payouts = await Promise.all(
+        conductors.map(async (conductor) => {
+          const previousPaidCount = await manager.count(HostPayout, {
+            where: { hostUserId: conductor.userId, status: PayoutStatus.PAID },
+          });
+          const isFirstWorkshop = previousPaidCount === 0;
+          const holdDays = isFirstWorkshop ? 7 : 0;
+          const baseDate = workshop.endsAt ?? new Date(workshop.startsAt.getTime() + 2 * 60 * 60 * 1000);
+          const readyAt = new Date(baseDate.getTime() + holdDays * 24 * 60 * 60 * 1000);
+
+          return manager.create(HostPayout, {
+            bookingId: booking.id,
+            hostUserId: conductor.userId,
+            workshopId: booking.workshopId,
+            grossAmount: Number((netAmount * Number(conductor.payoutShare)).toFixed(2)),
+            payoutShare: Number(conductor.payoutShare),
+            currency: booking.currency,
+            status: PayoutStatus.PENDING,
+            readyAt,
+          });
         }),
       );
 

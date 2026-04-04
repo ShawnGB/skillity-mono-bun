@@ -7,7 +7,7 @@ import { Workshop } from '../workshops/entities/workshop.entity';
 import { WorkshopConductor } from '../workshops/entities/workshop-conductor.entity';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PaymentsService } from '../payments/payments.service';
-import { BookingStatus, PayoutStatus } from '../types/enums';
+import { BookingStatus, PayoutStatus, WorkshopStatus } from '../types/enums';
 import { BadRequestException } from '@nestjs/common';
 
 const makeRepo = (overrides = {}) => ({
@@ -307,6 +307,103 @@ describe('BookingsService — payment paths', () => {
       });
 
       await expect(service.cancelBooking('b5', 'u1')).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('handlePaymentConfirmed — readyAt', () => {
+    it('sets readyAt to endsAt + 7 days for a conductor with no previous PAID payouts', async () => {
+      const workshopEndsAt = new Date('2026-05-01T20:00:00Z');
+      const workshop = {
+        id: 'ws1',
+        status: WorkshopStatus.PUBLISHED,
+        maxParticipants: 10,
+        endsAt: workshopEndsAt,
+      };
+      const booking = {
+        id: 'b1',
+        userId: 'u1',
+        workshopId: 'ws1',
+        molliePaymentId: 'tr_123',
+        status: BookingStatus.PENDING,
+        amount: 100,
+        serviceFee: 5,
+        currency: 'EUR',
+      };
+
+      bookingRepo.findOne.mockResolvedValue(booking);
+
+      const savedPayouts: any[] = [];
+
+      bookingRepo.manager.transaction.mockImplementation(async (callback: any) => {
+        const manager = {
+          findOne: jest.fn().mockResolvedValue(workshop),
+          count: jest.fn()
+            .mockResolvedValueOnce(3)  // confirmedCount < maxParticipants check
+            .mockResolvedValueOnce(0), // previousPaidCount — 0 means first workshop
+          find: jest.fn().mockResolvedValue([
+            { userId: 'host1', payoutShare: 1.0 },
+          ]),
+          save: jest.fn().mockImplementation((entityOrItems: any, items?: any) => {
+            const data = items ?? entityOrItems;
+            if (Array.isArray(data)) savedPayouts.push(...data);
+            return Promise.resolve(data);
+          }),
+          create: jest.fn().mockImplementation((_Entity: any, data: any) => data),
+        };
+        return callback(manager);
+      });
+
+      await service.handlePaymentConfirmed('tr_123');
+
+      const expected = new Date(workshopEndsAt.getTime() + 7 * 24 * 60 * 60 * 1000);
+      expect(savedPayouts[0].readyAt.getTime()).toBe(expected.getTime());
+    });
+
+    it('sets readyAt to endsAt for a conductor with previous PAID payouts', async () => {
+      const workshopEndsAt = new Date('2026-05-01T20:00:00Z');
+      const workshop = {
+        id: 'ws1',
+        status: WorkshopStatus.PUBLISHED,
+        maxParticipants: 10,
+        endsAt: workshopEndsAt,
+      };
+      const booking = {
+        id: 'b2',
+        userId: 'u1',
+        workshopId: 'ws1',
+        molliePaymentId: 'tr_456',
+        status: BookingStatus.PENDING,
+        amount: 100,
+        serviceFee: 5,
+        currency: 'EUR',
+      };
+
+      bookingRepo.findOne.mockResolvedValue(booking);
+
+      const savedPayouts: any[] = [];
+
+      bookingRepo.manager.transaction.mockImplementation(async (callback: any) => {
+        const manager = {
+          findOne: jest.fn().mockResolvedValue(workshop),
+          count: jest.fn()
+            .mockResolvedValueOnce(3)  // confirmedCount
+            .mockResolvedValueOnce(2), // previousPaidCount — 2 means returning conductor
+          find: jest.fn().mockResolvedValue([
+            { userId: 'host1', payoutShare: 1.0 },
+          ]),
+          save: jest.fn().mockImplementation((entityOrItems: any, items?: any) => {
+            const data = items ?? entityOrItems;
+            if (Array.isArray(data)) savedPayouts.push(...data);
+            return Promise.resolve(data);
+          }),
+          create: jest.fn().mockImplementation((_Entity: any, data: any) => data),
+        };
+        return callback(manager);
+      });
+
+      await service.handlePaymentConfirmed('tr_456');
+
+      expect(savedPayouts[0].readyAt.getTime()).toBe(workshopEndsAt.getTime());
     });
   });
 });
