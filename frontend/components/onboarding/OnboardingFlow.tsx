@@ -21,9 +21,10 @@ interface ProfileFormValues {
 
 interface OnboardingFlowProps {
   user: AuthUser;
+  error?: string | null;
 }
 
-export default function OnboardingFlow({ user }: OnboardingFlowProps) {
+export default function OnboardingFlow({ user, error }: OnboardingFlowProps) {
   const becomeHostFetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const profileFetcher = useFetcher<{ ok?: boolean; error?: string }>();
   const [step, setStep] = useState(0);
@@ -204,6 +205,12 @@ export default function OnboardingFlow({ user }: OnboardingFlowProps) {
               you can receive earnings from your workshops.
             </p>
           </div>
+
+          {error === 'mollie_connect_failed' && (
+            <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+              Could not connect to Mollie. Please try again or contact support.
+            </div>
+          )}
 
           <div className="rounded-xl border bg-card p-8 text-center space-y-4">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
