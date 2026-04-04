@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PaymentsService } from './payments.service';
 import { InternalServerErrorException } from '@nestjs/common';
 
-const mockClient: any = {
+const mockClient = {
   payments: {
     create: jest.fn(),
     get: jest.fn(),
@@ -10,7 +10,7 @@ const mockClient: any = {
   refunds: {
     create: jest.fn(),
   },
-  transfers: {
+  balanceTransfers: {
     create: jest.fn(),
   },
 };
@@ -26,6 +26,7 @@ describe('PaymentsService', () => {
     process.env.MOLLIE_API_KEY = 'test_key';
     process.env.FRONTEND_URL = 'http://localhost:3001';
     process.env.WEBHOOK_BASE_URL = 'https://example.ngrok.io';
+    process.env.MOLLIE_PLATFORM_ORG_ID = 'test_platform_org';
     jest.clearAllMocks();
 
     const module: TestingModule = await Test.createTestingModule({
@@ -92,17 +93,17 @@ describe('PaymentsService', () => {
       expect(mockClient.refunds.create).toHaveBeenCalledWith({
         paymentId: 'tr_test123',
         refundRequest: {
+          description: 'Workshop refund',
           amount: { value: '50.00', currency: 'EUR' },
+          metadata: null,
         },
       });
     });
   });
 
   describe('createTransfer', () => {
-    it('calls Mollie transfers.create with destination and amount', async () => {
-      mockClient.transfers = {
-        create: jest.fn().mockResolvedValue({ id: 'tr_transfer_1' }),
-      };
+    it('calls Mollie balanceTransfers.create with source, destination, and amount', async () => {
+      mockClient.balanceTransfers.create.mockResolvedValue({ id: 'tr_transfer_1' });
 
       const result = await service.createTransfer({
         destination: 'org_abc123',
@@ -112,11 +113,13 @@ describe('PaymentsService', () => {
       });
 
       expect(result).toEqual({ id: 'tr_transfer_1' });
-      expect(mockClient.transfers.create).toHaveBeenCalledWith({
+      expect(mockClient.balanceTransfers.create).toHaveBeenCalledWith({
         idempotencyKey: 'hp-payout-1',
-        transferRequest: {
+        entityBalanceTransfer: {
           amount: { value: '95.00', currency: 'EUR' },
-          destination: { type: 'organization', organizationId: 'org_abc123' },
+          source: { type: 'organization', id: 'test_platform_org', description: 'Skillity platform' },
+          destination: { type: 'organization', id: 'org_abc123', description: 'Conductor payout' },
+          description: 'Workshop conductor payout',
         },
       });
     });

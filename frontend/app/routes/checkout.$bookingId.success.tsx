@@ -39,9 +39,7 @@ export default function CheckoutSuccessPage({ loaderData }: Route.ComponentProps
         if (data.status === BookingStatus.CONFIRMED) {
           window.location.reload();
         }
-      } catch {
-        // poll failure — retry on next tick
-      }
+      } catch {}
       if (attempts >= 10) {
         clearInterval(interval);
         setTimedOut(true);

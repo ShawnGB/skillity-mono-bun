@@ -1,5 +1,6 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { Client } from 'mollie-api-typescript';
+import type { EntityBalanceTransfer } from 'mollie-api-typescript/models';
 
 @Injectable()
 export class PaymentsService {
@@ -41,18 +42,20 @@ export class PaymentsService {
   }
 
   async getPayment(molliePaymentId: string) {
-    return (this.client.payments as any).get({ id: molliePaymentId });
+    return this.client.payments.get({ paymentId: molliePaymentId });
   }
 
   async createRefund(molliePaymentId: string, amount?: string) {
-    const payment = await (this.client.payments as any).get({ id: molliePaymentId });
+    const payment = await this.client.payments.get({ paymentId: molliePaymentId });
     return this.client.refunds.create({
       paymentId: molliePaymentId,
       refundRequest: {
+        description: 'Workshop refund',
         amount: amount
           ? { value: amount, currency: payment.amount!.currency }
-          : payment.amount,
-      } as any,
+          : payment.amount!,
+        metadata: null,
+      },
     });
   }
 
@@ -62,12 +65,19 @@ export class PaymentsService {
     currency: string;
     idempotencyKey: string;
   }): Promise<{ id: string }> {
-    const transfer = await (this.client as any).transfers.create({
+    const platformOrgId = process.env.MOLLIE_PLATFORM_ORG_ID;
+    if (!platformOrgId) throw new Error('MOLLIE_PLATFORM_ORG_ID is not set');
+
+    const entityBalanceTransfer: EntityBalanceTransfer = {
+      amount: { value: params.amount.toFixed(2), currency: params.currency },
+      source: { type: 'organization', id: platformOrgId, description: 'Skillity platform' },
+      destination: { type: 'organization', id: params.destination, description: 'Conductor payout' },
+      description: 'Workshop conductor payout',
+    };
+
+    const transfer = await this.client.balanceTransfers.create({
       idempotencyKey: params.idempotencyKey,
-      transferRequest: {
-        amount: { value: params.amount.toFixed(2), currency: params.currency },
-        destination: { type: 'organization', organizationId: params.destination },
-      },
+      entityBalanceTransfer,
     });
     return { id: transfer.id };
   }

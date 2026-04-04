@@ -7,4 +7,9 @@ export default tseslint.config(
   {
     ignores: ['build/**', '.react-router/**', 'node_modules/**'],
   },
+  {
+    rules: {
+      'no-empty': ['error', { allowEmptyCatch: true }],
+    },
+  },
 );
