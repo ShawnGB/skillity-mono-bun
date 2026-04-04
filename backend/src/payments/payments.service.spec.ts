@@ -94,4 +94,28 @@ describe('PaymentsService', () => {
       });
     });
   });
+
+  describe('createTransfer', () => {
+    it('calls Mollie transfers.create with destination and amount', async () => {
+      mockClient.transfers = {
+        create: jest.fn().mockResolvedValue({ id: 'tr_transfer_1' }),
+      };
+
+      const result = await service.createTransfer({
+        destination: 'org_abc123',
+        amount: 95,
+        currency: 'EUR',
+        idempotencyKey: 'hp-payout-1',
+      });
+
+      expect(result).toEqual({ id: 'tr_transfer_1' });
+      expect(mockClient.transfers.create).toHaveBeenCalledWith({
+        idempotencyKey: 'hp-payout-1',
+        transferRequest: {
+          amount: { value: '95.00', currency: 'EUR' },
+          destination: { type: 'organization', organizationId: 'org_abc123' },
+        },
+      });
+    });
+  });
 });

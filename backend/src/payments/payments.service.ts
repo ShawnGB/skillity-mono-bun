@@ -56,6 +56,22 @@ export class PaymentsService {
     });
   }
 
+  async createTransfer(params: {
+    destination: string;
+    amount: number;
+    currency: string;
+    idempotencyKey: string;
+  }): Promise<{ id: string }> {
+    const transfer = await (this.client as any).transfers.create({
+      idempotencyKey: params.idempotencyKey,
+      transferRequest: {
+        amount: { value: params.amount.toFixed(2), currency: params.currency },
+        destination: { type: 'organization', organizationId: params.destination },
+      },
+    });
+    return { id: transfer.id };
+  }
+
   private async resolveWebhookUrl(): Promise<string> {
     const override = process.env.WEBHOOK_BASE_URL;
     if (override) return `${override}/payments/webhook`;
