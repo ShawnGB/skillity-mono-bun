@@ -8,7 +8,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, LessThanOrEqual, Repository } from 'typeorm';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { Booking } from './entities/booking.entity';
@@ -454,6 +454,41 @@ export class BookingsService {
       .andWhere('mollie_payment_id IS NULL')
       .andWhere('created_at < :cutoff', { cutoff: twentyFourHoursAgo })
       .execute();
+  }
+
+  @Cron(CronExpression.EVERY_HOUR)
+  async processPayouts(): Promise<void> {
+    const now = new Date();
+    const payouts = await this.hostPayoutRepository.find({
+      where: {
+        status: PayoutStatus.PENDING,
+        mollieTransferId: IsNull(),
+        readyAt: LessThanOrEqual(now),
+      },
+      relations: ['hostUser'],
+    });
+
+    for (const payout of payouts) {
+      if (!payout.hostUser?.mollieOrganizationId) {
+        this.logger.warn(`Skipping payout ${payout.id} — conductor has no Mollie account`);
+        continue;
+      }
+
+      try {
+        const transfer = await this.paymentsService.createTransfer({
+          destination: payout.hostUser.mollieOrganizationId,
+          amount: Number(payout.grossAmount),
+          currency: payout.currency,
+          idempotencyKey: payout.id,
+        });
+
+        payout.mollieTransferId = transfer.id;
+        payout.status = PayoutStatus.PAID;
+        await this.hostPayoutRepository.save(payout);
+      } catch (err) {
+        this.logger.error(`Transfer failed for payout ${payout.id}: ${err}`);
+      }
+    }
   }
 
   private getEffectiveStatus(workshop: Workshop): WorkshopStatus {
