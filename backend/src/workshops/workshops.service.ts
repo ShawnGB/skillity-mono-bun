@@ -20,6 +20,7 @@ import { randomUUID } from 'crypto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { UserRole, WorkshopStatus, BookingStatus, PhotoStatus } from 'src/types/enums';
 import { Booking } from 'src/bookings/entities/booking.entity';
+import { User } from 'src/users/entities/user.entity';
 import { StorageService } from 'src/storage/storage.service';
 import { BookingsService } from 'src/bookings/bookings.service';
 
@@ -55,6 +56,8 @@ export class WorkshopsService {
     private readonly photoRepository: Repository<WorkshopPhoto>,
     @InjectRepository(Booking)
     private readonly bookingRepository: Repository<Booking>,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly eventEmitter: EventEmitter2,
     private readonly storage: StorageService,
     @Inject(forwardRef(() => BookingsService))
@@ -223,14 +226,29 @@ export class WorkshopsService {
         );
       }
 
-      if (
-        updateWorkshopDto.status === WorkshopStatus.PUBLISHED &&
-        !workshop.startsAt &&
-        !updateWorkshopDto.startsAt
-      ) {
-        throw new BadRequestException(
-          'Cannot publish a workshop without a scheduled date',
-        );
+      if (updateWorkshopDto.status === WorkshopStatus.PUBLISHED) {
+        if (!workshop.startsAt && !updateWorkshopDto.startsAt) {
+          throw new BadRequestException(
+            'Cannot publish a workshop without a scheduled date',
+          );
+        }
+
+        const conductors = await this.conductorRepository.find({
+          where: { workshopId: id },
+        });
+        const allUserIds = [workshop.hostId, ...conductors.map((c) => c.userId)];
+
+        for (const userId of allUserIds) {
+          const user = await this.userRepository.findOne({ where: { id: userId } });
+          if (!user?.mollieOrganizationId) {
+            const name = user
+              ? `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
+              : userId;
+            throw new BadRequestException(
+              `${name} has not connected their Mollie account`,
+            );
+          }
+        }
       }
 
       if (updateWorkshopDto.status === WorkshopStatus.CANCELLED) {
