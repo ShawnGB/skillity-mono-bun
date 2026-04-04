@@ -15,6 +15,7 @@ export default [
   route('/login', 'routes/login.tsx'),
   route('/register', 'routes/register.tsx'),
   route('/logout', 'routes/logout.tsx'),
+  route('/auth/mollie/return', 'routes/auth.mollie.return.tsx'),
   route('/onboarding', 'routes/onboarding.tsx'),
   route('/onboarding/success', 'routes/onboarding.success.tsx'),
   route('/checkout/:bookingId', 'routes/checkout.$bookingId.tsx'),
