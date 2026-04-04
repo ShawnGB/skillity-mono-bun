@@ -7,6 +7,12 @@ export enum BookingStatus {
   REFUNDED = 'refunded',
 }
 
+export enum PayoutStatus {
+  PENDING = 'pending',
+  PAID = 'paid',
+  CANCELLED = 'cancelled',
+}
+
 export interface Booking {
   id: string;
   status: BookingStatus;
@@ -16,7 +22,21 @@ export interface Booking {
   molliePaymentId: string | null;
   paidAt: string | null;
   amount: number;
+  serviceFee: number | null;
   currency: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface HostPayout {
+  id: string;
+  bookingId: string;
+  hostUserId: string;
+  workshopId: string;
+  grossAmount: number;
+  payoutShare: number;
+  currency: string;
+  status: PayoutStatus;
   createdAt: string;
   updatedAt: string;
 }

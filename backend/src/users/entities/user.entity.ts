@@ -49,6 +49,12 @@ export class User extends BaseEntity {
   @Column({ name: 'avatar_key', nullable: true })
   avatarKey: string | null;
 
+  @Column({ name: 'mollie_organization_id', nullable: true })
+  mollieOrganizationId: string | null;
+
+  @Column({ name: 'mollie_connected_at', type: 'timestamptz', nullable: true })
+  mollieConnectedAt: Date | null;
+
   @Column({ name: 'deleted_at', type: 'timestamptz', nullable: true })
   deletedAt: Date | null;
 

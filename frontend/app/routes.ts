@@ -15,9 +15,12 @@ export default [
   route('/login', 'routes/login.tsx'),
   route('/register', 'routes/register.tsx'),
   route('/logout', 'routes/logout.tsx'),
+  route('/auth/mollie/return', 'routes/auth.mollie.return.tsx'),
   route('/onboarding', 'routes/onboarding.tsx'),
   route('/onboarding/success', 'routes/onboarding.success.tsx'),
   route('/checkout/:bookingId', 'routes/checkout.$bookingId.tsx'),
+  route('/checkout/:bookingId/success', 'routes/checkout.$bookingId.success.tsx'),
+  route('/checkout/:bookingId/cancel', 'routes/checkout.$bookingId.cancel.tsx'),
   route('/hosts/:id', 'routes/hosts.$id.tsx'),
 
   layout('routes/profile.tsx', [
@@ -60,6 +63,14 @@ export default [
   route(
     '/api/bookings/:bookingId/confirm',
     'routes/api.bookings.$bookingId.confirm.tsx',
+  ),
+  route(
+    '/api/bookings/:bookingId/pay',
+    'routes/api.bookings.$bookingId.pay.tsx',
+  ),
+  route(
+    '/api/bookings/:bookingId/status',
+    'routes/api.bookings.$bookingId.status.tsx',
   ),
 
   // SEO

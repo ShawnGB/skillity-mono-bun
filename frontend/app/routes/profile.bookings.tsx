@@ -112,6 +112,14 @@ function BookingRow({
       </div>
       <div className="flex items-center gap-2 shrink-0">
         {canReview && <ReviewButton workshopId={workshop.id} />}
+        {booking.status === BookingStatus.PENDING && Number(booking.amount) > 0 && (
+          <Link
+            to={`/checkout/${booking.id}`}
+            className="text-sm font-medium text-primary hover:underline"
+          >
+            Complete payment
+          </Link>
+        )}
         {canCancel && <CancelBookingButton bookingId={booking.id} />}
       </div>
     </div>

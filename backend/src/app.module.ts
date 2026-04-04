@@ -13,6 +13,7 @@ import { BookingsModule } from './bookings/bookings.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { WishlistsModule } from './wishlists/wishlists.module';
 import { StorageModule } from './storage/storage.module';
+import { PaymentsModule } from './payments/payments.module';
 import { UploadsModule } from './uploads/uploads.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
@@ -37,6 +38,7 @@ import { RolesGuard } from './auth/guards/roles.guard';
     WorkshopsModule,
     AuthModule,
     BookingsModule,
+    PaymentsModule,
     ReviewsModule,
     WishlistsModule,
   ],

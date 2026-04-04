@@ -3,6 +3,9 @@ import { BookingsService } from './bookings.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Booking } from './entities/booking.entity';
 import { Workshop } from '../workshops/entities/workshop.entity';
+import { HostPayout } from './entities/host-payout.entity';
+import { WorkshopConductor } from '../workshops/entities/workshop-conductor.entity';
+import { PaymentsService } from '../payments/payments.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { BadRequestException } from '@nestjs/common';
 import { BookingStatus } from '../types/enums';
@@ -21,6 +24,16 @@ const mockWorkshopRepo = () => ({
   findOne: jest.fn(),
 });
 
+const mockHostPayoutRepo = () => ({
+  findOne: jest.fn(),
+  save: jest.fn(),
+  find: jest.fn(),
+});
+
+const mockPaymentsService = () => ({
+  initiatePayment: jest.fn(),
+});
+
 describe('BookingsService.confirmBooking', () => {
   let service: BookingsService;
   let bookingRepo: ReturnType<typeof mockBookingRepo>;
@@ -33,7 +46,10 @@ describe('BookingsService.confirmBooking', () => {
         BookingsService,
         { provide: getRepositoryToken(Booking), useValue: bookingRepo },
         { provide: getRepositoryToken(Workshop), useValue: mockWorkshopRepo() },
+        { provide: getRepositoryToken(HostPayout), useValue: mockHostPayoutRepo() },
+        { provide: getRepositoryToken(WorkshopConductor), useValue: { find: jest.fn() } },
         { provide: EventEmitter2, useValue: { emit: jest.fn() } },
+        { provide: PaymentsService, useValue: mockPaymentsService() },
       ],
     }).compile();
 

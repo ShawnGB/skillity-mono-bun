@@ -40,6 +40,11 @@ export class BookingsController {
     return this.bookingsService.confirmBooking(id, user.id);
   }
 
+  @Post('bookings/:id/pay')
+  initiatePayment(@Param('id') id: string, @CurrentUser() user: { id: string }) {
+    return this.bookingsService.initiatePayment(id, user.id);
+  }
+
   @Post('bookings/:id/cancel')
   cancelBooking(@Param('id') id: string, @CurrentUser() user: { id: string }) {
     return this.bookingsService.cancelBooking(id, user.id);
