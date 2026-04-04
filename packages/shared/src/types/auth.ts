@@ -14,6 +14,8 @@ export interface AuthUser {
   companyName?: string | null;
   vatNumber?: string | null;
   avatarUrl?: string | null;
+  mollieOrganizationId?: string | null;
+  mollieConnectedAt?: string | null;
 }
 
 export interface LoginInput {
