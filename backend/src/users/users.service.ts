@@ -90,6 +90,15 @@ export class UsersService {
     };
   }
 
+  async connectMollie(userId: string, mollieOrganizationId: string): Promise<void> {
+    const user = await this.UsersRepository.findOne({ where: { id: userId } });
+    if (!user) throw new NotFoundException('User not found');
+    user.mollieOrganizationId = mollieOrganizationId;
+    user.mollieConnectedAt = new Date();
+    user.role = UserRole.HOST;
+    await this.UsersRepository.save(user);
+  }
+
   async updateProfile(userId: string, dto: UpdateProfileDto) {
     const user = await this.UsersRepository.findOne({ where: { id: userId } });
     if (!user) throw new NotFoundException('User not found');
