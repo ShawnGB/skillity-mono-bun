@@ -2,12 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PaymentsService } from './payments.service';
 import { InternalServerErrorException } from '@nestjs/common';
 
-const mockClient = {
+const mockClient: any = {
   payments: {
     create: jest.fn(),
     get: jest.fn(),
   },
   refunds: {
+    create: jest.fn(),
+  },
+  transfers: {
     create: jest.fn(),
   },
 };

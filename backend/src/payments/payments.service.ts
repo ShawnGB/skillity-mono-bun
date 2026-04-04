@@ -41,18 +41,18 @@ export class PaymentsService {
   }
 
   async getPayment(molliePaymentId: string) {
-    return this.client.payments.get({ id: molliePaymentId });
+    return (this.client.payments as any).get({ id: molliePaymentId });
   }
 
   async createRefund(molliePaymentId: string, amount?: string) {
-    const payment = await this.client.payments.get({ id: molliePaymentId });
+    const payment = await (this.client.payments as any).get({ id: molliePaymentId });
     return this.client.refunds.create({
       paymentId: molliePaymentId,
       refundRequest: {
         amount: amount
           ? { value: amount, currency: payment.amount!.currency }
           : payment.amount,
-      },
+      } as any,
     });
   }
 
